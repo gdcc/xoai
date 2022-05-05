@@ -47,10 +47,6 @@ public class GetRecordHandler extends VerbHandler<GetRecord> {
         GetRecord result = new GetRecord(record);
 
         MetadataFormat format = getContext().formatForPrefix(parameters.getMetadataPrefix());
-        if (format == null) {
-            throw new CannotDisseminateFormatException("Format "+parameters.getMetadataPrefix()+" not applicable to this item");
-        }
-
         Item item = getRepository().getItemRepository().getItem(parameters.getIdentifier());
 
         if (getContext().hasCondition() &&
@@ -72,10 +68,13 @@ public class GetRecordHandler extends VerbHandler<GetRecord> {
         for (Set set : item.getSets())
             header.withSetSpec(set.getSpec());
 
-        if (item.isDeleted())
+        if (item.isDeleted()) {
             header.withStatus(Header.Status.DELETED);
-
-        if (!item.isDeleted()) {
+        } else {
+            /* Include the raw pre-exported metadata: */
+            record.withMetadata(item.getMetadata());
+            
+            /* Bypass/disable the XOAI metadata pipeline: 
             Metadata metadata;
             try {
                 if (getContext().hasTransformer()) {
@@ -98,6 +97,7 @@ public class GetRecordHandler extends VerbHandler<GetRecord> {
                 for (About about : item.getAbout())
                     record.withAbout(about);
             }
+            */
         }
         return result;
     }

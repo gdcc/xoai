@@ -49,6 +49,7 @@ public class ListIdentifiersHandler extends VerbHandler<ListIdentifiers> {
         if (parameters.hasSet() && !getRepository().getSetRepository().supportSets())
             throw new DoesNotSupportSetsException();
 
+        /* This check is likely redundant/unnecessary here (?) -- L.A. */
         PreconditionHelper.checkMetadataFormat(getContext(), parameters.getMetadataPrefix());
 
         int length = getRepository().getConfiguration().getMaxListIdentifiers();
@@ -69,8 +70,10 @@ public class ListIdentifiersHandler extends VerbHandler<ListIdentifiers> {
                 listItemIdentifiersResult = itemRepositoryHelper.getItemIdentifiers(getContext(), offset, length,
                         parameters.getMetadataPrefix());
         } else {
-            if (!getRepository().getSetRepository().exists(parameters.getSet()) && !getContext().hasSet(parameters.getSet()))
-                throw new NoMatchesException();
+            /* TBH, I don't remember why the 2 lines below are commented out in 
+               the original IQSS fork. Will check. -- L.A. */
+            /*if (!getRepository().getSetRepository().exists(parameters.getSet()) && !getContext().hasSet(parameters.getSet()))
+                throw new NoMatchesException();*/
 
             if (parameters.hasFrom() && !parameters.hasUntil())
                 listItemIdentifiersResult = itemRepositoryHelper.getItemIdentifiers(getContext(), offset, length,
@@ -121,7 +124,7 @@ public class ListIdentifiersHandler extends VerbHandler<ListIdentifiers> {
     private Header createHeader(OAICompiledRequest parameters,
                                     ItemIdentifier itemIdentifier) throws BadArgumentException,
             OAIException,
-        NoMetadataFormatsException {
+            NoMetadataFormatsException {
         MetadataFormat format = getContext().formatForPrefix(parameters
                 .getMetadataPrefix());
         if (!itemIdentifier.isDeleted() && !canDisseminate(itemIdentifier, format))
