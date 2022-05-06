@@ -47,6 +47,10 @@ public class GetRecordHandler extends VerbHandler<GetRecord> {
         GetRecord result = new GetRecord(record);
 
         MetadataFormat format = getContext().formatForPrefix(parameters.getMetadataPrefix());
+        if (format == null) {
+            throw new CannotDisseminateFormatException("Format "+parameters.getMetadataPrefix()+" not applicable to this item");
+        }
+
         Item item = getRepository().getItemRepository().getItem(parameters.getIdentifier());
 
         if (getContext().hasCondition() &&
