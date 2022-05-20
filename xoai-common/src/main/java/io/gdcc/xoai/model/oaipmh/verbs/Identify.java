@@ -6,8 +6,11 @@
  * http://www.dspace.org/license/
  */
 
-package io.gdcc.xoai.model.oaipmh;
+package io.gdcc.xoai.model.oaipmh.verbs;
 
+import io.gdcc.xoai.model.oaipmh.DeletedRecord;
+import io.gdcc.xoai.model.oaipmh.results.Description;
+import io.gdcc.xoai.model.oaipmh.Granularity;
 import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import io.gdcc.xoai.xml.XmlWriter;
 
