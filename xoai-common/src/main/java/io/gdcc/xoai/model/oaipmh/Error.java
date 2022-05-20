@@ -40,37 +40,39 @@ public class Error implements XmlWritable {
         try {
             if (this.code != null)
                 writer.writeAttribute("code", this.code.toString());
-
+    
             writer.writeCharacters(value);
         } catch (XMLStreamException e) {
             throw new XmlWriteException(e);
         }
     }
-
-    public static enum Code {
-
-        CANNOT_DISSEMINATE_FORMAT("cannotDisseminateFormat"),
-        ID_DOES_NOT_EXIST("idDoesNotExist"),
-        BAD_ARGUMENT("badArgument"),
-        BAD_VERB("badVerb"),
-        NO_METADATA_FORMATS("noMetadataFormats"),
-        NO_RECORDS_MATCH("noRecordsMatch"),
-        BAD_RESUMPTION_TOKEN("badResumptionToken"),
-        NO_SET_HIERARCHY("noSetHierarchy");
+    
+    public enum Code {
+        CANNOT_DISSEMINATE_FORMAT("cannotDisseminateFormat", "Cannot disseminate item with the given format"),
+        ID_DOES_NOT_EXIST("idDoesNotExist", "The given id does not exist"),
+        BAD_ARGUMENT("badArgument", null),
+        BAD_VERB("badVerb", "Illegal OAI verb"),
+        NO_METADATA_FORMATS("noMetadataFormats", "The item does not have any metadata format available for dissemination"),
+        NO_RECORDS_MATCH("noRecordsMatch", "No matches for the query"),
+        BAD_RESUMPTION_TOKEN("badResumptionToken", "The resumption token is invalid"),
+        NO_SET_HIERARCHY("noSetHierarchy", "This repository does not support sets");
 
         private final String code;
+        private final String codeMessage;
 
-        Code(String code) {
+        Code(String code, String codeMessage) {
             this.code = code;
+            this.codeMessage = codeMessage;
         }
 
         public String code() {
             return code;
         }
+        public String message() {
+            return codeMessage;
+        }
 
-
-
-        public static Code fromCode(String code) {
+        public static Code from(String code) {
             for (Code c : Code.values()) {
                 if (c.code.equals(code)) {
                     return c;
