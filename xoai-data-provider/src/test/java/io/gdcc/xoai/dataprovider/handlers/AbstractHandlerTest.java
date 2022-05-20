@@ -41,7 +41,7 @@ public abstract class AbstractHandlerTest {
     private final Context context = new Context().withMetadataFormat(EXISTING_METADATA_FORMAT, MetadataFormat.identity());
     private final InMemorySetRepository setRepository = new InMemorySetRepository();
     private final InMemoryItemRepository itemRepository = new InMemoryItemRepository();
-    private final RepositoryConfiguration repositoryConfiguration = new RepositoryConfiguration().withDefaults();
+    private final RepositoryConfiguration repositoryConfiguration = RepositoryConfiguration.defaults();
     private final Repository repository = new Repository()
             .withSetRepository(setRepository)
             .withItemRepository(itemRepository)

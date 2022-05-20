@@ -38,9 +38,9 @@ public abstract class AbstractInMemoryDataProviderTest {
     private final InMemoryItemRepository itemRepository = new InMemoryItemRepository();
     private final InMemorySetRepository setRepository = new InMemorySetRepository();
     private final ResumptionTokenFormat resumptionTokenFormat = new SimpleResumptionTokenFormat();
-    private final RepositoryConfiguration repositoryConfiguration = new RepositoryConfiguration()
-            .withDefaults()
-            .withBaseUrl(BASE_URL);
+    private final RepositoryConfiguration repositoryConfiguration = RepositoryConfiguration
+        .defaults()
+        .withBaseUrl(BASE_URL);
     private final Context context = new Context().withMetadataFormat(FORMAT, identity());
     private final Repository repository = new Repository()
             .withConfiguration(repositoryConfiguration)
