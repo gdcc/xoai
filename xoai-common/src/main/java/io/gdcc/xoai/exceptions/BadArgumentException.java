@@ -6,24 +6,21 @@
  * http://www.dspace.org/license/
  */
 
-package io.gdcc.xoai.dataprovider.exceptions;
+package io.gdcc.xoai.exceptions;
+
+import io.gdcc.xoai.model.oaipmh.Error;
 
 /**
  * @author Development @ Lyncode
  * @version 3.1.0
  */
-public class BadArgumentException extends HandlerException {
+public class BadArgumentException extends OAIException {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 6436751364163509217L;
-
-    /**
-     * Creates a new instance of <code>BadArgumentException</code> without
-     * detail message.
-     */
-    public BadArgumentException() {
+    
+    @Override
+    public Error.Code getErrorCode() {
+        return Error.Code.BAD_ARGUMENT;
     }
 
     /**
