@@ -8,6 +8,7 @@
 
 package io.gdcc.xoai.model.oaipmh;
 
+import io.gdcc.xoai.model.oaipmh.verbs.Verb;
 import io.gdcc.xoai.services.api.DateProvider;
 import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import io.gdcc.xoai.xml.XSISchema;
@@ -19,7 +20,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * The modeling class representing the responses topmost XML root <OAI-PMH>
+ */
 public class OAIPMH implements XmlWritable {
     public static final String NAMESPACE_URI = "http://www.openarchives.org/OAI/2.0/";
     public static final String SCHEMA_LOCATION = "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd";

@@ -8,7 +8,7 @@
 
 package io.gdcc.xoai.services.impl;
 
-import io.gdcc.xoai.exceptions.InvalidResumptionTokenException;
+import io.gdcc.xoai.exceptions.BadResumptionTokenException;
 import io.gdcc.xoai.model.oaipmh.Granularity;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 import io.gdcc.xoai.services.api.DateProvider;
@@ -30,7 +30,7 @@ public class SimpleResumptionTokenFormat implements ResumptionTokenFormat {
     private static final String metadataPrefix = "prefix";
     
     @Override
-    public ResumptionToken.Value parse(String resumptionToken) throws InvalidResumptionTokenException {
+    public ResumptionToken.Value parse(String resumptionToken) throws BadResumptionTokenException {
     
         ResumptionToken.Value token = new ResumptionToken.Value();
         String decodedToken = base64Decode(resumptionToken);
@@ -42,7 +42,7 @@ public class SimpleResumptionTokenFormat implements ResumptionTokenFormat {
         for (String part : decodedToken.split(Pattern.quote(partSeparator))) {
             String[] keyValue = part.split(valueSeparator);
             if (keyValue.length != 2 || keyValue[1].isEmpty()) {
-                throw new InvalidResumptionTokenException("Invalid token part '" + part + "'");
+                throw new BadResumptionTokenException("Invalid token part '" + part + "'");
             }
             
             try {
@@ -63,10 +63,10 @@ public class SimpleResumptionTokenFormat implements ResumptionTokenFormat {
                         token.withMetadataPrefix(keyValue[1]);
                         break;
                     default:
-                        throw new InvalidResumptionTokenException("Unknown key '" + keyValue[0] + "' found");
+                        throw new BadResumptionTokenException("Unknown key '" + keyValue[0] + "' found");
                 }
             } catch (DateTimeException e) {
-                throw new InvalidResumptionTokenException(e);
+                throw new BadResumptionTokenException(e);
             }
         }
         

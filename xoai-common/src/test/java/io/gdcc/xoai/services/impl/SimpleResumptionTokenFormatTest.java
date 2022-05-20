@@ -1,6 +1,6 @@
 package io.gdcc.xoai.services.impl;
 
-import io.gdcc.xoai.exceptions.InvalidResumptionTokenException;
+import io.gdcc.xoai.exceptions.BadResumptionTokenException;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,7 +17,7 @@ class SimpleResumptionTokenFormatTest {
     final SimpleResumptionTokenFormat format = new SimpleResumptionTokenFormat();
     
     @Test
-    void cycleFullToken() throws InvalidResumptionTokenException {
+    void cycleFullToken() throws BadResumptionTokenException {
         // given
         ResumptionToken.Value expected = new ResumptionToken.Value();
         expected.withOffset(1);
@@ -45,7 +44,7 @@ class SimpleResumptionTokenFormatTest {
     })
     void failingParse(String token) {
         String encoded = SimpleResumptionTokenFormat.base64Encode(token);
-        assertThrows(InvalidResumptionTokenException.class, () -> format.parse(encoded));
+        assertThrows(BadResumptionTokenException.class, () -> format.parse(encoded));
     }
     
     @ParameterizedTest

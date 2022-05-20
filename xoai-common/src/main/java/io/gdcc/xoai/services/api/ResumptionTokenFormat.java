@@ -8,10 +8,10 @@
 
 package io.gdcc.xoai.services.api;
 
-import io.gdcc.xoai.exceptions.InvalidResumptionTokenException;
+import io.gdcc.xoai.exceptions.BadResumptionTokenException;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 
 public interface ResumptionTokenFormat {
     String format (ResumptionToken.Value value);
-    ResumptionToken.Value parse (String value) throws InvalidResumptionTokenException;
+    ResumptionToken.Value parse (String value) throws BadResumptionTokenException;
 }
