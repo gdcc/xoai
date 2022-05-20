@@ -32,7 +32,7 @@ public class MetadataHelper {
                     .process());
             
             return new Metadata(element);
-        } catch (XMLStreamException | TransformerException | IOException | XmlWriteException e) {
+        } catch (XMLStreamException | TransformerException | IOException e) {
             throw new OAIException(e);
         }
     }

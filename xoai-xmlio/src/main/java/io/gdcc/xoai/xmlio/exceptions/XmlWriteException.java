@@ -16,7 +16,9 @@
 
 package io.gdcc.xoai.xmlio.exceptions;
 
-public class XmlWriteException extends Exception {
+import javax.xml.stream.XMLStreamException;
+
+public class XmlWriteException extends XMLStreamException {
     public XmlWriteException() {
     }
 
