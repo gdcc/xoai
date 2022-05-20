@@ -8,6 +8,7 @@
 
 package io.gdcc.xoai.xml;
 
+import io.gdcc.xoai.model.oaipmh.verbs.Verb;
 import io.gdcc.xoai.xmlio.XmlIoWriter;
 import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import io.gdcc.xoai.model.oaipmh.Granularity;
@@ -21,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.Instant;
+import java.util.Optional;
 
 public class XmlWriter extends XmlIoWriter implements AutoCloseable {
     public static String toString(XmlWritable writable) throws XMLStreamException, XmlWriteException {
@@ -112,7 +114,7 @@ public class XmlWriter extends XmlIoWriter implements AutoCloseable {
     public void writeElement(String elementName, Instant date) throws XmlWriteException {
         this.writeElement(elementName, DateProvider.format(date, writerContext.granularity));
     }
-
+    
     public void writeAttribute(String name, Instant date) throws XmlWriteException {
         try {
             this.writeAttribute(name, DateProvider.format(date, writerContext.granularity));
@@ -126,6 +128,16 @@ public class XmlWriter extends XmlIoWriter implements AutoCloseable {
             this.writeAttribute(name, DateProvider.format(value, granularity));
         } catch (XMLStreamException e) {
             throw new XmlWriteException(e);
+        }
+    }
+    
+    public <T> void writeAttribute(Verb.Argument argument, Optional<T> optional) throws XMLStreamException {
+        if (optional.isPresent()) {
+            T value = optional.get();
+            if (value instanceof String)
+                writeAttribute(argument.toString(), (String) value);
+            else if (value instanceof Instant)
+                writeAttribute(argument.toString(), (Instant) value);
         }
     }
 

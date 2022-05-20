@@ -16,27 +16,32 @@
 package io.gdcc.xoai.model.oaipmh;
 
 
+import io.gdcc.xoai.model.oaipmh.verbs.Verb.Type;
+import io.gdcc.xoai.model.oaipmh.verbs.Verb.Argument;
 import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import io.gdcc.xoai.xml.XmlWritable;
 import io.gdcc.xoai.xml.XmlWriter;
 
 import javax.xml.stream.XMLStreamException;
 import java.time.Instant;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Optional;
 
+/**
+ * The modeling class representing the responses request repetition <OAI-PMH><request>
+ */
 public class Request implements XmlWritable {
-
+    
+    private final Type type;
     private final String baseUrl;
-    private String verbType;
-    private String identifier;
-    private String metadataPrefix;
+    private final Map<Argument, String> arguments = new EnumMap<>(Argument.class);
     private Instant from;
     private Instant until;
-    private String set;
-    private String resumptionToken;
-    private String fromString;
-    private String untilString;
 
-    public Request(String baseUrl) {
+    public Request(Type type, String baseUrl) {
+        this.type = type;
+        this.arguments.put(Argument.Verb, type.displayName());
         this.baseUrl = baseUrl;
     }
 
@@ -44,44 +49,34 @@ public class Request implements XmlWritable {
         return baseUrl;
     }
 
-    public Verb.Type getVerbType() {
-        return Verb.Type.fromValue(verbType);
+    public Type getType() {
+        return type;
     }
 
-    public String getVerb () {
-        return verbType;
+    public String getVerb() {
+        return arguments.get(Argument.Verb);
     }
 
-    public Request withVerbType(Verb.Type value) {
-        this.verbType = value.displayName();
-        return this;
-    }
-
-    public Request withVerbType (String verb) {
-        this.verbType = verb;
-        return this;
-    }
-
-    public String getIdentifier() {
-        return identifier;
+    public Optional<String> getIdentifier() {
+        return Optional.ofNullable(arguments.get(Argument.Identifier));
     }
 
     public Request withIdentifier(String value) {
-        this.identifier = value;
+        this.arguments.put(Argument.Identifier, value);
         return this;
     }
 
-    public String getMetadataPrefix() {
-        return metadataPrefix;
+    public Optional<String> getMetadataPrefix() {
+        return Optional.ofNullable(arguments.get(Argument.MetadataPrefix));
     }
 
     public Request withMetadataPrefix(String value) {
-        this.metadataPrefix = value;
+        this.arguments.put(Argument.MetadataPrefix, value);
         return this;
     }
 
-    public Instant getFrom() {
-        return from;
+    public Optional<Instant> getFrom() {
+        return Optional.ofNullable(from);
     }
 
     public Request withFrom(Instant value) {
@@ -89,8 +84,8 @@ public class Request implements XmlWritable {
         return this;
     }
 
-    public Instant getUntil() {
-        return until;
+    public Optional<Instant> getUntil() {
+        return Optional.ofNullable(until);
     }
 
     public Request withUntil(Instant value) {
@@ -98,52 +93,42 @@ public class Request implements XmlWritable {
         return this;
     }
 
-    public String getSet() {
-        return set;
+    public Optional<String> getSet() {
+        return Optional.ofNullable(this.arguments.get(Argument.Set));
     }
 
     public Request withSet(String value) {
-        this.set = value;
+        this.arguments.put(Argument.Set, value);
         return this;
     }
 
-    public String getResumptionToken() {
-        return resumptionToken;
+    public Optional<String> getResumptionToken() {
+        return Optional.ofNullable(this.arguments.get(Argument.ResumptionToken));
     }
 
     public Request withResumptionToken(String value) {
-        this.resumptionToken = value;
-        return this;
-    }
-
-    public Request withFrom(String value) {
-        this.fromString = value;
-        return this;
-    }
-
-    public Request withUntil(String value) {
-        this.untilString = value;
+        this.arguments.put(Argument.ResumptionToken, value);
         return this;
     }
 
     @Override
     public void write(XmlWriter writer) throws XmlWriteException {
         try {
-            writer.writeAttribute("verb", verbType);
-            writer.writeAttribute("identifier", identifier);
-            writer.writeAttribute("metadataPrefix", metadataPrefix);
-            if (from != null)
-                writer.writeAttribute("from", from);
-            else
-                writer.writeAttribute("from", fromString);
-
-            if (until != null)
-                writer.writeAttribute("until", until);
-            else
-                writer.writeAttribute("until", untilString);
-            writer.writeAttribute("set", set);
-            writer.writeAttribute("resumptionToken", resumptionToken);
-            writer.writeCharacters(baseUrl);
+            // This is always present (no OAI-PMH query without a verb)
+            writer.writeAttribute(Argument.Verb.toString(), getVerb());
+            
+            // These might be not present, depending on the verb.
+            // Validation of the request happens before writing out the response, so simply write things present.
+            // (Unwrapping the optional happens in the writer)
+            writer.writeAttribute(Argument.Identifier, getIdentifier());
+            writer.writeAttribute(Argument.MetadataPrefix, getMetadataPrefix());
+            writer.writeAttribute(Argument.From, getFrom());
+            writer.writeAttribute(Argument.Until, getUntil());
+            writer.writeAttribute(Argument.Set, getSet());
+            writer.writeAttribute(Argument.ResumptionToken, getResumptionToken());
+            
+            // Spec says within the <request> must be the OAI-PMH data provider endpoints base URL
+            writer.writeCharacters(getBaseUrl());
         } catch (XMLStreamException e) {
             throw new XmlWriteException(e);
         }
