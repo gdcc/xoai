@@ -6,8 +6,10 @@
  * http://www.dspace.org/license/
  */
 
-package io.gdcc.xoai.model.oaipmh;
+package io.gdcc.xoai.model.oaipmh.results.record;
 
+import io.gdcc.xoai.model.oaipmh.AbstractOAIPMHTest;
+import io.gdcc.xoai.model.oaipmh.results.record.Header;
 import io.gdcc.xoai.services.api.DateProvider;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;

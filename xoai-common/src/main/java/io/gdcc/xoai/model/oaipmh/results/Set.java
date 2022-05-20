@@ -13,7 +13,7 @@
 // Generated on: 2012.01.13 at 08:24:23 PM WET 
 //
 
-package io.gdcc.xoai.model.oaipmh;
+package io.gdcc.xoai.model.oaipmh.results;
 
 import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import io.gdcc.xoai.model.xoai.XOAIMetadata;

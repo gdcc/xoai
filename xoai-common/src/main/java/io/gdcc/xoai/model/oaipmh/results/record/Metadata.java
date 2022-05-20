@@ -6,7 +6,7 @@
  * http://www.dspace.org/license/
  */
 
-package io.gdcc.xoai.model.oaipmh;
+package io.gdcc.xoai.model.oaipmh.results.record;
 
 import io.gdcc.xoai.xml.CopyElement;
 import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
