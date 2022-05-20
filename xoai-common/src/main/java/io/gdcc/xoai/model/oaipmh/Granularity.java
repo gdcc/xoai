@@ -14,7 +14,9 @@ package io.gdcc.xoai.model.oaipmh;
  */
 public enum Granularity {
     Day("YYYY-MM-DD"),
-    Second("YYYY-MM-DDThh:mm:ssZ");
+    Second("YYYY-MM-DDThh:mm:ssZ"),
+    // Lenient defaults to Second granularity, but can be used to accept Day granularity, too
+    Lenient(Second.representation);
 
     public static Granularity fromRepresentation (String representation) {
         for (Granularity granularity : Granularity.values())
