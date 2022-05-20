@@ -8,7 +8,7 @@
 
 package io.gdcc.xoai.serviceprovider.parsers;
 
-import io.gdcc.xoai.model.oaipmh.MetadataFormat;
+import io.gdcc.xoai.model.oaipmh.results.MetadataFormat;
 import io.gdcc.xoai.serviceprovider.exceptions.IdDoesNotExistException;
 import io.gdcc.xoai.serviceprovider.exceptions.InvalidOAIResponse;
 import io.gdcc.xoai.xmlio.XmlReader;

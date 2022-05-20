@@ -10,7 +10,7 @@ package io.gdcc.xoai.serviceprovider;
 
 import io.gdcc.xoai.dataprovider.DataProvider;
 import io.gdcc.xoai.dataprovider.builder.OAIRequestParametersBuilder;
-import io.gdcc.xoai.dataprovider.exceptions.OAIException;
+import io.gdcc.xoai.exceptions.OAIException;
 import io.gdcc.xoai.dataprovider.model.Context;
 import io.gdcc.xoai.dataprovider.repository.InMemoryItemRepository;
 import io.gdcc.xoai.dataprovider.repository.InMemorySetRepository;

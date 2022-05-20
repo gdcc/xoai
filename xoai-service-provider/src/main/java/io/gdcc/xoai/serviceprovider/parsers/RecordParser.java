@@ -8,9 +8,9 @@
 
 package io.gdcc.xoai.serviceprovider.parsers;
 
-import io.gdcc.xoai.model.oaipmh.About;
-import io.gdcc.xoai.model.oaipmh.Metadata;
-import io.gdcc.xoai.model.oaipmh.Record;
+import io.gdcc.xoai.model.oaipmh.results.record.About;
+import io.gdcc.xoai.model.oaipmh.results.record.Metadata;
+import io.gdcc.xoai.model.oaipmh.results.Record;
 import io.gdcc.xoai.serviceprovider.exceptions.InternalHarvestException;
 import io.gdcc.xoai.serviceprovider.model.Context;
 import io.gdcc.xoai.xml.XSLPipeline;

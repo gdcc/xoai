@@ -9,7 +9,7 @@
 package io.gdcc.xoai.serviceprovider.parameters;
 
 import io.gdcc.xoai.model.oaipmh.Granularity;
-import io.gdcc.xoai.model.oaipmh.Verb;
+import io.gdcc.xoai.model.oaipmh.verbs.Verb;
 import io.gdcc.xoai.services.api.DateProvider;
 import io.gdcc.xoai.util.URLEncoder;
 
