@@ -24,14 +24,14 @@ public class BadVerbException extends OAIException {
     }
     
     /**
-     * Creates a new instance of <code>IllegalVerbException</code> without
+     * Creates a new instance of <code>BadVerbException</code> without
      * detail message.
      */
     public BadVerbException() {
     }
 
     /**
-     * Constructs an instance of <code>IllegalVerbException</code> with the
+     * Constructs an instance of <code>BadVerbException</code> with the
      * specified detail message.
      *
      * @param msg the detail message.

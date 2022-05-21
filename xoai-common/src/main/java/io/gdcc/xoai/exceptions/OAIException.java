@@ -39,8 +39,7 @@ public abstract class OAIException extends Exception {
      * Creates a new instance of <code>OAIException</code> without detail
      * message.
      */
-    protected OAIException() {
-    }
+    protected OAIException() {}
 
     /**
      * Constructs an instance of <code>OAIException</code> with the specified
