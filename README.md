@@ -22,6 +22,11 @@ This library is available from Maven Central, simply rely on the main POM:
 </dependency>
 ```
 
+Some minimal usage documentation has been scraped from the DSpace Wiki, mostly
+explaining the concepts of this library, and put into [docs/README.md](docs/README.md).
+It also contains some minimal explanation of this forks special changes.
+Feel free to extend the documentation, pull requests welcome.
+
 ## License
 
 See [LICENSE](LICENSE) or [DSpace BSD License](https://raw.github.com/DSpace/DSpace/master/LICENSE)
