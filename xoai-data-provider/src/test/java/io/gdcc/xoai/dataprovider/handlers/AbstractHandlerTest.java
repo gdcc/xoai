@@ -8,22 +8,18 @@
 
 package io.gdcc.xoai.dataprovider.handlers;
 
-import io.gdcc.xoai.dataprovider.builder.OAIRequestParametersBuilder;
-import io.gdcc.xoai.dataprovider.exceptions.BadArgumentException;
-import io.gdcc.xoai.dataprovider.exceptions.DuplicateDefinitionException;
-import io.gdcc.xoai.dataprovider.exceptions.IllegalVerbException;
-import io.gdcc.xoai.dataprovider.exceptions.UnknownParameterException;
 import io.gdcc.xoai.dataprovider.filter.Filter;
 import io.gdcc.xoai.dataprovider.model.Context;
 import io.gdcc.xoai.dataprovider.model.MetadataFormat;
 import io.gdcc.xoai.dataprovider.model.conditions.Condition;
-import io.gdcc.xoai.dataprovider.parameters.OAICompiledRequest;
 import io.gdcc.xoai.dataprovider.repository.InMemoryItemRepository;
 import io.gdcc.xoai.dataprovider.repository.InMemorySetRepository;
 import io.gdcc.xoai.dataprovider.repository.Repository;
 import io.gdcc.xoai.dataprovider.repository.RepositoryConfiguration;
-import io.gdcc.xoai.exceptions.InvalidResumptionTokenException;
+import io.gdcc.xoai.model.oaipmh.OAIPMH;
+import io.gdcc.xoai.model.oaipmh.Request;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
+import io.gdcc.xoai.services.api.DateProvider;
 import io.gdcc.xoai.services.impl.SimpleResumptionTokenFormat;
 import io.gdcc.xoai.xml.XmlWritable;
 import io.gdcc.xoai.xml.XmlWriter;
@@ -63,13 +59,12 @@ public abstract class AbstractHandlerTest {
             }
         });
     }
-
-    protected OAICompiledRequest a (OAIRequestParametersBuilder builder) throws BadArgumentException, InvalidResumptionTokenException, UnknownParameterException, IllegalVerbException, DuplicateDefinitionException {
-        return OAICompiledRequest.compile(builder);
+    
+    protected Request request() {
+        return new Request(theRepositoryConfiguration().getBaseUrl());
     }
-
-    protected OAIRequestParametersBuilder request() {
-        return new OAIRequestParametersBuilder();
+    protected OAIPMH oaipmh() {
+        return new OAIPMH().withResponseDate(DateProvider.now());
     }
 
     protected Context aContext () {

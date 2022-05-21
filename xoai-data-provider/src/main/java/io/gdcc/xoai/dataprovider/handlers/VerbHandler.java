@@ -8,45 +8,31 @@
 
 package io.gdcc.xoai.dataprovider.handlers;
 
-import io.gdcc.xoai.dataprovider.builder.OAIRequestParametersBuilder;
-import io.gdcc.xoai.dataprovider.exceptions.HandlerException;
-import io.gdcc.xoai.dataprovider.exceptions.OAIException;
+import io.gdcc.xoai.dataprovider.exceptions.handler.HandlerException;
 import io.gdcc.xoai.dataprovider.model.Context;
-import io.gdcc.xoai.dataprovider.parameters.OAICompiledRequest;
-import io.gdcc.xoai.dataprovider.parameters.OAIRequest;
 import io.gdcc.xoai.dataprovider.repository.Repository;
-import io.gdcc.xoai.exceptions.InvalidResumptionTokenException;
-import io.gdcc.xoai.types.Builder;
-import io.gdcc.xoai.xml.XmlWritable;
+import io.gdcc.xoai.dataprovider.repository.RepositoryConfiguration;
+import io.gdcc.xoai.model.oaipmh.Request;
+import io.gdcc.xoai.model.oaipmh.verbs.Verb;
 
-public abstract class VerbHandler<T extends XmlWritable> {
+public abstract class VerbHandler<T extends Verb> {
     private final Context context;
     private final Repository repository;
 
-    public VerbHandler (Context context, Repository repository) {
+    protected VerbHandler (Context context, Repository repository) {
         this.context = context;
         this.repository = repository;
     }
 
-    public Context getContext() {
+    protected Context getContext() {
         return context;
     }
-
-    public Repository getRepository() {
+    protected Repository getRepository() {
         return repository;
     }
-
-    public T handle (OAIRequest parameters) throws HandlerException, InvalidResumptionTokenException, OAIException {
-        return handle(parameters.compile());
+    protected RepositoryConfiguration getConfiguration() {
+        return repository.getConfiguration();
     }
 
-    public T handle (OAIRequestParametersBuilder parameters) throws OAIException, HandlerException, InvalidResumptionTokenException {
-        return handle(parameters.build());
-    }
-
-    public T handle(Builder<OAICompiledRequest> parameters) throws OAIException, HandlerException {
-        return handle(parameters.build());
-    }
-
-    public abstract T handle(OAICompiledRequest params) throws OAIException, HandlerException;
+    public abstract T handle(Request request) throws HandlerException;
 }

@@ -21,7 +21,7 @@ import org.xmlunit.matchers.HasXPathMatcher;
 import javax.xml.stream.XMLStreamException;
 import java.util.Map;
 
-import static io.gdcc.xoai.model.oaipmh.Verb.Type.ListRecords;
+import static io.gdcc.xoai.model.oaipmh.verbs.Verb.Type.ListRecords;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -31,51 +31,88 @@ public class DataProviderTest extends AbstractHandlerTest {
 
     @Test
     public void missingMetadataFormat() throws Exception {
-        String result = write(dataProvider.handle(request().withVerb(ListRecords)));
+        // when
+        String result = write(
+            dataProvider.handle(
+                oaipmh(),
+                request()
+                    .withVerb(ListRecords)
+            ));
         
+        // then
         assertThat(result, xPath("//oai:error/@code", equalTo("badArgument")));
     }
 
     @Test
     public void noMatchRecords() throws Exception {
-        String result = write(dataProvider.handle(request()
-                .withVerb(ListRecords)
-                .withMetadataPrefix(EXISTING_METADATA_FORMAT)));
+        // when
+        String result = write(
+            dataProvider.handle(
+                oaipmh(),
+                request()
+                    .withVerb(ListRecords)
+                    .withMetadataPrefix(EXISTING_METADATA_FORMAT)
+            ));
         
+        // then
         assertThat(result, xPath("//oai:error/@code", equalTo("noRecordsMatch")));
     }
 
     @Test
     public void oneRecordMatch() throws Exception {
+        // given
         theItemRepository().withRandomItems(1);
-        String result = write(dataProvider.handle(request()
-                .withVerb(ListRecords)
-                .withMetadataPrefix(EXISTING_METADATA_FORMAT)));
         
+        // when
+        String result = write(
+            dataProvider.handle(
+                oaipmh(),
+                request()
+                    .withVerb(ListRecords)
+                    .withMetadataPrefix(EXISTING_METADATA_FORMAT)
+            ));
+        
+        // then
         assertThat(result, xPath("count(//oai:record)", asInteger(equalTo(1))));
     }
 
     @Test
     public void incompleteResponseFirstPage () throws Exception {
+        // given
         theItemRepository().withRandomItems(10);
         theRepositoryConfiguration().withMaxListRecords(5);
-        String result = write(dataProvider.handle(request()
-                .withVerb(ListRecords)
-                .withMetadataPrefix(EXISTING_METADATA_FORMAT)));
+        
+        // when
+        String result = write(
+            dataProvider.handle(
+                oaipmh(),
+                request()
+                    .withVerb(ListRecords)
+                    .withMetadataPrefix(EXISTING_METADATA_FORMAT)
+            ));
     
+        // then
         assertThat(result, xPath("count(//oai:record)", asInteger(equalTo(5))));
         assertThat(result, hasXPath("//oai:resumptionToken"));
     }
 
     @Test
     public void incompleteResponseLastPage () throws Exception {
+        // given
         theItemRepository().withRandomItems(10);
         theRepositoryConfiguration().withMaxListRecords(5);
-        String result = write(dataProvider.handle(request()
-                .withVerb(ListRecords)
-                .withResumptionToken(valueOf(new ResumptionToken.Value()
+        
+        //when
+        String result = write(
+            dataProvider.handle(
+                oaipmh(),
+                request()
+                    .withVerb(ListRecords)
+                    .withMetadataPrefix(EXISTING_METADATA_FORMAT)
+                    .withResumptionToken(valueOf(new ResumptionToken.Value()
                         .withMetadataPrefix(EXISTING_METADATA_FORMAT)
-                        .withOffset(5)))));
+                        .withOffset(5)))
+            ));
         
         assertThat(result, xPath("count(//oai:record)", equalTo("5")));
         assertThat(result, xPath("//oai:resumptionToken", equalTo("")));
