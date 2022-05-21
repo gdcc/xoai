@@ -1,9 +1,9 @@
 package io.gdcc.xoai.dataprovider.handlers.helpers;
 
-import io.gdcc.xoai.dataprovider.exceptions.OAIException;
+import io.gdcc.xoai.exceptions.OAIException;
 import io.gdcc.xoai.dataprovider.model.Context;
 import io.gdcc.xoai.dataprovider.model.MetadataFormat;
-import io.gdcc.xoai.model.oaipmh.Metadata;
+import io.gdcc.xoai.model.oaipmh.results.record.Metadata;
 import io.gdcc.xoai.xml.EchoElement;
 import io.gdcc.xoai.xml.XSLPipeline;
 import io.gdcc.xoai.xml.XmlWriter;

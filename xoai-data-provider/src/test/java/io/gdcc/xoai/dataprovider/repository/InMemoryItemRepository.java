@@ -10,8 +10,8 @@ package io.gdcc.xoai.dataprovider.repository;
 
 import io.gdcc.xoai.dataprovider.model.InMemoryItem;
 import io.gdcc.xoai.dataprovider.model.Item;
-import io.gdcc.xoai.dataprovider.exceptions.IdDoesNotExistException;
-import io.gdcc.xoai.dataprovider.exceptions.OAIException;
+import io.gdcc.xoai.dataprovider.exceptions.handler.IdDoesNotExistException;
+import io.gdcc.xoai.exceptions.OAIException;
 import io.gdcc.xoai.dataprovider.filter.ScopedFilter;
 import io.gdcc.xoai.dataprovider.handlers.results.ListItemIdentifiersResult;
 import io.gdcc.xoai.dataprovider.handlers.results.ListItemsResults;

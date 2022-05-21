@@ -1,6 +1,6 @@
 package io.gdcc.xoai.dataprovider.handlers.helpers;
 
-import io.gdcc.xoai.dataprovider.exceptions.CannotDisseminateFormatException;
+import io.gdcc.xoai.dataprovider.exceptions.handler.CannotDisseminateFormatException;
 import io.gdcc.xoai.dataprovider.model.Context;
 import io.gdcc.xoai.dataprovider.model.MetadataFormat;
 

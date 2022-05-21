@@ -72,10 +72,10 @@ public class Set {
         return spec;
     }
 
-    public io.gdcc.xoai.model.oaipmh.Set toOAIPMH () {
-        io.gdcc.xoai.model.oaipmh.Set set = new io.gdcc.xoai.model.oaipmh.Set();
-        set.withName(getName());
-        set.withSpec(getSpec());
+    public io.gdcc.xoai.model.oaipmh.results.Set toOAIPMH () {
+        var set = new io.gdcc.xoai.model.oaipmh.results.Set()
+            .withName(getName())
+            .withSpec(getSpec());
         for (XOAIMetadata description : descriptions)
             set.withDescription(description);
         return set;

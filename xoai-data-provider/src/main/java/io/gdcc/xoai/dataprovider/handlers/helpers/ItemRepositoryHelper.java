@@ -8,16 +8,15 @@
 
 package io.gdcc.xoai.dataprovider.handlers.helpers;
 
-import io.gdcc.xoai.dataprovider.exceptions.IdDoesNotExistException;
-import io.gdcc.xoai.dataprovider.exceptions.OAIException;
+import io.gdcc.xoai.dataprovider.filter.Scope;
+import io.gdcc.xoai.dataprovider.filter.ScopedFilter;
 import io.gdcc.xoai.dataprovider.handlers.results.ListItemIdentifiersResult;
 import io.gdcc.xoai.dataprovider.handlers.results.ListItemsResults;
 import io.gdcc.xoai.dataprovider.model.Context;
 import io.gdcc.xoai.dataprovider.model.ItemIdentifier;
 import io.gdcc.xoai.dataprovider.model.MetadataFormat;
 import io.gdcc.xoai.dataprovider.repository.ItemRepository;
-import io.gdcc.xoai.dataprovider.filter.Scope;
-import io.gdcc.xoai.dataprovider.filter.ScopedFilter;
+import io.gdcc.xoai.exceptions.OAIException;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -189,7 +188,7 @@ public class ItemRepositoryHelper {
             return itemRepository.getItems(filters, offset, length, setSpec, from, until);
     }
 
-    public ItemIdentifier getItem(String identifier) throws IdDoesNotExistException, OAIException {
+    public ItemIdentifier getItem(String identifier) throws OAIException {
         return itemRepository.getItem(identifier);
     }
 }

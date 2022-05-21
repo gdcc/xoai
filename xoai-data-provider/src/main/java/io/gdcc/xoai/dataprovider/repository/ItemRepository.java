@@ -7,15 +7,16 @@
  */
 package io.gdcc.xoai.dataprovider.repository;
 
-import io.gdcc.xoai.dataprovider.model.Item;
-import io.gdcc.xoai.dataprovider.exceptions.IdDoesNotExistException;
-import io.gdcc.xoai.dataprovider.exceptions.OAIException;
+import io.gdcc.xoai.dataprovider.exceptions.handler.IdDoesNotExistException;
 import io.gdcc.xoai.dataprovider.filter.ScopedFilter;
 import io.gdcc.xoai.dataprovider.handlers.results.ListItemIdentifiersResult;
 import io.gdcc.xoai.dataprovider.handlers.results.ListItemsResults;
+import io.gdcc.xoai.dataprovider.model.Item;
 import io.gdcc.xoai.dataprovider.model.ItemIdentifier;
 import io.gdcc.xoai.dataprovider.model.MetadataFormat;
-import io.gdcc.xoai.model.oaipmh.Metadata;
+import io.gdcc.xoai.exceptions.OAIException;
+import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
+import io.gdcc.xoai.model.oaipmh.results.record.Metadata;
 
 import java.io.InputStream;
 import java.time.Instant;
@@ -29,7 +30,7 @@ import java.util.List;
  */
 public interface ItemRepository {
     /**
-     * Gets an item from the data source without {@link io.gdcc.xoai.model.oaipmh.Metadata}.
+     * Gets an item from the data source without {@link Metadata}.
      *
      * @param identifier Unique identifier of the item
      * @return An {@link ItemIdentifier} to work with
@@ -40,11 +41,11 @@ public interface ItemRepository {
      * @see <a href="client://www.openarchives.org/OAI/openarchivesprotocol.html#UniqueIdentifier">Unique identifier definition</a>
      */
     ItemIdentifier getItem(String identifier)
-            throws IdDoesNotExistException, OAIException;
+            throws OAIException;
     
     /**
      * Gets an item from the data source, but indicate the metadata format we are seeking.
-     * This may be used to return an {@link Item} already containing {@link io.gdcc.xoai.model.oaipmh.Metadata},
+     * This may be used to return an {@link Item} already containing {@link Metadata},
      * which makes {@link io.gdcc.xoai.dataprovider.handlers.GetRecordHandler} and
      * {@link io.gdcc.xoai.dataprovider.handlers.ListRecordsHandler} skip the build of such to compile the reply.
      *
@@ -53,14 +54,14 @@ public interface ItemRepository {
      * @see io.gdcc.xoai.xml.CopyElement
      *
      * @param identifier Unique identifier of the item
-     * @return An {@link Item} to work with, probably containing {@link io.gdcc.xoai.model.oaipmh.Metadata}
+     * @return An {@link Item} to work with, probably containing {@link Metadata}
      * @throws IdDoesNotExistException In case there is no record within the source matching the identifier
-     * @throws OAIException In case source internal errors happen
+     * @throws InternalOAIException In case source internal errors happen
      *
      * @see <a href="client://www.openarchives.org/OAI/openarchivesprotocol.html#UniqueIdentifier">Unique identifier definition</a>
      */
     Item getItem(String identifier, MetadataFormat format)
-        throws IdDoesNotExistException, OAIException;
+        throws OAIException;
     
     
     /**
