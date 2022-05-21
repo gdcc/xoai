@@ -34,7 +34,6 @@ public class DataProviderTest extends AbstractHandlerTest {
         // when
         String result = write(
             dataProvider.handle(
-                oaipmh(),
                 request()
                     .withVerb(ListRecords)
             ));
@@ -48,7 +47,6 @@ public class DataProviderTest extends AbstractHandlerTest {
         // when
         String result = write(
             dataProvider.handle(
-                oaipmh(),
                 request()
                     .withVerb(ListRecords)
                     .withMetadataPrefix(EXISTING_METADATA_FORMAT)
@@ -66,7 +64,6 @@ public class DataProviderTest extends AbstractHandlerTest {
         // when
         String result = write(
             dataProvider.handle(
-                oaipmh(),
                 request()
                     .withVerb(ListRecords)
                     .withMetadataPrefix(EXISTING_METADATA_FORMAT)
@@ -85,7 +82,6 @@ public class DataProviderTest extends AbstractHandlerTest {
         // when
         String result = write(
             dataProvider.handle(
-                oaipmh(),
                 request()
                     .withVerb(ListRecords)
                     .withMetadataPrefix(EXISTING_METADATA_FORMAT)
@@ -105,7 +101,6 @@ public class DataProviderTest extends AbstractHandlerTest {
         //when
         String result = write(
             dataProvider.handle(
-                oaipmh(),
                 request()
                     .withVerb(ListRecords)
                     .withMetadataPrefix(EXISTING_METADATA_FORMAT)

@@ -18,6 +18,7 @@ import io.gdcc.xoai.dataprovider.handlers.ListRecordsHandler;
 import io.gdcc.xoai.dataprovider.handlers.ListSetsHandler;
 import io.gdcc.xoai.dataprovider.model.Context;
 import io.gdcc.xoai.dataprovider.repository.Repository;
+import io.gdcc.xoai.dataprovider.repository.RepositoryConfiguration;
 import io.gdcc.xoai.dataprovider.request.RequestBuilder;
 import io.gdcc.xoai.dataprovider.request.RequestBuilder.RawRequest;
 import io.gdcc.xoai.exceptions.BadVerbException;
@@ -31,6 +32,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
+/**
+ * When looking to implement an OAI-PMH data provider, you should create a servlet on your own
+ * and use an instance of this class (preferably within a stateless bean to make the application server
+ * scale instances if necessary) to handle the incoming requests.
+ *
+ * The only state to keep track is the configuration. The repositories need to interface with the rest of your
+ * application anyway - they probably should be instances within the same service bean, alongside a provider.
+ */
 public class DataProvider {
     private static final Logger log = LoggerFactory.getLogger(DataProvider.class);
 
@@ -67,40 +76,59 @@ public class DataProvider {
         this.errorsHandler = new ErrorHandler(repository.getConfiguration());
     }
     
+    /**
+     * Handle a request by passing along a {@see jakarta.servlet.ServletRequest#getParameters} map.
+     * @param queryParameters The requests parameter map
+     * @return The response to send to the user (you need an {@link io.gdcc.xoai.xml.XmlWriter}). Might contain errors!
+     * @throws io.gdcc.xoai.dataprovider.exceptions.InternalOAIException in case of serverside errors.
+     */
     public OAIPMH handle(Map<String, String[]> queryParameters) {
         OAIPMH oaipmh = new OAIPMH();
-        
         try {
             RawRequest rawRequest = RequestBuilder.buildRawRequest(queryParameters);
             // process the raw request further, even if it has errors - we might discover more errors in the next step
-            return handle(oaipmh, rawRequest);
+            return handle(rawRequest);
         } catch (OAIException e) {
             log.debug(e.getMessage(), e);
             return this.errorsHandler.handle(oaipmh, e);
         }
     }
     
-    public OAIPMH handle(final OAIPMH oaipmh, final RawRequest rawRequest) {
-        try {
-            // build the request first
-            final Request request = RequestBuilder.buildRequest(rawRequest, this.repository.getConfiguration());
-            
-            // if there are errors, stop here, build errors and return.
-            if (rawRequest.hasErrors()) {
-                return this.errorsHandler.handle(oaipmh, rawRequest);
-            }
-            // hand down the request, now validated for the most basic things, to the real verb handlers
-            return handle(oaipmh, request);
-        } catch (OAIException e) {
-            log.debug(e.getMessage(), e);
-            return this.errorsHandler.handle(oaipmh, e);
+    /**
+     * Second entrypoint. You can also build the {@link RawRequest} yourself and start here.
+     * Please look at {@link RequestBuilder#buildRawRequest(Map)} or {@link RequestBuilder.RawRequest} to learn
+     * about creating these.
+     *
+     * @param rawRequest The minimal parsed and validated request
+     * @return The response to send to the user (you need an {@link io.gdcc.xoai.xml.XmlWriter}). Might contain errors!
+     * @throws io.gdcc.xoai.dataprovider.exceptions.InternalOAIException in case of serverside errors.
+     */
+    public OAIPMH handle(final RawRequest rawRequest) {
+        OAIPMH oaipmh = new OAIPMH();
+        // build the request first
+        final Request request = RequestBuilder.buildRequest(rawRequest, this.repository.getConfiguration());
+        
+        // if there are errors, stop here, build errors and return.
+        if (rawRequest.hasErrors()) {
+            return this.errorsHandler.handle(oaipmh, rawRequest);
         }
+        // hand down the request, now validated for the most basic things, to the real verb handlers
+        return handle(request);
     }
-
-    public OAIPMH handle(OAIPMH oaipmh, Request request) throws OAIException {
-        log.debug("Starting handling OAI request");
-
-        oaipmh.withRequest(request).withResponseDate(DateProvider.now());
+    
+    /**
+     * Third entry point. You provide a full-fledged {@link Request}, compiled, validated etc to work with.
+     * Please look at {@link RequestBuilder#buildRequest(RawRequest, RepositoryConfiguration)} or
+     * {@link Request} to learn about creating these.
+     *
+     * @param request The validated full-fledged request to be worked on.
+     * @return The response to send to the user (you need an {@link io.gdcc.xoai.xml.XmlWriter}). Might contain errors!
+     * @throws io.gdcc.xoai.dataprovider.exceptions.InternalOAIException in case of serverside errors.
+     */
+    public OAIPMH handle(Request request){
+        OAIPMH oaipmh = new OAIPMH()
+            .withRequest(request)
+            .withResponseDate(DateProvider.now());
         
         try {
             Type verb = request.getType().orElseThrow(BadVerbException::new);
@@ -121,7 +149,7 @@ public class DataProvider {
                 default:
                     throw new BadVerbException("Illegal verb " + verb);
             }
-        } catch (HandlerException e) {
+        } catch (OAIException e) {
             log.debug(e.getMessage(), e);
             return this.errorsHandler.handle(oaipmh, e);
         }

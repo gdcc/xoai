@@ -63,9 +63,6 @@ public abstract class AbstractHandlerTest {
     protected Request request() {
         return new Request(theRepositoryConfiguration().getBaseUrl());
     }
-    protected OAIPMH oaipmh() {
-        return new OAIPMH().withResponseDate(DateProvider.now());
-    }
 
     protected Context aContext () {
         return context;
