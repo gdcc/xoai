@@ -8,6 +8,7 @@
 
 package io.gdcc.xoai.dataprovider.model;
 
+import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
 import io.gdcc.xoai.dataprovider.model.conditions.Condition;
 
 import javax.xml.XMLConstants;
@@ -26,7 +27,7 @@ public class MetadataFormat {
             factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
             return factory.newTransformer();
         } catch (TransformerConfigurationException e) {
-            throw new IllegalStateException("Could not setup the identity transformer", e);
+            throw new InternalOAIException("Could not setup the identity transformer", e);
         }
     }
 
