@@ -6,17 +6,21 @@
  * http://www.dspace.org/license/
  */
 
-package io.gdcc.xoai.dataprovider.exceptions;
+package io.gdcc.xoai.dataprovider.exceptions.handler;
+
+import io.gdcc.xoai.model.oaipmh.Error;
 
 /**
  * @author Development @ Lyncode
  * @version 3.1.0
  */
 public class IdDoesNotExistException extends HandlerException {
-
-    /**
-     *
-     */
+    
+    @Override
+    public Error.Code getErrorCode() {
+        return Error.Code.ID_DOES_NOT_EXIST;
+    }
+    
     private static final long serialVersionUID = -657866486396669641L;
 
     /**

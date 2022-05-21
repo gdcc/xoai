@@ -6,7 +6,9 @@
  * http://www.dspace.org/license/
  */
 
-package io.gdcc.xoai.dataprovider.exceptions;
+package io.gdcc.xoai.dataprovider.exceptions.handler;
+
+import io.gdcc.xoai.model.oaipmh.Error;
 
 /**
  * @author Development @ Lyncode
@@ -14,7 +16,12 @@ package io.gdcc.xoai.dataprovider.exceptions;
 public class CannotDisseminateFormatException extends HandlerException {
 
     private static final long serialVersionUID = -6654346398053844736L;
-
+    
+    @Override
+    public Error.Code getErrorCode() {
+        return Error.Code.CANNOT_DISSEMINATE_FORMAT;
+    }
+    
     /**
      * Creates a new instance of <code>CannotDisseminateFormatException</code>
      * without detail message.

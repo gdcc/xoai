@@ -6,7 +6,9 @@
  * http://www.dspace.org/license/
  */
 
-package io.gdcc.xoai.dataprovider.exceptions;
+package io.gdcc.xoai.dataprovider.exceptions.handler;
+
+import io.gdcc.xoai.model.oaipmh.Error;
 
 /**
  * @author Development @ Lyncode
@@ -14,11 +16,13 @@ package io.gdcc.xoai.dataprovider.exceptions;
  */
 public class NoMatchesException extends HandlerException {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 7051492953854730413L;
-
+    
+    @Override
+    public Error.Code getErrorCode() {
+        return Error.Code.NO_RECORDS_MATCH;
+    }
+    
     /**
      * Creates a new instance of <code>NoMatchesException</code> without detail
      * message.

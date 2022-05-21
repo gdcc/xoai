@@ -6,27 +6,26 @@
  * http://www.dspace.org/license/
  */
 
-package io.gdcc.xoai.dataprovider.exceptions;
+package io.gdcc.xoai.dataprovider.exceptions.handler;
 
+import io.gdcc.xoai.exceptions.OAIException;
 
-public abstract class HandlerException extends Exception {
+public abstract class HandlerException extends OAIException {
     private static final long serialVersionUID = 3141316350056438361L;
 
-    public HandlerException() {
+    protected HandlerException() {
         super();
     }
-
-    public HandlerException(String message, Throwable cause) {
+    
+    protected HandlerException(String message, Throwable cause) {
         super(message, cause);
     }
-
-    public HandlerException(String message) {
+    
+    protected HandlerException(String message) {
         super(message);
     }
-
-    public HandlerException(Throwable cause) {
+    
+    protected HandlerException(Throwable cause) {
         super(cause);
     }
-
-
 }
