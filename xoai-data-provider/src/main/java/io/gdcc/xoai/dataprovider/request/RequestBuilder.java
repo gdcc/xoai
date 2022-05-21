@@ -162,9 +162,9 @@ public final class RequestBuilder {
      * @param configuration The repository configuration your are using for your {@link io.gdcc.xoai.dataprovider.DataProvider}
      * @return A request to work with (might be empty when errors are present within the raw request!)
      */
-    public static OAIRequest buildRequest(final RawRequest rawRequest, final RepositoryConfiguration configuration) {
+    public static Request buildRequest(final RawRequest rawRequest, final RepositoryConfiguration configuration) {
         // Create a new request model object and try to fill it below
-        final OAIRequest request = new OAIRequest(configuration.getBaseUrl());
+        final Request request = new Request(configuration.getBaseUrl());
         final Granularity granularity = configuration.getGranularity();
     
         // Remember: raw request might already have errors at this point! We still try our best to find more.
@@ -180,9 +180,8 @@ public final class RequestBuilder {
         // When we found any errors along the way, bail out early and prevent anything using the returned request
         // to do sth with it. The calling code possesses the raw request, to which we might have added more errors.
         if (rawRequest.hasErrors())
-            return new OAIRequest(configuration.getBaseUrl());
+            return new Request(configuration.getBaseUrl());
     
-        // TODO: add resumptionToken loading here
         // TODO: add timestamp skewing for until here
         return request;
     }
