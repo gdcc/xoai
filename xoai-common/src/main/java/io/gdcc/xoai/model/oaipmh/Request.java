@@ -26,6 +26,7 @@ import javax.xml.stream.XMLStreamException;
 import java.time.Instant;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -33,15 +34,20 @@ import java.util.Optional;
  */
 public class Request implements XmlWritable {
     
-    private final Type type;
     private final String baseUrl;
     private final Map<Argument, String> arguments = new EnumMap<>(Argument.class);
+    private Type type;
     private Instant from;
     private Instant until;
-
-    public Request(Type type, String baseUrl) {
-        this.type = type;
-        this.arguments.put(Argument.Verb, type.displayName());
+    
+    /**
+     * Create a new request in its most basic form with just the base URL.
+     * According to spec, when responding with an error, the < request > part must be
+     * present and contain this base URL, even if the verb is not given/illegal.
+     *
+     * @param baseUrl The endpoint URL
+     */
+    public Request(String baseUrl) {
         this.baseUrl = baseUrl;
     }
 
@@ -49,12 +55,19 @@ public class Request implements XmlWritable {
         return baseUrl;
     }
 
-    public Type getType() {
-        return type;
+    public Optional<Type> getType() {
+        return Optional.ofNullable(type);
     }
 
-    public String getVerb() {
-        return arguments.get(Argument.Verb);
+    public Optional<String> getVerb() {
+        return Optional.ofNullable(arguments.get(Argument.Verb));
+    }
+    
+    public Request withVerb(Type type) {
+        Objects.requireNonNull(type);
+        this.type = type;
+        this.arguments.put(Argument.Verb, type.displayName());
+        return this;
     }
 
     public Optional<String> getIdentifier() {
@@ -114,12 +127,10 @@ public class Request implements XmlWritable {
     @Override
     public void write(XmlWriter writer) throws XmlWriteException {
         try {
-            // This is always present (no OAI-PMH query without a verb)
-            writer.writeAttribute(Argument.Verb.toString(), getVerb());
-            
-            // These might be not present, depending on the verb.
+            // These might be not present, depending on the verb and the validity of the verb.
             // Validation of the request happens before writing out the response, so simply write things present.
             // (Unwrapping the optional happens in the writer)
+            writer.writeAttribute(Argument.Verb, getVerb());
             writer.writeAttribute(Argument.Identifier, getIdentifier());
             writer.writeAttribute(Argument.MetadataPrefix, getMetadataPrefix());
             writer.writeAttribute(Argument.From, getFrom());
@@ -127,7 +138,7 @@ public class Request implements XmlWritable {
             writer.writeAttribute(Argument.Set, getSet());
             writer.writeAttribute(Argument.ResumptionToken, getResumptionToken());
             
-            // Spec says within the <request> must be the OAI-PMH data provider endpoints base URL
+            // Spec says within the <request> must be the OAI-PMH data provider endpoints base URL no matter what.
             writer.writeCharacters(getBaseUrl());
         } catch (XMLStreamException e) {
             throw new XmlWriteException(e);
