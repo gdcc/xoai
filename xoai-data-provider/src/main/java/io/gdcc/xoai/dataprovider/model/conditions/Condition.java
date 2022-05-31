@@ -9,12 +9,11 @@
 package io.gdcc.xoai.dataprovider.model.conditions;
 
 import io.gdcc.xoai.dataprovider.filter.Filter;
-import io.gdcc.xoai.dataprovider.filter.FilterResolver;
 
 /**
  * @author Development @ Lyncode
  * @version 3.1.0
  */
 public interface Condition {
-    Filter getFilter (FilterResolver filterResolver);
+    Filter getFilter();
 }

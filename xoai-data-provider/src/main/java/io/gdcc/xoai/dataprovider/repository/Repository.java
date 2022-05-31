@@ -8,17 +8,14 @@
 
 package io.gdcc.xoai.dataprovider.repository;
 
-import io.gdcc.xoai.dataprovider.filter.FilterResolver;
 import io.gdcc.xoai.services.api.ResumptionTokenFormat;
 
-public class Repository {
-    private FilterResolver filterResolver;
-
+public final class Repository {
     public static Repository repository () {
         return new Repository();
     }
 
-    private RepositoryConfiguration configuration;
+    private RepositoryConfiguration configuration = RepositoryConfiguration.defaults();
     private ItemRepository itemRepository;
     private SetRepository setRepository;
     private ResumptionTokenFormat resumptionTokenFormatter;
@@ -57,9 +54,5 @@ public class Repository {
     public Repository withResumptionTokenFormatter(ResumptionTokenFormat resumptionTokenFormatter) {
         this.resumptionTokenFormatter = resumptionTokenFormatter;
         return this;
-    }
-
-    public FilterResolver getFilterResolver() {
-        return filterResolver;
     }
 }

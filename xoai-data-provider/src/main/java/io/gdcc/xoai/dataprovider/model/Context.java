@@ -9,7 +9,6 @@
 package io.gdcc.xoai.dataprovider.model;
 
 import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
-import io.gdcc.xoai.dataprovider.filter.FilterResolver;
 import io.gdcc.xoai.dataprovider.model.conditions.Condition;
 
 import javax.xml.transform.Transformer;
@@ -128,10 +127,10 @@ public class Context {
         return this;
     }
 
-    public List<MetadataFormat> formatFor(FilterResolver resolver, ItemIdentifier item) {
+    public List<MetadataFormat> formatFor(ItemIdentifier item) {
         List<MetadataFormat> result = new ArrayList<>();
         for (MetadataFormat format : this.metadataFormats)
-            if (!format.hasCondition() || format.getCondition().getFilter(resolver).isItemShown(item))
+            if (!format.hasCondition() || format.getCondition().getFilter().isItemShown(item))
                 result.add(format);
         return result;
     }

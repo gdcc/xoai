@@ -13,7 +13,6 @@ import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 
 import io.gdcc.xoai.dataprovider.model.Context;
 import io.gdcc.xoai.dataprovider.model.Item;
-import io.gdcc.xoai.dataprovider.filter.FilterResolver;
 import io.gdcc.xoai.dataprovider.model.Set;
 
 import javax.xml.stream.XMLStreamException;
@@ -48,10 +47,10 @@ public class ItemHelper extends ItemIdentifyHelper {
         }
     }
 
-    public List<Set> getSets(Context context, FilterResolver resolver) {
+    public List<Set> getSets(Context context) {
         List<Set> result = new ArrayList<>();
         for (Set set : context.getSets())
-            if (set.getCondition().getFilter(resolver).isItemShown(item))
+            if (set.getCondition().getFilter().isItemShown(item))
                 result.add(set);
 
         result.addAll(item.getSets());

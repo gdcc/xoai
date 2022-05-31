@@ -9,7 +9,6 @@
 package io.gdcc.xoai.serviceprovider;
 
 import io.gdcc.xoai.dataprovider.filter.Filter;
-import io.gdcc.xoai.dataprovider.filter.FilterResolver;
 import io.gdcc.xoai.dataprovider.model.ItemIdentifier;
 import io.gdcc.xoai.dataprovider.model.conditions.Condition;
 import io.gdcc.xoai.model.oaipmh.verbs.Identify;
@@ -146,7 +145,7 @@ public class ServiceProviderTest extends AbstractServiceProviderTest {
     private Condition alwaysFalseCondition() {
         return new Condition() {
             @Override
-            public Filter getFilter(FilterResolver filterResolver) {
+            public Filter getFilter() {
                 return new Filter() {
                     @Override
                     public boolean isItemShown(ItemIdentifier item) {
