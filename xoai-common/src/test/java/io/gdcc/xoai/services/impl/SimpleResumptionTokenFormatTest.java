@@ -19,12 +19,13 @@ class SimpleResumptionTokenFormatTest {
     @Test
     void cycleFullToken() throws BadResumptionTokenException {
         // given
-        ResumptionToken.Value expected = new ResumptionToken.Value();
-        expected.withOffset(1);
-        expected.withSetSpec("test");
-        expected.withMetadataPrefix("oai_dc");
-        expected.withFrom(Instant.now().truncatedTo(ChronoUnit.MINUTES));
-        expected.withUntil(Instant.now().truncatedTo(ChronoUnit.MINUTES));
+        ResumptionToken.Value expected = new ResumptionToken.ValueBuilder()
+            .withOffset(1)
+            .withSetSpec("test")
+            .withMetadataPrefix("oai_dc")
+            .withFrom(Instant.now().truncatedTo(ChronoUnit.MINUTES))
+            .withUntil(Instant.now().truncatedTo(ChronoUnit.MINUTES))
+            .build();
         
         // when
         ResumptionToken.Value result = format.parse(format.format(expected));

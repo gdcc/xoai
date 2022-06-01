@@ -114,11 +114,18 @@ public class Request implements XmlWritable {
         this.arguments.put(Argument.Set, value);
         return this;
     }
-
+    
+    /**
+     * A request may contain (as an exclusive argument) an encoded {@link ResumptionToken.Value}.
+     * It must be decoded with a {@link io.gdcc.xoai.services.api.ResumptionTokenFormat} before being useful.
+     */
     public Optional<String> getResumptionToken() {
         return Optional.ofNullable(this.arguments.get(Argument.ResumptionToken));
     }
-
+    
+    /**
+     * Set a string with an encoded {@link ResumptionToken.Value}.
+     */
     public Request withResumptionToken(String value) {
         this.arguments.put(Argument.ResumptionToken, value);
         return this;

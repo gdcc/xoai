@@ -32,11 +32,11 @@ public class SimpleResumptionTokenFormat implements ResumptionTokenFormat {
     @Override
     public ResumptionToken.Value parse(String resumptionToken) throws BadResumptionTokenException {
     
-        ResumptionToken.Value token = new ResumptionToken.Value();
+        ResumptionToken.ValueBuilder tokenBuilder = new ResumptionToken.ValueBuilder();
         String decodedToken = base64Decode(resumptionToken);
         
         if (decodedToken == null || decodedToken.isBlank()) {
-            return token;
+            return tokenBuilder.build();
         }
         
         for (String part : decodedToken.split(Pattern.quote(partSeparator))) {
@@ -48,19 +48,19 @@ public class SimpleResumptionTokenFormat implements ResumptionTokenFormat {
             try {
                 switch (keyValue[0]) {
                     case offset:
-                        token.withOffset(Integer.parseInt(keyValue[1]));
+                        tokenBuilder.withOffset(Integer.parseInt(keyValue[1]));
                         break;
                     case set:
-                        token.withSetSpec(keyValue[1]);
+                        tokenBuilder.withSetSpec(keyValue[1]);
                         break;
                     case from:
-                        token.withFrom(DateProvider.parse(keyValue[1], Granularity.Second));
+                        tokenBuilder.withFrom(DateProvider.parse(keyValue[1], Granularity.Second));
                         break;
                     case until:
-                        token.withUntil(DateProvider.parse(keyValue[1], Granularity.Second));
+                        tokenBuilder.withUntil(DateProvider.parse(keyValue[1], Granularity.Second));
                         break;
                     case metadataPrefix:
-                        token.withMetadataPrefix(keyValue[1]);
+                        tokenBuilder.withMetadataPrefix(keyValue[1]);
                         break;
                     default:
                         throw new BadResumptionTokenException("Unknown key '" + keyValue[0] + "' found");
@@ -70,7 +70,7 @@ public class SimpleResumptionTokenFormat implements ResumptionTokenFormat {
             }
         }
         
-        return token;
+        return tokenBuilder.build();
     }
 
     @Override
