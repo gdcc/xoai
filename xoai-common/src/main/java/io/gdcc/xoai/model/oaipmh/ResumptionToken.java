@@ -19,7 +19,7 @@ import java.util.Objects;
 public class ResumptionToken implements XmlWritable {
 
     private final Value value;
-    private Instant expirationInstant;
+    private Instant expirationDate;
     private Long completeListSize;
     private Long cursor;
 
@@ -34,12 +34,12 @@ public class ResumptionToken implements XmlWritable {
         return value;
     }
 
-    public Instant getExpirationInstant() {
-        return expirationInstant;
+    public Instant getExpirationDate() {
+        return expirationDate;
     }
 
-    public ResumptionToken withExpirationInstant(Instant value) {
-        this.expirationInstant = value;
+    public ResumptionToken withExpirationDate(Instant value) {
+        this.expirationDate = value;
         return this;
     }
 
@@ -64,8 +64,8 @@ public class ResumptionToken implements XmlWritable {
     @Override
     public void write(XmlWriter writer) throws XmlWriteException {
         try {
-            if (this.expirationInstant != null)
-                writer.writeAttribute("expirationInstant", this.expirationInstant, Granularity.Second);
+            if (this.expirationDate != null)
+                writer.writeAttribute("expirationDate", this.expirationDate, Granularity.Second);
             if (this.completeListSize != null)
                 writer.writeAttribute("completeListSize", "" + this.completeListSize);
             if (this.cursor != null)
