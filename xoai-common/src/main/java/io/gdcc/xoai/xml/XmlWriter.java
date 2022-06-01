@@ -43,17 +43,7 @@ public class XmlWriter extends XmlIoWriter implements AutoCloseable {
     }
 
     public static WriterContext defaultContext () {
-        return new WriterContext(Granularity.Second, new SimpleResumptionTokenFormat());
-    }
-
-    public static class WriterContext {
-        private final Granularity granularity;
-        private final ResumptionTokenFormat formatter;
-
-        public WriterContext(Granularity granularity, ResumptionTokenFormat formatter) {
-            this.granularity = granularity;
-            this.formatter = formatter;
-        }
+        return new WriterContext(){};
     }
     
     private final WriterContext writerContext;
@@ -68,11 +58,9 @@ public class XmlWriter extends XmlIoWriter implements AutoCloseable {
         this.writerContext = writerContext;
     }
 
-
-
     public void writeDate(Instant date) throws XmlWriteException {
         try {
-            this.writeCharacters(DateProvider.format(date, writerContext.granularity));
+            this.writeCharacters(DateProvider.format(date, writerContext.getGranularity()));
         } catch (XMLStreamException e) {
             throw new XmlWriteException(e);
         }
@@ -112,12 +100,12 @@ public class XmlWriter extends XmlIoWriter implements AutoCloseable {
         this.writeElement(elementName, DateProvider.format(date, granularity));
     }
     public void writeElement(String elementName, Instant date) throws XmlWriteException {
-        this.writeElement(elementName, DateProvider.format(date, writerContext.granularity));
+        this.writeElement(elementName, DateProvider.format(date, writerContext.getGranularity()));
     }
     
     public void writeAttribute(String name, Instant date) throws XmlWriteException {
         try {
-            this.writeAttribute(name, DateProvider.format(date, writerContext.granularity));
+            this.writeAttribute(name, DateProvider.format(date, writerContext.getGranularity()));
         } catch (XMLStreamException e) {
             throw new XmlWriteException(e);
         }
@@ -161,7 +149,7 @@ public class XmlWriter extends XmlIoWriter implements AutoCloseable {
     public void write(ResumptionToken.Value value) throws XmlWriteException {
         try {
             if (!value.isEmpty())
-                writeCharacters(writerContext.formatter.format(value));
+                writeCharacters(writerContext.getResumptionTokenFormat().format(value));
         } catch (XMLStreamException e) {
             throw new XmlWriteException(e);
         }
