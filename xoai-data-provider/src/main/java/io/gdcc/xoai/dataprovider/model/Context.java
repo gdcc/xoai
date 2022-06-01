@@ -60,13 +60,14 @@ public class Context {
         return this;
     }
 
-    public Condition getCondition() {
-        return condition;
-    }
-
     public Context withCondition(Condition condition) {
         this.condition = condition;
         return this;
+    }
+    
+    public boolean isItemShown(ItemIdentifier item) {
+        // null item means false (not shown), otherwise true (no condition), when condition present check filter
+        return item != null && condition == null || condition.isItemShown(item);
     }
 
     public MetadataFormat formatForPrefix(String metadataPrefix) {
@@ -79,10 +80,6 @@ public class Context {
 
     public boolean hasTransformer() {
         return metadataTransformer != null;
-    }
-
-    public boolean hasCondition() {
-        return this.condition != null;
     }
 
     public boolean isStaticSet(String setSpec) {
@@ -130,7 +127,7 @@ public class Context {
     public List<MetadataFormat> formatFor(ItemIdentifier item) {
         List<MetadataFormat> result = new ArrayList<>();
         for (MetadataFormat format : this.metadataFormats)
-            if (!format.hasCondition() || format.getCondition().getFilter().isItemShown(item))
+            if (format.isItemShown(item))
                 result.add(format);
         return result;
     }

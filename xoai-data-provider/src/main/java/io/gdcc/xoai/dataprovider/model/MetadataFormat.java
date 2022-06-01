@@ -81,12 +81,9 @@ public class MetadataFormat {
         this.condition = filter;
         return this;
     }
-
-    public Condition getCondition() {
-        return condition;
-    }
-
-    public boolean hasCondition() {
-        return condition != null;
+    
+    public boolean isItemShown(ItemIdentifier item) {
+        // null item means false (not shown), otherwise true (no condition), when condition present check filter
+        return item != null && condition == null || condition.isItemShown(item);
     }
 }

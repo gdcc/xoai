@@ -9,6 +9,7 @@
 package io.gdcc.xoai.dataprovider.model.conditions;
 
 import io.gdcc.xoai.dataprovider.filter.Filter;
+import io.gdcc.xoai.dataprovider.model.ItemIdentifier;
 
 /**
  * @author Development @ Lyncode
@@ -16,4 +17,8 @@ import io.gdcc.xoai.dataprovider.filter.Filter;
  */
 public interface Condition {
     Filter getFilter();
+    
+    default boolean isItemShown(ItemIdentifier item) {
+        return item != null && getFilter() != null && getFilter().isItemShown(item);
+    }
 }

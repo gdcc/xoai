@@ -55,10 +55,6 @@ public class Set {
         return (!this.descriptions.isEmpty());
     }
 
-    public Condition getCondition() {
-        return condition;
-    }
-
     public boolean hasCondition() {
         return condition != null;
     }
@@ -66,6 +62,11 @@ public class Set {
     public Set withCondition(Condition condition) {
         this.condition = condition;
         return this;
+    }
+    
+    public boolean isItemShown(ItemIdentifier item) {
+        // null item means false (not shown), otherwise true (no condition), when condition present check filter
+        return item != null && condition == null || condition.isItemShown(item);
     }
 
     public String getSpec() {
