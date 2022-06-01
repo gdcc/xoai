@@ -25,7 +25,7 @@ import java.time.Instant;
 import java.util.Optional;
 
 public class XmlWriter extends XmlIoWriter implements AutoCloseable {
-    public static String toString(XmlWritable writable) throws XMLStreamException, XmlWriteException {
+    public static String toString(XmlWritable writable) throws XMLStreamException {
         final OutputStream out = new ByteArrayOutputStream();
         
         try (
