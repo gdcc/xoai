@@ -9,7 +9,7 @@
 package io.gdcc.xoai.dataprovider.model;
 
 import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
-import io.gdcc.xoai.dataprovider.model.conditions.Condition;
+import io.gdcc.xoai.dataprovider.filter.Condition;
 
 import javax.xml.transform.Transformer;
 import java.util.ArrayList;

@@ -6,7 +6,7 @@
  * http://www.dspace.org/license/
  */
 
-package io.gdcc.xoai.dataprovider.model.conditions;
+package io.gdcc.xoai.dataprovider.filter;
 
 import io.gdcc.xoai.dataprovider.filter.Filter;
 import io.gdcc.xoai.dataprovider.model.ItemIdentifier;

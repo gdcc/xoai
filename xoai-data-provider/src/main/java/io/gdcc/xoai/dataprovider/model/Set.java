@@ -8,7 +8,7 @@
 
 package io.gdcc.xoai.dataprovider.model;
 
-import io.gdcc.xoai.dataprovider.model.conditions.Condition;
+import io.gdcc.xoai.dataprovider.filter.Condition;
 import io.gdcc.xoai.model.xoai.XOAIMetadata;
 
 import java.util.ArrayList;
