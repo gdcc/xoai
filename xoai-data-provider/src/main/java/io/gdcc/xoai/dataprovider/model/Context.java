@@ -14,6 +14,8 @@ import io.gdcc.xoai.dataprovider.model.conditions.Condition;
 import javax.xml.transform.Transformer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class Context {
     public static Context context () {
@@ -34,6 +36,24 @@ public class Context {
             throw new InternalOAIException("Context sets must have a condition");
         this.sets.add(set);
         return this;
+    }
+    
+    public boolean hasSet(String setSpec) {
+        return isStaticSet(setSpec);
+    }
+    public boolean isStaticSet(String setSpec) {
+        return this.sets.stream().anyMatch(set -> set.getSpec().equals(setSpec));
+    }
+    
+    public Optional<Set> getSet(String setSpec) {
+        return this.sets.stream()
+            .filter(set -> set.getSpec().equals(setSpec))
+            .findAny();
+    }
+    
+    public Stream<Set> getSetsForItem(ItemIdentifier item) {
+        return this.sets.stream()
+            .filter(set -> set.isItemShown(item));
     }
 
     public Transformer getTransformer() {
@@ -80,26 +100,6 @@ public class Context {
 
     public boolean hasTransformer() {
         return metadataTransformer != null;
-    }
-
-    public boolean isStaticSet(String setSpec) {
-        for (Set set : this.sets)
-            if (set.getSpec().equals(setSpec))
-                return true;
-
-        return false;
-    }
-
-    public Set getSet(String setSpec) {
-        for (Set set : this.sets)
-            if (set.getSpec().equals(setSpec))
-                return set;
-
-        return null;
-    }
-
-    public boolean hasSet(String set) {
-        return isStaticSet(set);
     }
 
     public Context withMetadataFormat(String prefix, Transformer transformer) {
