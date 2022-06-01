@@ -12,6 +12,9 @@ import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
 import io.gdcc.xoai.model.oaipmh.DeletedRecord;
 import io.gdcc.xoai.model.oaipmh.Granularity;
 import io.gdcc.xoai.services.api.DateProvider;
+import io.gdcc.xoai.services.api.ResumptionTokenFormat;
+import io.gdcc.xoai.services.impl.SimpleResumptionTokenFormat;
+import io.gdcc.xoai.xml.WriterContext;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -20,13 +23,14 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 
-public class RepositoryConfiguration {
+public class RepositoryConfiguration implements WriterContext {
     
     private final List<String> adminEmails = new ArrayList<>();
     private final List<String> descriptions = new ArrayList<>();
     private final List<String> compressions = new ArrayList<>();
     
     private Granularity granularity;
+    private ResumptionTokenFormat resumptionTokenFormat;
     private String repositoryName;
     private String baseUrl;
     private Instant earliestDate;
@@ -77,6 +81,7 @@ public class RepositoryConfiguration {
         return maxListRecords;
     }
 
+    @Override
     public Granularity getGranularity() {
         if (granularity == null)
             throw new InternalOAIException("Granularity has not been configured");
@@ -99,6 +104,13 @@ public class RepositoryConfiguration {
     
     public boolean hasCompressions() {
         return !compressions.isEmpty();
+    }
+    
+    @Override
+    public ResumptionTokenFormat getResumptionTokenFormat() {
+        if (resumptionTokenFormat == null)
+            throw new InternalOAIException("Resumption token format has not been configured");
+        return this.resumptionTokenFormat;
     }
     
     public RepositoryConfiguration and() {
@@ -163,7 +175,12 @@ public class RepositoryConfiguration {
         this.maxListSets = maxListSets;
         return this;
     }
-
+    
+    public RepositoryConfiguration withResumptionTokenFormat(ResumptionTokenFormat format) {
+        this.resumptionTokenFormat = format;
+        return this;
+    }
+    
     public static RepositoryConfiguration defaults () {
         return new RepositoryConfiguration()
             .withGranularity(Granularity.Second)
@@ -174,6 +191,7 @@ public class RepositoryConfiguration {
             .withMaxListRecords(100)
             .withMaxListIdentifiers(100)
             .withMaxListSets(100)
-            .withDeleteMethod(DeletedRecord.NO);
+            .withDeleteMethod(DeletedRecord.NO)
+            .withResumptionTokenFormat(new SimpleResumptionTokenFormat().withGranularity(Granularity.Second));
     }
 }

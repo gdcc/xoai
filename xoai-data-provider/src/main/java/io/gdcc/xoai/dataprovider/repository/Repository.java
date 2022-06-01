@@ -18,7 +18,6 @@ public final class Repository {
     private RepositoryConfiguration configuration = RepositoryConfiguration.defaults();
     private ItemRepository itemRepository;
     private SetRepository setRepository;
-    private ResumptionTokenFormat resumptionTokenFormatter;
 
     public RepositoryConfiguration getConfiguration() {
         return configuration;
@@ -44,15 +43,6 @@ public final class Repository {
 
     public Repository withSetRepository(SetRepository setRepository) {
         this.setRepository = setRepository;
-        return this;
-    }
-
-    public ResumptionTokenFormat getResumptionTokenFormatter() {
-        return resumptionTokenFormatter;
-    }
-
-    public Repository withResumptionTokenFormatter(ResumptionTokenFormat resumptionTokenFormatter) {
-        this.resumptionTokenFormatter = resumptionTokenFormatter;
         return this;
     }
 }
