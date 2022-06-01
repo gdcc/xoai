@@ -1,37 +1,49 @@
 package io.gdcc.xoai.services.impl;
 
 import io.gdcc.xoai.exceptions.BadResumptionTokenException;
+import io.gdcc.xoai.model.oaipmh.Granularity;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
+import io.gdcc.xoai.services.api.ResumptionTokenFormat;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class SimpleResumptionTokenFormatTest {
     
-    final SimpleResumptionTokenFormat format = new SimpleResumptionTokenFormat();
+    static final ResumptionTokenFormat format = new SimpleResumptionTokenFormat();
     
-    @Test
-    void cycleFullToken() throws BadResumptionTokenException {
+    static Stream<Arguments> fullCycleExamples() {
+        return Stream.of(
+            Arguments.of(ChronoUnit.MINUTES, format),
+            Arguments.of(ChronoUnit.DAYS, new SimpleResumptionTokenFormat().withGranularity(Granularity.Day)),
+            Arguments.of(ChronoUnit.MINUTES, new SimpleResumptionTokenFormat().withGranularity(Granularity.Lenient)),
+            Arguments.of(ChronoUnit.DAYS, new SimpleResumptionTokenFormat().withGranularity(Granularity.Lenient))
+        );
+    }
+    
+    @ParameterizedTest
+    @MethodSource("fullCycleExamples")
+    void cycleFullToken(ChronoUnit limit, ResumptionTokenFormat format) throws BadResumptionTokenException {
         // given
         ResumptionToken.Value expected = new ResumptionToken.ValueBuilder()
             .withOffset(1)
             .withSetSpec("test")
             .withMetadataPrefix("oai_dc")
-            .withFrom(Instant.now().truncatedTo(ChronoUnit.MINUTES))
-            .withUntil(Instant.now().truncatedTo(ChronoUnit.MINUTES))
+            .withFrom(Instant.now().truncatedTo(limit))
+            .withUntil(Instant.now().truncatedTo(limit))
             .build();
         
-        // when
-        ResumptionToken.Value result = format.parse(format.format(expected));
-        
-        // then
-        assertEquals(expected, result);
+        // when && then
+        assertEquals(expected, format.parse(format.format(expected)));
     }
     
     @ParameterizedTest
