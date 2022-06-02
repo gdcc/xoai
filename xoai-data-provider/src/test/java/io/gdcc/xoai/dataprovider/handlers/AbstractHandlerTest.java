@@ -8,18 +8,15 @@
 
 package io.gdcc.xoai.dataprovider.handlers;
 
-import io.gdcc.xoai.dataprovider.filter.Filter;
+import io.gdcc.xoai.dataprovider.filter.Condition;
 import io.gdcc.xoai.dataprovider.model.Context;
 import io.gdcc.xoai.dataprovider.model.MetadataFormat;
-import io.gdcc.xoai.dataprovider.model.conditions.Condition;
 import io.gdcc.xoai.dataprovider.repository.InMemoryItemRepository;
 import io.gdcc.xoai.dataprovider.repository.InMemorySetRepository;
 import io.gdcc.xoai.dataprovider.repository.Repository;
 import io.gdcc.xoai.dataprovider.repository.RepositoryConfiguration;
-import io.gdcc.xoai.model.oaipmh.OAIPMH;
 import io.gdcc.xoai.model.oaipmh.Request;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
-import io.gdcc.xoai.services.api.DateProvider;
 import io.gdcc.xoai.services.impl.SimpleResumptionTokenFormat;
 import io.gdcc.xoai.xml.XmlWritable;
 import io.gdcc.xoai.xml.XmlWriter;
@@ -47,7 +44,7 @@ public abstract class AbstractHandlerTest {
     protected static Matcher<? super String> xPath(String xpath, Matcher<String> stringMatcher) {
         return EvaluateXPathMatcher.hasXPath(xpath, stringMatcher);
     }
-    protected String write(final XmlWritable handle) throws XMLStreamException, XmlWriteException {
+    protected String write(final XmlWritable handle) throws XMLStreamException {
         return XmlWriter.toString(writer -> {
             try {
                 writer.writeStartElement("root");
@@ -102,7 +99,7 @@ public abstract class AbstractHandlerTest {
     }
 
     protected Condition alwaysFalseCondition() {
-        return filterResolver -> (Filter) item -> false;
+        return () -> item -> false;
     }
 
     protected String valueOf(ResumptionToken.Value resumptionToken) {
