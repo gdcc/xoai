@@ -66,7 +66,7 @@ public class Context {
     }
 
     public List<MetadataFormat> getMetadataFormats() {
-        return metadataFormats;
+        return List.copyOf(metadataFormats);
     }
 
     public Context withMetadataFormat(MetadataFormat metadataFormat) {
