@@ -8,7 +8,6 @@
 
 package io.gdcc.xoai.dataprovider.filter;
 
-import io.gdcc.xoai.dataprovider.filter.Filter;
 import io.gdcc.xoai.dataprovider.model.ItemIdentifier;
 
 /**
@@ -16,6 +15,9 @@ import io.gdcc.xoai.dataprovider.model.ItemIdentifier;
  * @version 3.1.0
  */
 public interface Condition {
+    Condition ALWAYS_TRUE = () -> Filter.ALWAYS_TRUE;
+    Condition ALWAYS_FALSE = () -> Filter.ALWAYS_FALSE;
+    
     Filter getFilter();
     
     default boolean isItemShown(ItemIdentifier item) {

@@ -98,10 +98,6 @@ public abstract class AbstractHandlerTest {
         };
     }
 
-    protected Condition alwaysFalseCondition() {
-        return () -> item -> false;
-    }
-
     protected String valueOf(ResumptionToken.Value resumptionToken) {
         return theRepository().getResumptionTokenFormatter()
                 .format(resumptionToken);
