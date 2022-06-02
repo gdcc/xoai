@@ -86,4 +86,11 @@ public class MetadataFormat {
         // null item means false (not shown), otherwise true (no condition), when condition present check filter
         return item != null && condition == null || condition.isItemShown(item);
     }
+    
+    public io.gdcc.xoai.model.oaipmh.results.MetadataFormat toOAIPMH() {
+        return new io.gdcc.xoai.model.oaipmh.results.MetadataFormat()
+            .withMetadataNamespace(this.namespace)
+            .withMetadataPrefix(this.prefix)
+            .withSchema(this.schemaLocation);
+    }
 }
