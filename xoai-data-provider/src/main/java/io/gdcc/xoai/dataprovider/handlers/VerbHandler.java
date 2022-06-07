@@ -13,6 +13,7 @@ import io.gdcc.xoai.dataprovider.model.Context;
 import io.gdcc.xoai.dataprovider.repository.Repository;
 import io.gdcc.xoai.dataprovider.repository.RepositoryConfiguration;
 import io.gdcc.xoai.model.oaipmh.Request;
+import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 import io.gdcc.xoai.model.oaipmh.verbs.Verb;
 
 public abstract class VerbHandler<T extends Verb> {
@@ -33,6 +34,38 @@ public abstract class VerbHandler<T extends Verb> {
     protected RepositoryConfiguration getConfiguration() {
         return repository.getConfiguration();
     }
-
-    public abstract T handle(Request request) throws HandlerException;
+    
+    /**
+     * Handle an OAI-PMH {@link Request} without a resumption token.
+     *
+     * Note: handlers not support this type of method may throw {@link io.gdcc.xoai.dataprovider.exceptions.InternalOAIException}
+     *       to indicate lacking support. This should only happen when implementing applications override
+     *       the handlers.
+     *
+     * @param request The request to work on
+     * @return The OAI-PMH {@link Verb} response
+     * @throws HandlerException When the request does not create a valid OAI-PMH response, triggering an error message.
+     * @throws io.gdcc.xoai.dataprovider.exceptions.InternalOAIException When an implementation internal error happens
+     *                                                                   which has a root cause independent from the
+     *                                                                   clients request.
+     */
+    public abstract T handle(final Request request) throws HandlerException;
+    
+    /**
+     * Handle an OAI-PMH {@link Request} with an optional response token.
+     *
+     * * Note: handlers not support this type of method may throw {@link io.gdcc.xoai.dataprovider.exceptions.InternalOAIException}
+     *         to indicate lacking support. This should only happen when implementing applications override
+     *         the handlers.
+     *
+     * @param request The request to work on
+     * @param token   The token to start crafting response data from (defined offset, dates and metadata prefix).
+     *                May be null in case of handlers not supporting resumption tokens.
+     * @return The OAI-PMH {@link Verb} response
+     * @throws HandlerException When the request does not create a valid OAI-PMH response, triggering an error message.
+     * @throws io.gdcc.xoai.dataprovider.exceptions.InternalOAIException When an implementation internal error happens
+     *                                                                   which has a root cause independent from the
+     *                                                                   clients request.
+     */
+    public abstract T handle(final Request request, final ResumptionToken.Value token) throws HandlerException;
 }
