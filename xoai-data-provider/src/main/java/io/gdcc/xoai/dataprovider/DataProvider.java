@@ -70,6 +70,8 @@ public class DataProvider {
     public DataProvider(final Context context, final Repository repository) {
         Objects.requireNonNull(context, "Context for data provider may not be null");
         Objects.requireNonNull(repository, "Repository for data provider may not be null");
+        Objects.requireNonNull(repository.getItemRepository(), "Repository must contain a non-null item repository");
+        Objects.requireNonNull(repository.getSetRepository(), "Repository must contain a non-null sets repository");
         
         this.configuration = repository.getConfiguration();
         Objects.requireNonNull(this.configuration, "Repository configuration may not be null");
