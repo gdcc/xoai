@@ -8,14 +8,12 @@
 
 package io.gdcc.xoai.dataprovider.handlers;
 
-import io.gdcc.xoai.dataprovider.exceptions.BadArgumentException;
-import io.gdcc.xoai.dataprovider.exceptions.CannotDisseminateFormatException;
-import io.gdcc.xoai.dataprovider.exceptions.DoesNotSupportSetsException;
-import io.gdcc.xoai.dataprovider.exceptions.NoMatchesException;
+import io.gdcc.xoai.exceptions.BadArgumentException;
+import io.gdcc.xoai.dataprovider.exceptions.handler.CannotDisseminateFormatException;
+import io.gdcc.xoai.dataprovider.exceptions.handler.DoesNotSupportSetsException;
+import io.gdcc.xoai.dataprovider.exceptions.handler.NoMatchesException;
 import io.gdcc.xoai.dataprovider.model.MetadataFormat;
-import io.gdcc.xoai.model.oaipmh.GetRecord;
-import io.gdcc.xoai.model.oaipmh.Metadata;
-import io.gdcc.xoai.model.oaipmh.Verb;
+import io.gdcc.xoai.model.oaipmh.results.record.Metadata;
 import org.junit.jupiter.api.Test;
 import org.xmlunit.matchers.HasXPathMatcher;
 
@@ -23,7 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 
 import static io.gdcc.xoai.dataprovider.model.InMemoryItem.randomItem;
-import static io.gdcc.xoai.model.oaipmh.Verb.Type.ListRecords;
+import static io.gdcc.xoai.model.oaipmh.verbs.Verb.Type.ListRecords;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -44,7 +42,7 @@ public class ListRecordsHandlerTest extends AbstractHandlerTest {
         aContext().withMetadataFormat(EXISTING_METADATA_FORMAT, MetadataFormat.identity());
     
         assertThrows(CannotDisseminateFormatException.class,
-            () -> underTest.handle(a(request().withVerb(ListRecords).withMetadataPrefix("abcd"))));
+            () -> underTest.handle(request().withVerb(ListRecords).withMetadataPrefix("abcd")));
     }
 
     @Test
