@@ -7,20 +7,18 @@
  */
 package io.gdcc.xoai.dataprovider.repository;
 
+import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
+import io.gdcc.xoai.dataprovider.exceptions.handler.CannotDisseminateFormatException;
 import io.gdcc.xoai.dataprovider.exceptions.handler.HandlerException;
 import io.gdcc.xoai.dataprovider.exceptions.handler.IdDoesNotExistException;
-import io.gdcc.xoai.dataprovider.exceptions.handler.CannotDisseminateFormatException;
 import io.gdcc.xoai.dataprovider.filter.ScopedFilter;
-import io.gdcc.xoai.dataprovider.handlers.results.ListItemIdentifiersResult;
-import io.gdcc.xoai.dataprovider.handlers.results.ListItemsResults;
 import io.gdcc.xoai.dataprovider.model.Item;
 import io.gdcc.xoai.dataprovider.model.ItemIdentifier;
 import io.gdcc.xoai.dataprovider.model.MetadataFormat;
-import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
+import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 import io.gdcc.xoai.model.oaipmh.results.record.Metadata;
 
 import java.io.InputStream;
-import java.time.Instant;
 import java.util.List;
 
 /**
@@ -62,272 +60,62 @@ public interface ItemRepository {
      */
     Item getItem(String identifier, MetadataFormat format) throws HandlerException;
     
+    /**
+     * Gets a (paged) list of identifiers. The metadata prefix parameter is internally converted to a list of filters.
+     * That is, when configuring XOAI, it is possible to associate to each metadata format a list of filters.
+     *
+     * @param filters           List of Filters, see <a href="https://github.com/lyncode/xoai/wiki/XOAI-Data-Provider-Architecture">details</a>
+     * @param metadataFormat    The intended {@link MetadataFormat} the repository shall return
+     *                          (may also be contained within the scoped filter for
+     *                          {@link io.gdcc.xoai.dataprovider.filter.Scope#MetadataFormat})
+     * @param maxResponseLength The maximum count of identifiers to return (paged results).
+     *                          Is always > 0 from {@link RepositoryConfiguration}, enforced by
+     *                          {@link io.gdcc.xoai.dataprovider.handlers.IdentifyHandler}
+     * @param resumptionToken   A resumption token (element value) either freshly created from a new
+     *                          {@link io.gdcc.xoai.model.oaipmh.Request} or by loading it from a clients request argument.
+     *                          Contains information about offset (for paging), from/until dates and sets.
+     *                          You may assume any information in this parameter is verified.
+     *                          Will not be null and instances are immutable.
+     *
+     * @return List of identifiers
+     *
+     * @throws HandlerException     In case no match can be found or something else related to the request goes wrong.
+     *                              Repository internal errors not triggered by a false client request must throw an
+     *                              internal error!
+     * @throws InternalOAIException In case source internal errors happen
+     *
+     * @see <a href="client://www.openarchives.org/OAI/openarchivesprotocol.html#ListIdentifiers">List Identifiers Definition</a>
+     */
+    ResultsPage<ItemIdentifier> getItemIdentifiers(
+        final List<ScopedFilter> filters, final MetadataFormat metadataFormat, final int maxResponseLength,
+        final ResumptionToken.Value resumptionToken) throws HandlerException;
     
     /**
-     * Gets a paged list of identifiers. The metadata prefix parameter is internally converted to a list of filters.
+     * Gets a (paged) list of items. The metadata prefix parameter is internally converted to a list of filters.
      * That is, when configuring XOAI, it is possible to associate to each metadata format a list of filters.
      *
      * @param filters List of Filters <a href="https://github.com/lyncode/xoai/wiki/XOAI-Data-Provider-Architecture">details</a>
-     * @param offset  Start offset
-     * @param length  Max items returned
-     * @return List of identifiers
-     * @throws HandlerException
-     * @throws InternalOAIException In case source internal errors happen
-     * @see <a href="client://www.openarchives.org/OAI/openarchivesprotocol.html#ListIdentifiers">List Identifiers definition</a>
-     */
-    ListItemIdentifiersResult getItemIdentifiers(
-        List<ScopedFilter> filters, int offset, int length) throws HandlerException;
-
-    /**
-     * Gets a paged list of identifiers. The metadata prefix parameter is internally converted to a list of filters.
-     * That is, when configuring XOAI, it is possible to associate to each metadata format a list of filters.
+     * @param metadataFormat    The intended {@link MetadataFormat} the repository shall return
+     *                          (may also be contained within the scoped filter for
+     *                          {@link io.gdcc.xoai.dataprovider.filter.Scope#MetadataFormat})
+     * @param maxResponseLength The maximum count of identifiers to return (paged results).
+     *                          Is always > 0 from {@link RepositoryConfiguration}, enforced by
+     *                          {@link io.gdcc.xoai.dataprovider.handlers.IdentifyHandler}
+     * @param resumptionToken   A resumption token (element value) either freshly created from a new
+     *                          {@link io.gdcc.xoai.model.oaipmh.Request} or by loading it from a clients request argument.
+     *                          Contains information about offset (for paging), from/until dates and sets.
+     *                          You may assume any information in this parameter is verified.
+     *                          Will not be null and instances are immutable.
      *
-     * @param filters List of Filters <a href="https://github.com/lyncode/xoai/wiki/XOAI-Data-Provider-Architecture">details</a>
-     * @param offset  Start offset
-     * @param length  Max items returned
-     * @param from    Date parameter
-     * @return List of identifiers
-     * @throws HandlerException
-     * @throws InternalOAIException In case source internal errors happen
-     * @see <a href="client://www.openarchives.org/OAI/openarchivesprotocol.html#ListIdentifiers">List Identifiers definition</a>
-     */
-    ListItemIdentifiersResult getItemIdentifiers(
-        List<ScopedFilter> filters, int offset, int length, Instant from) throws HandlerException;
-
-    /**
-     * Gets a paged list of identifiers. The metadata prefix parameter is internally converted to a list of filters.
-     * That is, when configuring XOAI, it is possible to associate to each metadata format a list of filters.
-     *
-     * @param filters List of Filters <a href="https://github.com/lyncode/xoai/wiki/XOAI-Data-Provider-Architecture">details</a>
-     * @param offset  Start offset
-     * @param length  Max items returned
-     * @param until   Date parameter
-     * @return List of identifiers
-     * @throws HandlerException
-     * @throws InternalOAIException In case source internal errors happen
-     * @see <a href="client://www.openarchives.org/OAI/openarchivesprotocol.html#ListIdentifiers">List Identifiers definition</a>
-     */
-    ListItemIdentifiersResult getItemIdentifiersUntil(
-        List<ScopedFilter> filters, int offset, int length, Instant until) throws HandlerException;
-
-    /**
-     * Gets a paged list of identifiers. The metadata prefix parameter is internally converted to a list of filters.
-     * That is, when configuring XOAI, it is possible to associate to each metadata format a list of filters.
-     *
-     * @param filters List of Filters <a href="https://github.com/lyncode/xoai/wiki/XOAI-Data-Provider-Architecture">details</a>
-     * @param offset  Start offset
-     * @param length  Max items returned
-     * @param from    Date parameter
-     * @param until   Date parameter
-     * @return List of identifiers
-     * @throws HandlerException
-     * @throws InternalOAIException In case source internal errors happen
-     * @see <a href="client://www.openarchives.org/OAI/openarchivesprotocol.html#ListIdentifiers">List Identifiers definition</a>
-     */
-    ListItemIdentifiersResult getItemIdentifiers(
-        List<ScopedFilter> filters, int offset, int length, Instant from, Instant until) throws HandlerException;
-
-    /**
-     * Gets a paged list of identifiers. The metadata prefix parameter is internally converted to a list of filters.
-     * That is, when configuring XOAI, it is possible to associate to each metadata format a list of filters.
-     *
-     * @param filters List of Filters <a href="https://github.com/lyncode/xoai/wiki/XOAI-Data-Provider-Architecture">details</a>
-     * @param offset  Start offset
-     * @param length  Max items returned
-     * @param setSpec Set Spec
-     * @return List of identifiers
-     * @throws HandlerException
-     * @throws InternalOAIException In case source internal errors happen
-     * @see <a href="client://www.openarchives.org/OAI/openarchivesprotocol.html#ListIdentifiers">List Identifiers definition</a>
-     */
-    ListItemIdentifiersResult getItemIdentifiers(
-        List<ScopedFilter> filters, int offset, int length, String setSpec) throws HandlerException;
-
-    /**
-     * Gets a paged list of identifiers. The metadata prefix parameter is internally converted to a list of filters.
-     * That is, when configuring XOAI, it is possible to associate to each metadata format a list of filters.
-     *
-     * @param filters List of Filters <a href="https://github.com/lyncode/xoai/wiki/XOAI-Data-Provider-Architecture">details</a>
-     * @param offset  Start offset
-     * @param length  Max items returned
-     * @param setSpec Set Spec
-     * @param from    Date parameter
-     * @return List of identifiers
-     * @throws HandlerException
-     * @throws InternalOAIException In case source internal errors happen
-     * @see <a href="client://www.openarchives.org/OAI/openarchivesprotocol.html#ListIdentifiers">List Identifiers definition</a>
-     */
-    ListItemIdentifiersResult getItemIdentifiers(
-        List<ScopedFilter> filters, int offset, int length, String setSpec,
-        Instant from) throws HandlerException;
-
-    /**
-     * Gets a paged list of identifiers. The metadata prefix parameter is internally converted to a list of filters.
-     * That is, when configuring XOAI, it is possible to associate to each metadata format a list of filters.
-     *
-     * @param filters List of Filters <a href="https://github.com/lyncode/xoai/wiki/XOAI-Data-Provider-Architecture">details</a>
-     * @param offset  Start offset
-     * @param length  Max items returned
-     * @param setSpec Set Spec
-     * @param until   Date parameter
-     * @return List of identifiers
-     * @throws HandlerException
-     * @throws InternalOAIException In case source internal errors happen
-     * @see <a href="client://www.openarchives.org/OAI/openarchivesprotocol.html#ListIdentifiers">List Identifiers definition</a>
-     */
-    ListItemIdentifiersResult getItemIdentifiersUntil(
-        List<ScopedFilter> filters, int offset, int length, String setSpec,
-        Instant until) throws HandlerException;
-
-    /**
-     * Gets a paged list of identifiers. The metadata prefix parameter is internally converted to a list of filters.
-     * That is, when configuring XOAI, it is possible to associate to each metadata format a list of filters.
-     *
-     * @param filters List of Filters <a href="https://github.com/lyncode/xoai/wiki/XOAI-Data-Provider-Architecture">details</a>
-     * @param offset  Start offset
-     * @param length  Max items returned
-     * @param setSpec Set Spec
-     * @param from    Date parameter
-     * @param until   Date parameter
-     * @return List of identifiers
-     * @throws HandlerException
-     * @throws InternalOAIException In case source internal errors happen
-     * @see <a href="client://www.openarchives.org/OAI/openarchivesprotocol.html#ListIdentifiers">List Identifiers definition</a>
-     */
-    ListItemIdentifiersResult getItemIdentifiers(
-        List<ScopedFilter> filters, int offset, int length, String setSpec,
-        Instant from, Instant until) throws HandlerException;
-
-    /**
-     * Gets a paged list of items. The metadata prefix parameter is internally converted to a list of filters.
-     * That is, when configuring XOAI, it is possible to associate to each metadata format a list of filters.
-     *
-     * @param filters List of Filters <a href="https://github.com/lyncode/xoai/wiki/XOAI-Data-Provider-Architecture">details</a>
-     * @param offset  Start offset
-     * @param length  Max items returned
      * @return List of Items
-     * @throws HandlerException
+     * @throws HandlerException     In case no match can be found or something else related to the request goes wrong.
+     *                              Repository internal errors not triggered by a false client request must throw an
+     *                              internal error!
      * @throws InternalOAIException In case source internal errors happen
      * @see <a href="client://www.openarchives.org/OAI/openarchivesprotocol.html#ListRecords">List Records Definition</a>
      */
-    ListItemsResults getItems(List<ScopedFilter> filters,
-                              int offset, int length) throws HandlerException;
-
-    /**
-     * Gets a paged list of items. The metadata prefix parameter is internally converted to a list of filters.
-     * That is, when configuring XOAI, it is possible to associate to each metadata format a list of filters.
-     *
-     * @param filters List of Filters <a href="https://github.com/lyncode/xoai/wiki/XOAI-Data-Provider-Architecture">details</a>
-     * @param offset  Start offset
-     * @param length  Max items returned
-     * @param from    Date parameter
-     * @return List of Items
-     * @throws HandlerException
-     * @throws InternalOAIException In case source internal errors happen
-     * @see <a href="client://www.openarchives.org/OAI/openarchivesprotocol.html#ListRecords">List Records Definition</a>
-     */
-    ListItemsResults getItems(List<ScopedFilter> filters,
-                              int offset, int length, Instant from) throws HandlerException;
-
-    /**
-     * Gets a paged list of items. The metadata prefix parameter is internally converted to a list of filters.
-     * That is, when configuring XOAI, it is possible to associate to each metadata format a list of filters.
-     *
-     * @param filters List of Filters <a href="https://github.com/lyncode/xoai/wiki/XOAI-Data-Provider-Architecture">details</a>
-     * @param offset  Start offset
-     * @param length  Max items returned
-     * @param until   Date parameter
-     * @return List of Items
-     * @throws HandlerException
-     * @throws InternalOAIException In case source internal errors happen
-     * @see <a href="client://www.openarchives.org/OAI/openarchivesprotocol.html#ListRecords">List Records Definition</a>
-     */
-    ListItemsResults getItemsUntil(List<ScopedFilter> filters,
-                                   int offset, int length, Instant until) throws HandlerException;
-
-    /**
-     * Gets a paged list of items. The metadata prefix parameter is internally converted to a list of filters.
-     * That is, when configuring XOAI, it is possible to associate to each metadata format a list of filters.
-     *
-     * @param filters List of Filters <a href="https://github.com/lyncode/xoai/wiki/XOAI-Data-Provider-Architecture">details</a>
-     * @param offset  Start offset
-     * @param length  Max items returned
-     * @param from    Date parameter
-     * @param until   Date parameter
-     * @return List of Items
-     * @throws HandlerException
-     * @throws InternalOAIException In case source internal errors happen
-     * @see <a href="client://www.openarchives.org/OAI/openarchivesprotocol.html#ListRecords">List Records Definition</a>
-     */
-    ListItemsResults getItems(List<ScopedFilter> filters,
-                              int offset, int length, Instant from, Instant until) throws HandlerException;
-
-    /**
-     * Gets a paged list of items. The metadata prefix parameter is internally converted to a list of filters.
-     * That is, when configuring XOAI, it is possible to associate to each metadata format a list of filters.
-     *
-     * @param filters List of Filters <a href="https://github.com/lyncode/xoai/wiki/XOAI-Data-Provider-Architecture">details</a>
-     * @param offset  Start offset
-     * @param length  Max items returned
-     * @param setSpec Set spec
-     * @return List of Items
-     * @throws HandlerException
-     * @throws InternalOAIException In case source internal errors happen
-     * @see <a href="client://www.openarchives.org/OAI/openarchivesprotocol.html#ListRecords">List Records Definition</a>
-     */
-    ListItemsResults getItems(List<ScopedFilter> filters,
-                              int offset, int length, String setSpec) throws HandlerException;
-
-    /**
-     * Gets a paged list of items. The metadata prefix parameter is internally converted to a list of filters.
-     * That is, when configuring XOAI, it is possible to associate to each metadata format a list of filters.
-     *
-     * @param filters List of Filters <a href="https://github.com/lyncode/xoai/wiki/XOAI-Data-Provider-Architecture">details</a>
-     * @param offset  Start offset
-     * @param length  Max items returned
-     * @param from    Date parameter
-     * @param setSpec Set spec
-     * @return List of Items
-     * @throws HandlerException
-     * @throws InternalOAIException In case source internal errors happen
-     * @see <a href="client://www.openarchives.org/OAI/openarchivesprotocol.html#ListRecords">List Records Definition</a>
-     */
-    ListItemsResults getItems(List<ScopedFilter> filters,
-                              int offset, int length, String setSpec, Instant from) throws HandlerException;
-
-    /**
-     * Gets a paged list of items. The metadata prefix parameter is internally converted to a list of filters.
-     * That is, when configuring XOAI, it is possible to associate to each metadata format a list of filters.
-     *
-     * @param filters List of Filters <a href="https://github.com/lyncode/xoai/wiki/XOAI-Data-Provider-Architecture">details</a>
-     * @param offset  Start offset
-     * @param length  Max items returned
-     * @param until   Date parameter
-     * @param setSpec Set spec
-     * @return List of Items
-     * @throws HandlerException
-     * @throws InternalOAIException In case source internal errors happen
-     * @see <a href="client://www.openarchives.org/OAI/openarchivesprotocol.html#ListRecords">List Records Definition</a>
-     */
-    ListItemsResults getItemsUntil(List<ScopedFilter> filters,
-                                   int offset, int length, String setSpec, Instant until) throws HandlerException;
-
-    /**
-     * Gets a paged list of items. The metadata prefix parameter is internally converted to a list of filters.
-     * That is, when configuring XOAI, it is possible to associate to each metadata format a list of filters.
-     *
-     * @param filters List of Filters <a href="https://github.com/lyncode/xoai/wiki/XOAI-Data-Provider-Architecture">details</a>
-     * @param offset  Start offset
-     * @param length  Max items returned
-     * @param from    Date parameter
-     * @param until   Date parameter
-     * @param setSpec Set spec
-     * @return List of Items
-     * @throws HandlerException
-     * @throws InternalOAIException In case source internal errors happen
-     * @see <a href="client://www.openarchives.org/OAI/openarchivesprotocol.html#ListRecords">List Records Definition</a>
-     */
-    ListItemsResults getItems(List<ScopedFilter> filters,
-                              int offset, int length, String setSpec, Instant from, Instant until) throws HandlerException;
+    ResultsPage<Item> getItems(
+        final List<ScopedFilter> filters, final MetadataFormat metadataFormat, final int maxResponseLength,
+        final ResumptionToken.Value resumptionToken) throws HandlerException;
 
 }

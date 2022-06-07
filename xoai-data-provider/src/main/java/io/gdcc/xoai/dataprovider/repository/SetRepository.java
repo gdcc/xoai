@@ -7,7 +7,7 @@
  */
 package io.gdcc.xoai.dataprovider.repository;
 
-import io.gdcc.xoai.dataprovider.handlers.results.ListSetsResult;
+import io.gdcc.xoai.dataprovider.model.Set;
 
 /**
  * API for implementing a repository of sets.
@@ -23,7 +23,9 @@ public interface SetRepository {
      *
      * @return Supports sets?
      */
-    boolean supportSets();
+    default boolean supportSets() {
+        return false;
+    };
 
     /**
      * Returns a paged list of sets.
@@ -33,7 +35,7 @@ public interface SetRepository {
      * @param length Max size of the returned list
      * @return List of Sets
      */
-    ListSetsResult retrieveSets(int offset, int length);
+    ResultsPage<Set> retrieveSets(int offset, int length);
 
     /**
      * Checks if a specific sets exists in the data source.
@@ -42,5 +44,7 @@ public interface SetRepository {
      * @return Set exists
      * @see <a href="client://www.openarchives.org/OAI/openarchivesprotocol.html#Set">Set definition</a>
      */
-    boolean exists(String setSpec);
+    default boolean exists(String setSpec) {
+        return false;
+    };
 }
