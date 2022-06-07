@@ -115,6 +115,22 @@ public final class ResumptionToken implements XmlWritable {
         public Value build() {
             return new Value(offset, set, from, until, metadataPrefix);
         }
+    
+        /**
+         * Create an all new resumption token from an (initial) request
+         * @param request The request sent by the client
+         * @return An immutable resumption token value
+         */
+        public static ResumptionToken.Value build(Request request) {
+            final ResumptionToken.ValueBuilder tokenBuilder = new ResumptionToken.ValueBuilder();
+        
+            request.getMetadataPrefix().ifPresent(tokenBuilder::withMetadataPrefix);
+            request.getFrom().ifPresent(tokenBuilder::withFrom);
+            request.getUntil().ifPresent(tokenBuilder::withUntil);
+            request.getSet().ifPresent(tokenBuilder::withSetSpec);
+        
+            return tokenBuilder.build();
+        }
     }
     
     /**
