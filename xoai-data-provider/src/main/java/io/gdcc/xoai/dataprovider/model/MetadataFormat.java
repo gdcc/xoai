@@ -10,11 +10,15 @@ package io.gdcc.xoai.dataprovider.model;
 
 import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
 import io.gdcc.xoai.dataprovider.filter.Condition;
+import io.gdcc.xoai.dataprovider.filter.Scope;
+import io.gdcc.xoai.dataprovider.filter.ScopedFilter;
+import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
+import java.util.List;
 
 public class MetadataFormat {
     public static Transformer identity () {
@@ -80,6 +84,18 @@ public class MetadataFormat {
     public MetadataFormat withCondition(Condition filter) {
         this.condition = filter;
         return this;
+    }
+    
+    /**
+     * Create a scoped {@link io.gdcc.xoai.dataprovider.filter.Filter} to hide items not matching the {@link Condition}.
+     *
+     * @return The scoped filter used with {@link io.gdcc.xoai.dataprovider.repository.ItemRepository#getItems(List, MetadataFormat, int, ResumptionToken.Value)}
+     *         or {@link io.gdcc.xoai.dataprovider.repository.ItemRepository#getItemIdentifiers(List, MetadataFormat, int, ResumptionToken.Value)}.
+     *         Will default to a transparent filter by using {@link Condition#ALWAYS_TRUE}.
+     */
+    public ScopedFilter getScopedFilter() {
+        // if no condition is present, make the filter transparent by using always true
+        return new ScopedFilter(this.condition == null ? Condition.ALWAYS_TRUE : this.condition, Scope.MetadataFormat);
     }
     
     public boolean isItemShown(ItemIdentifier item) {

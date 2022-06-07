@@ -10,6 +10,9 @@ package io.gdcc.xoai.dataprovider.model;
 
 import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
 import io.gdcc.xoai.dataprovider.filter.Condition;
+import io.gdcc.xoai.dataprovider.filter.Scope;
+import io.gdcc.xoai.dataprovider.filter.ScopedFilter;
+import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 
 import javax.xml.transform.Transformer;
 import java.util.ArrayList;
@@ -88,6 +91,17 @@ public class Context {
     public boolean isItemShown(ItemIdentifier item) {
         // null item means false (not shown), otherwise true (no condition), when condition present check filter
         return item != null && condition == null || condition.isItemShown(item);
+    }
+    
+    /**
+     * Create a scoped {@link io.gdcc.xoai.dataprovider.filter.Filter} to hide items not matching the {@link Condition}.
+     *
+     * @return The scoped filter used with {@link io.gdcc.xoai.dataprovider.repository.ItemRepository#getItems(List, MetadataFormat, int, ResumptionToken.Value)}
+     *         or {@link io.gdcc.xoai.dataprovider.repository.ItemRepository#getItemIdentifiers(List, MetadataFormat, int, ResumptionToken.Value)}.
+     *         Will default to a transparent filter by using {@link Condition#ALWAYS_TRUE}.
+     */
+    public ScopedFilter getScopedFilter() {
+        return new ScopedFilter(condition != null ? condition : Condition.ALWAYS_TRUE, Scope.Context);
     }
 
     public MetadataFormat formatForPrefix(String metadataPrefix) {
