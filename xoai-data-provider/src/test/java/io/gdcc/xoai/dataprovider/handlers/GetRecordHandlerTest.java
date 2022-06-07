@@ -8,13 +8,13 @@
 
 package io.gdcc.xoai.dataprovider.handlers;
 
-import io.gdcc.xoai.dataprovider.exceptions.BadArgumentException;
-import io.gdcc.xoai.dataprovider.exceptions.CannotDisseminateFormatException;
-import io.gdcc.xoai.dataprovider.exceptions.IdDoesNotExistException;
+import io.gdcc.xoai.exceptions.BadArgumentException;
+import io.gdcc.xoai.dataprovider.exceptions.handler.CannotDisseminateFormatException;
+import io.gdcc.xoai.dataprovider.exceptions.handler.IdDoesNotExistException;
 import io.gdcc.xoai.dataprovider.model.InMemoryItem;
 import io.gdcc.xoai.dataprovider.model.MetadataFormat;
-import io.gdcc.xoai.model.oaipmh.GetRecord;
-import io.gdcc.xoai.model.oaipmh.Metadata;
+import io.gdcc.xoai.model.oaipmh.verbs.GetRecord;
+import io.gdcc.xoai.model.oaipmh.results.record.Metadata;
 import io.gdcc.xoai.xml.EchoElement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 import static io.gdcc.xoai.dataprovider.model.InMemoryItem.randomItem;
-import static io.gdcc.xoai.model.oaipmh.Verb.Type.GetRecord;
+import static io.gdcc.xoai.model.oaipmh.verbs.Verb.Type.GetRecord;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -45,19 +45,19 @@ public class GetRecordHandlerTest extends AbstractHandlerTest {
     @Test
     void getRecordRequiresMetadataPrefixParameter() {
         assertThrows(BadArgumentException.class,
-            () -> underTest.handle(a(request().withVerb(GetRecord).withIdentifier("a"))));
+            () -> underTest.handle(request().withVerb(GetRecord).withIdentifier("a")));
     }
 
     @Test
     void getRecordRequiresIdentifierParameter() {
         assertThrows(BadArgumentException.class,
-            () -> underTest.handle(a(request().withVerb(GetRecord).withMetadataPrefix("a"))));
+            () -> underTest.handle(request().withVerb(GetRecord).withMetadataPrefix("a")));
     }
 
     @Test
     void idDoesNotExists() {
         assertThrows(IdDoesNotExistException.class,
-            () -> underTest.handle(a(request().withVerb(GetRecord).withMetadataPrefix("xoai").withIdentifier("1"))));
+            () -> underTest.handle(request().withVerb(GetRecord).withMetadataPrefix("xoai").withIdentifier("1")));
     }
 
     @Test
@@ -66,7 +66,7 @@ public class GetRecordHandlerTest extends AbstractHandlerTest {
         aContext().withMetadataFormat("xoai", MetadataFormat.identity());
     
         assertThrows(CannotDisseminateFormatException.class,
-            () -> underTest.handle(a(request().withVerb(GetRecord).withMetadataPrefix("abcd").withIdentifier("1"))));
+            () -> underTest.handle(request().withVerb(GetRecord).withMetadataPrefix("abcd").withIdentifier("1")));
     }
     
     
@@ -89,9 +89,9 @@ public class GetRecordHandlerTest extends AbstractHandlerTest {
         // given
         theItemRepository().withItem(item.withIdentifier("1"));
         aContext().withMetadataFormat("xoai", MetadataFormat.identity());
-        GetRecord handle = underTest.handle(a(request().withVerb(GetRecord)
+        GetRecord handle = underTest.handle(request().withVerb(GetRecord)
                 .withMetadataPrefix("xoai")
-                .withIdentifier("1")));
+                .withIdentifier("1"));
 
         // when
         String result = write(handle);
@@ -110,9 +110,9 @@ public class GetRecordHandlerTest extends AbstractHandlerTest {
                 .withMetadata(Metadata.copyFromStream(new ByteArrayInputStream("<testdata>Test1234</testdata>".getBytes(StandardCharsets.UTF_8))))
         );
         aContext().withMetadataFormat("custom", MetadataFormat.identity());
-        GetRecord handle = underTest.handle(a(request().withVerb(GetRecord)
+        GetRecord handle = underTest.handle(request().withVerb(GetRecord)
             .withMetadataPrefix("custom")
-            .withIdentifier("copy")));
+            .withIdentifier("copy"));
     
         // when
         String result = write(handle);
