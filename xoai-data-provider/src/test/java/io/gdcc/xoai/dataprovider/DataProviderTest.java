@@ -104,9 +104,10 @@ public class DataProviderTest extends AbstractHandlerTest {
                 request()
                     .withVerb(ListRecords)
                     .withMetadataPrefix(EXISTING_METADATA_FORMAT)
-                    .withResumptionToken(valueOf(new ResumptionToken.Value()
+                    .withResumptionToken(valueOf(new ResumptionToken.ValueBuilder()
                         .withMetadataPrefix(EXISTING_METADATA_FORMAT)
-                        .withOffset(5)))
+                        .withOffset(5)
+                        .build()))
             ));
         
         assertThat(result, xPath("count(//oai:record)", equalTo("5")));

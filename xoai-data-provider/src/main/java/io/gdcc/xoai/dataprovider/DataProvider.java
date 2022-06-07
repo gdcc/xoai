@@ -8,7 +8,6 @@
 
 package io.gdcc.xoai.dataprovider;
 
-import io.gdcc.xoai.dataprovider.exceptions.handler.HandlerException;
 import io.gdcc.xoai.dataprovider.handlers.ErrorHandler;
 import io.gdcc.xoai.dataprovider.handlers.GetRecordHandler;
 import io.gdcc.xoai.dataprovider.handlers.IdentifyHandler;
@@ -25,6 +24,7 @@ import io.gdcc.xoai.exceptions.BadVerbException;
 import io.gdcc.xoai.exceptions.OAIException;
 import io.gdcc.xoai.model.oaipmh.OAIPMH;
 import io.gdcc.xoai.model.oaipmh.Request;
+import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 import io.gdcc.xoai.model.oaipmh.verbs.Verb.Type;
 import io.gdcc.xoai.services.api.DateProvider;
 import org.slf4j.Logger;
@@ -132,27 +132,34 @@ public class DataProvider {
      * @return The response to send to the user (you need an {@link io.gdcc.xoai.xml.XmlWriter}). Might contain errors!
      * @throws io.gdcc.xoai.dataprovider.exceptions.InternalOAIException in case of serverside errors.
      */
-    public OAIPMH handle(Request request){
+    public OAIPMH handle(Request request) {
+        // Build a response model instance
         OAIPMH oaipmh = new OAIPMH()
             .withRequest(request)
             .withResponseDate(DateProvider.now());
         
         try {
+            // Try to retrieve a token sent by the client
+            Optional<ResumptionToken.Value> clientSentToken = configuration.getResumptionTokenFormat().parse(request);
+            // When not present, create a new token value for this initial request
+            // Remember: an initial token never be sent back to the client. (Empty when result is small, additional offset otherwise)
+            ResumptionToken.Value token = clientSentToken.orElse(ResumptionToken.ValueBuilder.build(request));
+    
+            // Execute the request with a matching handler
             Type verb = request.getType().orElseThrow(BadVerbException::new);
-            
             switch (verb) {
                 case Identify:
                     return oaipmh.withVerb(identifyHandler.handle(request));
                 case ListSets:
-                    return oaipmh.withVerb(listSetsHandler.handle(request));
+                    return oaipmh.withVerb(listSetsHandler.handle(request, token));
                 case ListMetadataFormats:
                     return oaipmh.withVerb(listMetadataFormatsHandler.handle(request));
                 case GetRecord:
                     return oaipmh.withVerb(getRecordHandler.handle(request));
                 case ListIdentifiers:
-                    return oaipmh.withVerb(listIdentifiersHandler.handle(request));
+                    return oaipmh.withVerb(listIdentifiersHandler.handle(request, token));
                 case ListRecords:
-                    return oaipmh.withVerb(listRecordsHandler.handle(request));
+                    return oaipmh.withVerb(listRecordsHandler.handle(request, token));
                 default:
                     throw new BadVerbException("Illegal verb " + verb);
             }
