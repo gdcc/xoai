@@ -9,6 +9,8 @@ package io.gdcc.xoai.dataprovider.repository;
 
 import io.gdcc.xoai.dataprovider.model.Set;
 
+import java.util.List;
+
 /**
  * API for implementing a repository of sets.
  * It is possible to have a data provider without sets.
@@ -28,14 +30,15 @@ public interface SetRepository {
     };
 
     /**
-     * Returns a paged list of sets.
-     * It is common to use a partial result of 100 sets however, in XOAI this is a configured parameter.
+     * Returns a list of all sets that exist within the repository context. This will usually be not very large and
+     * is not very memory intense. The repository may cache the result to avoid unnecessary database calls.
      *
-     * @param offset Starting offset
-     * @param length Max size of the returned list
+     * The result will be enriched with the {@link io.gdcc.xoai.dataprovider.model.Context} static sets and returned
+     * as a paged result to the client.
+     *
      * @return List of Sets
      */
-    ResultsPage<Set> retrieveSets(int offset, int length);
+    List<Set> getSets();
 
     /**
      * Checks if a specific sets exists in the data source.
