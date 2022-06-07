@@ -31,6 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * When looking to implement an OAI-PMH data provider, you should create a servlet on your own
@@ -47,7 +49,7 @@ public class DataProvider {
         return new DataProvider(context, repository);
     }
     
-    private final Repository repository;
+    private final RepositoryConfiguration configuration;
     
     protected final IdentifyHandler identifyHandler;
     protected final GetRecordHandler getRecordHandler;
@@ -66,7 +68,12 @@ public class DataProvider {
      * @param repository Your repository
      */
     public DataProvider(final Context context, final Repository repository) {
-        this.repository = repository;
+        Objects.requireNonNull(context, "Context for data provider may not be null");
+        Objects.requireNonNull(repository, "Repository for data provider may not be null");
+        
+        this.configuration = repository.getConfiguration();
+        Objects.requireNonNull(this.configuration, "Repository configuration may not be null");
+        
         this.identifyHandler = new IdentifyHandler(context, repository);
         this.listSetsHandler = new ListSetsHandler(context, repository);
         this.listMetadataFormatsHandler = new ListMetadataFormatsHandler(context, repository);
@@ -106,7 +113,7 @@ public class DataProvider {
     public OAIPMH handle(final RawRequest rawRequest) {
         OAIPMH oaipmh = new OAIPMH();
         // build the request first
-        final Request request = RequestBuilder.buildRequest(rawRequest, this.repository.getConfiguration());
+        final Request request = RequestBuilder.buildRequest(rawRequest, this.configuration);
         
         // if there are errors, stop here, build errors and return.
         if (rawRequest.hasErrors()) {
