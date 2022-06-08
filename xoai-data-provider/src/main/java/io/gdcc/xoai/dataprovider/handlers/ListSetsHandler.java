@@ -66,7 +66,8 @@ public class ListSetsHandler extends VerbHandler<ListSets> {
         // Create the paged result
         ResultsPage<Set> results = new ResultsPage<>(
             token,
-            pagedSetList.size() == maxResults && maxResults != totalResults, // solve edge case max = total
+            // more results available when page size == maxlength - but only when this is not also the end of the list (edge case where maxlength is a multiple of total size)
+            pagedSetList.size() == maxResults && totalResults != maxResults + token.getOffset(),
             pagedSetList,
             totalResults
         );
