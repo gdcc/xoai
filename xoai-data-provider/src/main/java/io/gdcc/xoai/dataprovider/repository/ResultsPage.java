@@ -107,7 +107,7 @@ public final class ResultsPage<T> {
      * @return A <code>&lt;resumptionToken&gt;</code> to return to the harvesting client.
      */
     public ResumptionToken getResponseToken() {
-        return new ResumptionToken(getRequestTokenValue())
+        return new ResumptionToken(getResponseTokenValue())
             .withCompleteListSize(totalResults)
             .withCursor(requestToken.getOffset());
     }
