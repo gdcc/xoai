@@ -17,7 +17,6 @@ import io.gdcc.xoai.dataprovider.model.MetadataFormat;
 import io.gdcc.xoai.dataprovider.repository.ItemRepository;
 import io.gdcc.xoai.dataprovider.repository.Repository;
 import io.gdcc.xoai.model.oaipmh.Request;
-import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 import io.gdcc.xoai.model.oaipmh.verbs.ListMetadataFormats;
 
 import java.util.ArrayList;
@@ -38,11 +37,6 @@ public class ListMetadataFormatsHandler extends VerbHandler<ListMetadataFormats>
             throw new InternalOAIException("The context must expose at least one metadata format");
     }
     
-    @Override
-    public ListMetadataFormats handle(Request request, ResumptionToken.Value token) throws HandlerException {
-        throw new InternalOAIException("Method ListMetadataFormatsHandler.handle not allowed with resumption token");
-    }
-
     @Override
     public ListMetadataFormats handle(Request request) throws HandlerException {
         final List<MetadataFormat> formats = new ArrayList<>();

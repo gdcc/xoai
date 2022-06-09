@@ -20,7 +20,6 @@ import io.gdcc.xoai.dataprovider.model.Set;
 import io.gdcc.xoai.dataprovider.repository.ItemRepository;
 import io.gdcc.xoai.dataprovider.repository.Repository;
 import io.gdcc.xoai.dataprovider.repository.ResultsPage;
-import io.gdcc.xoai.model.oaipmh.Request;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 import io.gdcc.xoai.model.oaipmh.results.Record;
 import io.gdcc.xoai.model.oaipmh.results.record.About;
@@ -45,25 +44,19 @@ public class ListRecordsHandler extends VerbHandler<ListRecords> {
     }
     
     @Override
-    public ListRecords handle(Request request) throws HandlerException {
-        throw new InternalOAIException("Method ListRecordsHandler.handle not allowed without resumption token");
-    }
-    
-    
-    @Override
-    public ListRecords handle(Request request, ResumptionToken.Value token) throws HandlerException {
+    public ListRecords handle(ResumptionToken.Value token) throws HandlerException {
     
         if (token == null || token.isEmpty())
             throw new InternalOAIException("Resumption token must not be null or empty - check your implementation!");
     
         // Check for set support if set argument is present (skip lot's of CPU cycles if not)
-        verifySet(request);
+        verifySet(token);
     
         // Get the format
-        MetadataFormat format = verifyFormat(request);
+        MetadataFormat format = verifyFormat(token);
     
         // Create filters
-        final List<ScopedFilter> filters = createFilters(request, format);
+        final List<ScopedFilter> filters = createFilters(token, format);
     
         // Execute the lookup with the repository
         ResultsPage<Item> results =

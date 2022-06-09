@@ -143,6 +143,9 @@ public class DataProvider {
         try {
             // Try to retrieve a token sent by the client
             Optional<ResumptionToken.Value> clientSentToken = configuration.getResumptionTokenFormat().parse(request);
+            
+            // TODO: validate the token when present!
+            
             // When not present, create a new token value for this initial request
             // Remember: an initial token never be sent back to the client. (Empty when result is small, additional offset otherwise)
             ResumptionToken.Value token = clientSentToken.orElse(ResumptionToken.ValueBuilder.build(request));
@@ -153,15 +156,15 @@ public class DataProvider {
                 case Identify:
                     return oaipmh.withVerb(identifyHandler.handle(request));
                 case ListSets:
-                    return oaipmh.withVerb(listSetsHandler.handle(request, token));
+                    return oaipmh.withVerb(listSetsHandler.handle(token));
                 case ListMetadataFormats:
                     return oaipmh.withVerb(listMetadataFormatsHandler.handle(request));
                 case GetRecord:
                     return oaipmh.withVerb(getRecordHandler.handle(request));
                 case ListIdentifiers:
-                    return oaipmh.withVerb(listIdentifiersHandler.handle(request, token));
+                    return oaipmh.withVerb(listIdentifiersHandler.handle(token));
                 case ListRecords:
-                    return oaipmh.withVerb(listRecordsHandler.handle(request, token));
+                    return oaipmh.withVerb(listRecordsHandler.handle(token));
                 default:
                     throw new BadVerbException("Illegal verb " + verb);
             }

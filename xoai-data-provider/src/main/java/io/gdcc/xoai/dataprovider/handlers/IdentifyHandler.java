@@ -68,11 +68,6 @@ public final class IdentifyHandler extends VerbHandler<Identify> {
     }
     
     @Override
-    public Identify handle(Request request, ResumptionToken.Value token) throws HandlerException {
-        throw new InternalOAIException("Method IdentifyHandler.handle not allowed with resumption token");
-    }
-    
-    @Override
     public Identify handle(Request request) throws HandlerException {
         Identify identify = new Identify();
         RepositoryConfiguration configuration = getRepository().getConfiguration();

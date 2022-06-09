@@ -35,11 +35,6 @@ public final class GetRecordHandler extends VerbHandler<GetRecord> {
     }
     
     @Override
-    public GetRecord handle(Request request, ResumptionToken.Value token) throws HandlerException {
-        throw new InternalOAIException("Method GetRecordHandler.handle not allowed with resumption token");
-    }
-    
-    @Override
     public GetRecord handle(final Request request) throws HandlerException {
         // Get the metadata format or throw errors
         String requestedFormat = request.getMetadataPrefix()

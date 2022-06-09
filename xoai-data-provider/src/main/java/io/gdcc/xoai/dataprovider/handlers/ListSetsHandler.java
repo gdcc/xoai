@@ -16,7 +16,6 @@ import io.gdcc.xoai.dataprovider.model.Set;
 import io.gdcc.xoai.dataprovider.repository.Repository;
 import io.gdcc.xoai.dataprovider.repository.ResultsPage;
 import io.gdcc.xoai.dataprovider.repository.SetRepository;
-import io.gdcc.xoai.model.oaipmh.Request;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 import io.gdcc.xoai.model.oaipmh.verbs.ListSets;
 
@@ -32,14 +31,9 @@ public class ListSetsHandler extends VerbHandler<ListSets> {
         super(context, repository);
         this.setRepository = getRepository().getSetRepository();
     }
-    
-    @Override
-    public ListSets handle(Request request) throws HandlerException {
-        throw new InternalOAIException("Method ListSets.handle not allowed without resumption token");
-    }
 
     @Override
-    public ListSets handle(Request request, ResumptionToken.Value token) throws HandlerException {
+    public ListSets handle(ResumptionToken.Value token) throws HandlerException {
     
         if (token == null || token.isEmpty())
             throw new InternalOAIException("Resumption token must not be null or empty - check your implementation!");
