@@ -17,9 +17,14 @@ import io.gdcc.xoai.services.impl.SimpleResumptionTokenFormat;
 import io.gdcc.xoai.xml.WriterContext;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.Arrays.asList;
 
@@ -86,6 +91,28 @@ public class RepositoryConfiguration implements WriterContext {
         if (granularity == null)
             throw new InternalOAIException("Granularity has not been configured");
         return granularity;
+    }
+    
+    /**
+     * Skew an instant to end of day (granularity Day or Lenient) or by a second (granularity Second).
+     * This is necessary for two reasons:
+     * 1. Day granularity must be inclusive, so we can't leave an "until" at start of day.
+     * 2. Lenient granularity must work like day in this case, as we cannot be sure which is meant.
+     * 3. Second granularity needs skipping a second to avoid not returning {@link io.gdcc.xoai.dataprovider.model.Item}
+     *    from the repository that use an SQL timestamp with nanosecond granularity (so ...:00.5829 would not be
+     *    found when asking for all until ...:00.000)
+     *
+     * @param timestamp The timestamp to skew a little
+     * @return The skewed timestamp
+     */
+    public Instant skewUntil(Instant timestamp) {
+        Objects.requireNonNull(timestamp, "Skewing an 'until' date must not be used with null");
+        switch (getGranularity()) {
+            case Day:
+            case Lenient: return LocalDate.ofInstant(timestamp, ZoneId.of("UTC")).atTime(LocalTime.MAX).toInstant(ZoneOffset.UTC);
+            case Second: return timestamp.plusSeconds(1);
+            default: return timestamp;
+        }
     }
 
     public DeletedRecord getDeleteMethod() {
