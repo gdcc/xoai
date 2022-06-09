@@ -5,6 +5,7 @@ import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * A mapping POJO carrying a list of elements returned from application repositories.
@@ -106,10 +107,12 @@ public final class ResultsPage<T> {
      *
      * @return A <code>&lt;resumptionToken&gt;</code> to return to the harvesting client.
      */
-    public ResumptionToken getResponseToken() {
-        return new ResumptionToken(getResponseTokenValue())
-            .withCompleteListSize(totalResults)
-            .withCursor(requestToken.getOffset());
+    public Optional<ResumptionToken> getResponseToken(int maxResponseLength) {
+        return totalResults > maxResponseLength
+            ? Optional.of(new ResumptionToken(getResponseTokenValue())
+                .withCompleteListSize(totalResults)
+                .withCursor(requestToken.getOffset()))
+            : Optional.empty();
     }
     
     @Override

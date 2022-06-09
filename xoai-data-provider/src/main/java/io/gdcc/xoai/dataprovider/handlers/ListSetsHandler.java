@@ -11,6 +11,7 @@ package io.gdcc.xoai.dataprovider.handlers;
 import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
 import io.gdcc.xoai.dataprovider.exceptions.handler.DoesNotSupportSetsException;
 import io.gdcc.xoai.dataprovider.exceptions.handler.HandlerException;
+import io.gdcc.xoai.dataprovider.exceptions.handler.NoMatchesException;
 import io.gdcc.xoai.dataprovider.model.Context;
 import io.gdcc.xoai.dataprovider.model.Set;
 import io.gdcc.xoai.dataprovider.repository.Repository;
@@ -74,10 +75,11 @@ public class ListSetsHandler extends VerbHandler<ListSets> {
         );
     
         // Create the OAIPMH model for the <resumptionToken>
-        ResumptionToken tokenResponse = results.getResponseToken();
-        // TODO: add expiration date here, based on repository configuration
+        results.getResponseToken(getConfiguration().getMaxListSets())
+            // TODO: add expiration date here, based on repository configuration
+            .ifPresent(response::withResumptionToken);
     
-        return response.withResumptionToken(tokenResponse);
+        return response;
     }
 
 }

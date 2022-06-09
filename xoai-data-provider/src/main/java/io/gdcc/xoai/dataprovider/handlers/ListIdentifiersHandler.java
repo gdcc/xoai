@@ -67,12 +67,13 @@ public class ListIdentifiersHandler extends VerbHandler<ListIdentifiers> {
         results.getList().forEach(
             item -> response.getHeaders().add(createHeader(item, format))
         );
-        
+    
         // Create the OAIPMH model for the <resumptionToken>
-        ResumptionToken tokenResponse = results.getResponseToken();
-        // TODO: add expiration date here, based on repository configuration
+        results.getResponseToken(getConfiguration().getMaxListIdentifiers())
+            // TODO: add expiration date here, based on repository configuration
+            .ifPresent(response::withResumptionToken);
 
-        return response.withResumptionToken(tokenResponse);
+        return response;
     }
 
 
