@@ -66,7 +66,10 @@ public class ListSetsHandler extends VerbHandler<ListSets> {
             pagedSetList,
             totalResults
         );
-        
+    
+        // If no results present, send error message
+        if (results.getTotal() == 0)
+            throw new NoMatchesException();
     
         final ListSets response = new ListSets();
         // TODO make the getSets an unmodifiable list and add withSet() method to ListSets
