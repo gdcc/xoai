@@ -1,13 +1,12 @@
 package io.gdcc.xoai.dataprovider.handlers.helpers;
 
-import io.gdcc.xoai.exceptions.OAIException;
+import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
 import io.gdcc.xoai.dataprovider.model.Context;
 import io.gdcc.xoai.dataprovider.model.MetadataFormat;
 import io.gdcc.xoai.model.oaipmh.results.record.Metadata;
 import io.gdcc.xoai.xml.EchoElement;
 import io.gdcc.xoai.xml.XSLPipeline;
 import io.gdcc.xoai.xml.XmlWriter;
-import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.TransformerException;
@@ -16,7 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class MetadataHelper {
-    public static Metadata process(Metadata metadata, MetadataFormat format, Context context) throws OAIException {
+    public static Metadata process(Metadata metadata, MetadataFormat format, Context context) {
         try (
             ByteArrayOutputStream outStream = new ByteArrayOutputStream();
             XmlWriter writer = new XmlWriter(outStream);
@@ -33,7 +32,7 @@ public class MetadataHelper {
             
             return new Metadata(element);
         } catch (XMLStreamException | TransformerException | IOException e) {
-            throw new OAIException(e);
+            throw new InternalOAIException(e);
         }
     }
 }
