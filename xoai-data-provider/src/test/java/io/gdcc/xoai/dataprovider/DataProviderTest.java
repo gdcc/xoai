@@ -9,7 +9,9 @@
 package io.gdcc.xoai.dataprovider;
 
 import io.gdcc.xoai.dataprovider.handlers.AbstractHandlerTest;
+import io.gdcc.xoai.dataprovider.request.RequestBuilder;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
+import io.gdcc.xoai.model.oaipmh.verbs.Verb;
 import io.gdcc.xoai.xml.XmlWritable;
 import io.gdcc.xoai.xml.XmlWriter;
 import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
@@ -34,8 +36,7 @@ public class DataProviderTest extends AbstractHandlerTest {
         // when
         String result = write(
             dataProvider.handle(
-                request()
-                    .withVerb(ListRecords)
+                new RequestBuilder.RawRequest(ListRecords)
             ));
         
         // then
@@ -47,9 +48,8 @@ public class DataProviderTest extends AbstractHandlerTest {
         // when
         String result = write(
             dataProvider.handle(
-                request()
-                    .withVerb(ListRecords)
-                    .withMetadataPrefix(EXISTING_METADATA_FORMAT)
+                new RequestBuilder.RawRequest(ListRecords)
+                    .withArgument(Verb.Argument.MetadataPrefix, EXISTING_METADATA_FORMAT)
             ));
         
         // then
@@ -64,9 +64,8 @@ public class DataProviderTest extends AbstractHandlerTest {
         // when
         String result = write(
             dataProvider.handle(
-                request()
-                    .withVerb(ListRecords)
-                    .withMetadataPrefix(EXISTING_METADATA_FORMAT)
+                new RequestBuilder.RawRequest(ListRecords)
+                    .withArgument(Verb.Argument.MetadataPrefix, EXISTING_METADATA_FORMAT)
             ));
         
         // then

@@ -52,10 +52,11 @@ public final class RequestBuilder {
             Objects.requireNonNull(verb);
             this.verb = verb;
         }
-        public void withArgument(final Argument argument, final String value) {
+        public RawRequest withArgument(final Argument argument, final String value) {
             Objects.requireNonNull(argument);
             Objects.requireNonNull(value);
             this.arguments.put(argument, value);
+            return this;
         }
         public void withError(final BadArgumentException e) {
             Objects.requireNonNull(e);

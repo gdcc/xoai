@@ -38,7 +38,6 @@ public abstract class AbstractHandlerTest {
     private final Repository repository = new Repository()
             .withSetRepository(setRepository)
             .withItemRepository(itemRepository)
-            .withResumptionTokenFormatter(new SimpleResumptionTokenFormat())
             .withConfiguration(repositoryConfiguration);
     
     protected static Matcher<? super String> xPath(String xpath, Matcher<String> stringMatcher) {
@@ -99,7 +98,6 @@ public abstract class AbstractHandlerTest {
     }
 
     protected String valueOf(ResumptionToken.Value resumptionToken) {
-        return theRepository().getResumptionTokenFormatter()
-                .format(resumptionToken);
+        return theRepositoryConfiguration().getResumptionTokenFormat().format(resumptionToken);
     }
 }

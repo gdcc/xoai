@@ -44,14 +44,14 @@ public class GetRecordHandlerTest extends AbstractHandlerTest {
 
     @Test
     void getRecordRequiresMetadataPrefixParameter() {
-        assertThrows(BadArgumentException.class,
+        assertThrows(CannotDisseminateFormatException.class,
             () -> underTest.handle(request().withVerb(GetRecord).withIdentifier("a")));
     }
 
     @Test
     void getRecordRequiresIdentifierParameter() {
-        assertThrows(BadArgumentException.class,
-            () -> underTest.handle(request().withVerb(GetRecord).withMetadataPrefix("a")));
+        assertThrows(IdDoesNotExistException.class,
+            () -> underTest.handle(request().withVerb(GetRecord).withMetadataPrefix("xoai")));
     }
 
     @Test
