@@ -13,6 +13,11 @@ import io.gdcc.xoai.services.api.DateProvider;
 
 import java.time.DateTimeException;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 public final class RequestBuilder {
@@ -173,17 +179,27 @@ public final class RequestBuilder {
         request.withVerb(rawRequest.getVerb());
         
         // Compile the raw arguments into usable options of the request
-        compileRequestArgument(request, rawRequest.getArguments(), rawRequest.errors, granularity, configuration.getEarliestDate());
+        compileRequestArgument(request, rawRequest.getArguments(), rawRequest.errors, granularity);
         // Validate the arguments with the associated verb for exclusive, required and optional arguments
         validateArgumentPresence(rawRequest.getVerb(), rawRequest.getArguments().keySet())
             .forEach(rawRequest::withError);
+
+        // Verify the from/until arguments make sense
+        verifyTimeArguments(request, rawRequest.errors, configuration.getEarliestDate(), granularity);
+    
+        // NOTE: Do not load the resumption token here. The spec says, when no error occurs, we MUST reply with the
+        //       exact arguments in <request> attributes as given in the clients request. The loading of the
+        //       resumption token may not interfere with the requests content - which means we must handle this later.
         
         // When we found any errors along the way, bail out early and prevent anything using the returned request
         // to do sth with it. The calling code possesses the raw request, to which we might have added more errors.
         if (rawRequest.hasErrors())
             return new Request(configuration.getBaseUrl());
-    
-        // TODO: add timestamp skewing for until here
+        
+        // skew the clock of an until argument if present, replace in request
+        request.getUntil().ifPresent(
+            until -> request.withUntil(configuration.skewUntil(until))
+        );
         return request;
     }
     
@@ -191,8 +207,8 @@ public final class RequestBuilder {
      * Iterate all the raw arguments. For dates: try to convert and check for granularity & earliest allowed (as configured).
      * Will add any errors found to the list of errors, which is the list from the RawRequest, passed by reference.
      */
-    static void compileRequestArgument(final Request request, final Map<Argument,String> arguments, final List<BadArgumentException> errorList,
-                                       final Granularity granularity, final Instant earliestDate) {
+    static void compileRequestArgument(final Request request, final Map<Argument,String> arguments,
+                                       final List<BadArgumentException> errorList, final Granularity granularity) {
         
         // Iterate all the arguments and add to the request, parsing the dates on the go.
         for (Map.Entry<Argument,String> entry : arguments.entrySet()) {
@@ -205,13 +221,7 @@ public final class RequestBuilder {
                         request.withMetadataPrefix(value); break;
                     case From:
                         // Parse the date
-                        Instant from = DateProvider.parse(value, granularity);
-                        // Ensure from is not before the configured earliest date or throw BadArgumentException
-                        if (from.isAfter(earliestDate))
-                            request.withFrom(from);
-                        else
-                            throw new BadArgumentException("'" + argument + "' cannot be before " + earliestDate);
-                        break;
+                        request.withFrom(DateProvider.parse(value, granularity)); break;
                     case Until:
                         request.withUntil(DateProvider.parse(value, granularity)); break;
                     case Identifier:
@@ -226,11 +236,42 @@ public final class RequestBuilder {
             } catch (DateTimeException e) {
                 errorList.add(new BadArgumentException("'" + value + "' is not a valid date for '" + argument +
                     "' requiring format '" + granularity + "'"));
-            } catch (BadArgumentException e) {
-                // Collect all errors instead of bailing out
-                errorList.add(e);
             }
         }
+    }
+    
+    static void verifyTimeArguments(final Request request, final List<BadArgumentException> errorList,
+                                    final Instant earliestDate, final Granularity granularity) {
+        final Optional<Instant> from = request.getFrom();
+        final Optional<Instant> until = request.getUntil();
+    
+        Instant fromNotAfter;
+        Instant untilNotAfter;
+        
+        switch (granularity) {
+            case Day:
+            case Lenient:
+                // Ensure until and from is not after the end of today
+                untilNotAfter = fromNotAfter = LocalDate.now(ZoneId.of("UTC")).atTime(LocalTime.MAX).toInstant(ZoneOffset.UTC); break;
+            default:
+                // All other cases (Second) means not after this very moment.
+                fromNotAfter = Instant.now();
+                // All until two seconds after now to be sure we get no problems with database timestamps
+                untilNotAfter = Instant.now().plus(2, ChronoUnit.SECONDS);
+        }
+    
+        // Ensure a from argument is after the earliest date supported
+        if (from.isPresent() && from.get().isBefore(earliestDate))
+            errorList.add(new BadArgumentException("'from' may not be before " + DateProvider.format(earliestDate, granularity)));
+        // Ensure from is not after this point in time
+        if (from.isPresent() && from.get().isAfter(fromNotAfter))
+            errorList.add(new BadArgumentException("'from' cannot not be after " + DateProvider.format(fromNotAfter, granularity)));
+        // Ensure from is not after until
+        if (until.isPresent() && from.isPresent() && from.get().isAfter(until.get()))
+            errorList.add(new BadArgumentException("'from' may not be after 'until'"));
+        // Ensure until is not after this point in time
+        if (until.isPresent() && until.get().isAfter(untilNotAfter))
+            errorList.add(new BadArgumentException("'until' cannot not be after " + DateProvider.format(untilNotAfter, granularity)));
     }
     
     /**
