@@ -53,7 +53,7 @@ public class ListSetsHandler extends VerbHandler<ListSets> {
         // Create an ordered stream of sets (as both are coming from lists, they are ordered by design)
         // and create a slice for the paginated result
         List<Set> pagedSetList = Stream
-            .concat(repositorySets.stream(), contextSets.stream())
+            .concat(contextSets.stream(), repositorySets.stream())
                 .skip(token.getOffset())
                 .limit(maxResults)
                 .collect(Collectors.toUnmodifiableList());
