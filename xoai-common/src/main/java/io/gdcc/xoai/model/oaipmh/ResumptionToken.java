@@ -124,6 +124,7 @@ public final class ResumptionToken implements XmlWritable {
         public static ResumptionToken.Value build(Request request) {
             final ResumptionToken.ValueBuilder tokenBuilder = new ResumptionToken.ValueBuilder();
         
+            tokenBuilder.withOffset(0);
             request.getMetadataPrefix().ifPresent(tokenBuilder::withMetadataPrefix);
             request.getFrom().ifPresent(tokenBuilder::withFrom);
             request.getUntil().ifPresent(tokenBuilder::withUntil);
