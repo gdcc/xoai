@@ -125,10 +125,10 @@ public final class RequestBuilder {
         
         // Iterate all query parameters
         for (String parameter : parameterKeys) {
-            // Check if the parameter actually exists (will throw BadArgumentException) and transform to argument
-            Argument argument = Argument.from(parameter);
-            
             try {
+                // Check if the parameter actually exists (will throw BadArgumentException) and transform to argument
+                Argument argument = Argument.from(parameter);
+                
                 // Check if the parameter is allowed for this verb at all or throw BadArgumentException
                 if (!verb.reqArgs().contains(argument)
                     && !verb.optArgs().contains(argument)
@@ -179,13 +179,15 @@ public final class RequestBuilder {
         request.withVerb(rawRequest.getVerb());
         
         // Compile the raw arguments into usable options of the request
-        compileRequestArgument(request, rawRequest.getArguments(), rawRequest.errors, granularity);
+        compileRequestArgument(request, rawRequest.getArguments(), granularity)
+            .forEach(rawRequest::withError);
         // Validate the arguments with the associated verb for exclusive, required and optional arguments
         validateArgumentPresence(rawRequest.getVerb(), rawRequest.getArguments().keySet())
             .forEach(rawRequest::withError);
 
         // Verify the from/until arguments make sense
-        verifyTimeArguments(request, rawRequest.errors, configuration.getEarliestDate(), granularity);
+        verifyTimeArguments(request, configuration.getEarliestDate(), granularity)
+            .forEach(rawRequest::withError);
     
         // NOTE: Do not load the resumption token here. The spec says, when no error occurs, we MUST reply with the
         //       exact arguments in <request> attributes as given in the clients request. The loading of the
@@ -207,8 +209,10 @@ public final class RequestBuilder {
      * Iterate all the raw arguments. For dates: try to convert and check for granularity & earliest allowed (as configured).
      * Will add any errors found to the list of errors, which is the list from the RawRequest, passed by reference.
      */
-    static void compileRequestArgument(final Request request, final Map<Argument,String> arguments,
-                                       final List<BadArgumentException> errorList, final Granularity granularity) {
+    public static List<BadArgumentException> compileRequestArgument(final Request request,
+                                                                    final Map<Argument,String> arguments,
+                                                                    final Granularity granularity) {
+        final List<BadArgumentException> errors = new ArrayList<>();
         
         // Iterate all the arguments and add to the request, parsing the dates on the go.
         for (Map.Entry<Argument,String> entry : arguments.entrySet()) {
@@ -220,7 +224,6 @@ public final class RequestBuilder {
                     case MetadataPrefix:
                         request.withMetadataPrefix(value); break;
                     case From:
-                        // Parse the date
                         request.withFrom(DateProvider.parse(value, granularity)); break;
                     case Until:
                         request.withUntil(DateProvider.parse(value, granularity)); break;
@@ -234,14 +237,17 @@ public final class RequestBuilder {
                         throw new InternalOAIException("This should never happen - do not include the verb in the arguments!");
                 }
             } catch (DateTimeException e) {
-                errorList.add(new BadArgumentException("'" + value + "' is not a valid date for '" + argument +
+                errors.add(new BadArgumentException("'" + value + "' is not a valid date for '" + argument +
                     "' requiring format '" + granularity + "'"));
             }
         }
+        
+        return errors;
     }
     
-    static void verifyTimeArguments(final Request request, final List<BadArgumentException> errorList,
-                                    final Instant earliestDate, final Granularity granularity) {
+    public static List<BadArgumentException> verifyTimeArguments(final Request request, final Instant earliestDate,
+                                                                 final Granularity granularity) {
+        final List<BadArgumentException> errorList = new ArrayList<>();
         final Optional<Instant> from = request.getFrom();
         final Optional<Instant> until = request.getUntil();
     
@@ -272,6 +278,8 @@ public final class RequestBuilder {
         // Ensure until is not after this point in time
         if (until.isPresent() && until.get().isAfter(untilNotAfter))
             errorList.add(new BadArgumentException("'until' cannot not be after " + DateProvider.format(untilNotAfter, granularity)));
+        
+        return errorList;
     }
     
     /**
