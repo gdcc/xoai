@@ -8,10 +8,24 @@
 
 package io.gdcc.xoai.services.api;
 
-import io.gdcc.xoai.exceptions.InvalidResumptionTokenException;
+import io.gdcc.xoai.exceptions.BadResumptionTokenException;
+import io.gdcc.xoai.model.oaipmh.Granularity;
+import io.gdcc.xoai.model.oaipmh.Request;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 
+import java.util.Optional;
+
 public interface ResumptionTokenFormat {
-    String format (ResumptionToken.Value value);
-    ResumptionToken.Value parse (String value) throws InvalidResumptionTokenException;
+    ResumptionTokenFormat withGranularity(Granularity granularity);
+    String format(ResumptionToken.Value value);
+    ResumptionToken.Value parse(String value) throws BadResumptionTokenException;
+    
+    default Optional<ResumptionToken.Value> parse(Request request) throws BadResumptionTokenException {
+        Optional<String> token = request.getResumptionToken();
+        if (token.isPresent()) {
+            return Optional.ofNullable(parse(token.get()));
+        } else {
+            return Optional.empty();
+        }
+    }
 }

@@ -8,8 +8,8 @@
 
 package io.gdcc.xoai.dataprovider.model;
 
-import io.gdcc.xoai.model.oaipmh.About;
-import io.gdcc.xoai.model.oaipmh.Metadata;
+import io.gdcc.xoai.model.oaipmh.results.record.About;
+import io.gdcc.xoai.model.oaipmh.results.record.Metadata;
 
 import java.util.Collections;
 import java.util.List;

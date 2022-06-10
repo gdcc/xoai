@@ -8,22 +8,22 @@
 
 package io.gdcc.xoai.xml;
 
-import io.gdcc.xoai.xmlio.XmlIoWriter;
-import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import io.gdcc.xoai.model.oaipmh.Granularity;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
+import io.gdcc.xoai.model.oaipmh.verbs.Verb;
 import io.gdcc.xoai.services.api.DateProvider;
-import io.gdcc.xoai.services.api.ResumptionTokenFormat;
-import io.gdcc.xoai.services.impl.SimpleResumptionTokenFormat;
+import io.gdcc.xoai.xmlio.XmlIoWriter;
+import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.Instant;
+import java.util.Optional;
 
 public class XmlWriter extends XmlIoWriter implements AutoCloseable {
-    public static String toString(XmlWritable writable) throws XMLStreamException, XmlWriteException {
+    public static String toString(XmlWritable writable) throws XMLStreamException {
         final OutputStream out = new ByteArrayOutputStream();
         
         try (
@@ -41,17 +41,7 @@ public class XmlWriter extends XmlIoWriter implements AutoCloseable {
     }
 
     public static WriterContext defaultContext () {
-        return new WriterContext(Granularity.Second, new SimpleResumptionTokenFormat());
-    }
-
-    public static class WriterContext {
-        private final Granularity granularity;
-        private final ResumptionTokenFormat formatter;
-
-        public WriterContext(Granularity granularity, ResumptionTokenFormat formatter) {
-            this.granularity = granularity;
-            this.formatter = formatter;
-        }
+        return new WriterContext(){};
     }
     
     private final WriterContext writerContext;
@@ -66,11 +56,9 @@ public class XmlWriter extends XmlIoWriter implements AutoCloseable {
         this.writerContext = writerContext;
     }
 
-
-
     public void writeDate(Instant date) throws XmlWriteException {
         try {
-            this.writeCharacters(DateProvider.format(date, writerContext.granularity));
+            this.writeCharacters(DateProvider.format(date, writerContext.getGranularity()));
         } catch (XMLStreamException e) {
             throw new XmlWriteException(e);
         }
@@ -110,12 +98,12 @@ public class XmlWriter extends XmlIoWriter implements AutoCloseable {
         this.writeElement(elementName, DateProvider.format(date, granularity));
     }
     public void writeElement(String elementName, Instant date) throws XmlWriteException {
-        this.writeElement(elementName, DateProvider.format(date, writerContext.granularity));
+        this.writeElement(elementName, DateProvider.format(date, writerContext.getGranularity()));
     }
-
+    
     public void writeAttribute(String name, Instant date) throws XmlWriteException {
         try {
-            this.writeAttribute(name, DateProvider.format(date, writerContext.granularity));
+            this.writeAttribute(name, DateProvider.format(date, writerContext.getGranularity()));
         } catch (XMLStreamException e) {
             throw new XmlWriteException(e);
         }
@@ -126,6 +114,16 @@ public class XmlWriter extends XmlIoWriter implements AutoCloseable {
             this.writeAttribute(name, DateProvider.format(value, granularity));
         } catch (XMLStreamException e) {
             throw new XmlWriteException(e);
+        }
+    }
+    
+    public <T> void writeAttribute(Verb.Argument argument, Optional<T> optional) throws XMLStreamException {
+        if (optional.isPresent()) {
+            T value = optional.get();
+            if (value instanceof String)
+                writeAttribute(argument.toString(), (String) value);
+            else if (value instanceof Instant)
+                writeAttribute(argument.toString(), (Instant) value);
         }
     }
 
@@ -149,7 +147,7 @@ public class XmlWriter extends XmlIoWriter implements AutoCloseable {
     public void write(ResumptionToken.Value value) throws XmlWriteException {
         try {
             if (!value.isEmpty())
-                writeCharacters(writerContext.formatter.format(value));
+                writeCharacters(writerContext.getResumptionTokenFormat().format(value));
         } catch (XMLStreamException e) {
             throw new XmlWriteException(e);
         }

@@ -75,7 +75,7 @@ public class XOAIMetadata implements XmlWritable {
     public String toString() {
         try {
             return XmlWriter.toString(this);
-        } catch (XMLStreamException | XmlWriteException e) {
+        } catch (XMLStreamException e) {
             throw new IllegalStateException(e);
         }
     }

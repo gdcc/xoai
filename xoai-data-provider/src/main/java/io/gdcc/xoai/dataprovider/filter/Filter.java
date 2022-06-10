@@ -11,5 +11,8 @@ package io.gdcc.xoai.dataprovider.filter;
 import io.gdcc.xoai.dataprovider.model.ItemIdentifier;
 
 public interface Filter {
+    Filter ALWAYS_TRUE = item -> true;
+    Filter ALWAYS_FALSE = item -> false;
+    
     boolean isItemShown(ItemIdentifier item);
 }

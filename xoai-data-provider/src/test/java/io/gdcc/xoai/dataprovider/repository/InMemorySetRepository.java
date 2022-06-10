@@ -8,7 +8,6 @@
 
 package io.gdcc.xoai.dataprovider.repository;
 
-import io.gdcc.xoai.dataprovider.handlers.results.ListSetsResult;
 import io.gdcc.xoai.dataprovider.model.Set;
 
 import java.util.ArrayList;
@@ -41,10 +40,10 @@ public class InMemorySetRepository implements SetRepository {
     public boolean supportSets() {
         return supportSets;
     }
-
+    
     @Override
-    public ListSetsResult retrieveSets(int offset, int length) {
-        return new ListSetsResult(offset + length < this.sets.size(), this.sets.subList(offset, Math.min(offset + length, sets.size())));
+    public List<Set> getSets() {
+        return List.copyOf(this.sets);
     }
 
     @Override

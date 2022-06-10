@@ -46,9 +46,6 @@ public class MetadataSearcherItems extends AbstractMetadataSearcher<MetadataItem
 	}
 
 	private void add(String name, List<Field> fields) {
-		 if (!index.containsKey(name))
-	            index.put(name, new ArrayList<>());
-		 
 		 MetadataItem newElement = new MetadataItem();
 		 for (Field field : fields) {
 			 if (field.getName() != null && !field.getName().equals(DEFAULT_FIELD)) {
@@ -57,23 +54,8 @@ public class MetadataSearcherItems extends AbstractMetadataSearcher<MetadataItem
 				 newElement.setValue(field.getValue());
 			 }
 		 }
-	        index.get(name).add(newElement);
 		
+		index.computeIfAbsent(name, key -> new ArrayList<>());
+		index.get(name).add(newElement);
 	}
-
-	@Override
-	public MetadataItem findOne(String xoaiPath) {
-		return super.findOne(xoaiPath);
-	}
-
-	@Override
-	public List<MetadataItem> findAll(String xoaiPath) {
-		return super.findAll(xoaiPath);
-	}
-
-
-	
-
-	
-
 }

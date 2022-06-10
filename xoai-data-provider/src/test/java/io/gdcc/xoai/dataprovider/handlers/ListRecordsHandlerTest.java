@@ -8,14 +8,17 @@
 
 package io.gdcc.xoai.dataprovider.handlers;
 
-import io.gdcc.xoai.dataprovider.exceptions.BadArgumentException;
-import io.gdcc.xoai.dataprovider.exceptions.CannotDisseminateFormatException;
-import io.gdcc.xoai.dataprovider.exceptions.DoesNotSupportSetsException;
-import io.gdcc.xoai.dataprovider.exceptions.NoMatchesException;
+import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
+import io.gdcc.xoai.dataprovider.exceptions.handler.CannotDisseminateFormatException;
+import io.gdcc.xoai.dataprovider.exceptions.handler.DoesNotSupportSetsException;
+import io.gdcc.xoai.dataprovider.exceptions.handler.NoMatchesException;
 import io.gdcc.xoai.dataprovider.model.MetadataFormat;
-import io.gdcc.xoai.model.oaipmh.GetRecord;
-import io.gdcc.xoai.model.oaipmh.Metadata;
-import io.gdcc.xoai.model.oaipmh.Verb;
+import io.gdcc.xoai.model.oaipmh.ResumptionToken;
+import io.gdcc.xoai.model.oaipmh.results.record.Metadata;
+import io.gdcc.xoai.model.oaipmh.verbs.ListIdentifiers;
+import io.gdcc.xoai.model.oaipmh.verbs.ListRecords;
+import io.gdcc.xoai.model.oaipmh.verbs.ListSets;
+import io.gdcc.xoai.model.oaipmh.verbs.Verb;
 import org.junit.jupiter.api.Test;
 import org.xmlunit.matchers.HasXPathMatcher;
 
@@ -23,53 +26,103 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 
 import static io.gdcc.xoai.dataprovider.model.InMemoryItem.randomItem;
-import static io.gdcc.xoai.model.oaipmh.Verb.Type.ListRecords;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.xmlunit.matchers.HasXPathMatcher.hasXPath;
 
 public class ListRecordsHandlerTest extends AbstractHandlerTest {
     private final ListRecordsHandler underTest = new ListRecordsHandler(aContext(), theRepository());
-
+    
     @Test
-    void missingMetadataFormat() {
-        assertThrows(BadArgumentException.class,
-            () -> underTest.handle(request().withVerb(ListRecords)));
+    public void noEmptyOrNullToken () {
+        ResumptionToken.Value subject = new ResumptionToken.ValueBuilder().build();
+        assertThrows(InternalOAIException.class, () -> underTest.handle(subject));
+        assertThrows(InternalOAIException.class, () -> underTest.handle((ResumptionToken.Value) null));
     }
-
+    
     @Test
-    void cannotDisseminateFormat() {
+    public void metadataPrefixIsMandatory () {
+        assertThrows(CannotDisseminateFormatException.class, () -> underTest.handle(
+            new ResumptionToken.ValueBuilder().withOffset(0).build()
+        ));
+    }
+    
+    @Test
+    public void cannotDisseminateFormat() {
         theItemRepository().withItem(randomItem().withIdentifier("1"));
         aContext().withMetadataFormat(EXISTING_METADATA_FORMAT, MetadataFormat.identity());
-    
         assertThrows(CannotDisseminateFormatException.class,
-            () -> underTest.handle(a(request().withVerb(ListRecords).withMetadataPrefix("abcd"))));
+            () -> underTest.handle(
+                new ResumptionToken.ValueBuilder()
+                    .withMetadataPrefix("abcd")
+                    .build())
+        );
     }
-
+    
     @Test
-    void noMatchRecords() {
-        assertThrows(NoMatchesException.class,
-            () -> underTest.handle(request()
-                    .withVerb(ListRecords)
-                    .withMetadataPrefix(EXISTING_METADATA_FORMAT)));
-    }
-
-    @Test
-    void setRequestAndSetsNotSupported() {
+    public void doesNotSupportSets() {
         theSetRepository().doesNotSupportSets();
         assertThrows(DoesNotSupportSetsException.class,
-            () -> underTest.handle(request()
-                    .withVerb(ListRecords)
+            () -> underTest.handle(
+                new ResumptionToken.ValueBuilder()
                     .withMetadataPrefix(EXISTING_METADATA_FORMAT)
-                    .withSet("sad")));
+                    .withSetSpec("hello")
+                    .build())
+        );
+    }
+    
+    @Test
+    public void responseWithoutItems()  {
+        assertThrows(NoMatchesException.class,
+            () -> underTest.handle(
+                new ResumptionToken.ValueBuilder()
+                    .withMetadataPrefix(EXISTING_METADATA_FORMAT)
+                    .build())
+        );
     }
 
     @Test
     void validResponse() throws Exception {
         theItemRepository().withRandomItems(10);
-        String result = write(underTest.handle(request().withVerb(ListRecords).withMetadataPrefix(EXISTING_METADATA_FORMAT)));
+        String result = write(underTest.handle(
+            new ResumptionToken.ValueBuilder()
+                .withMetadataPrefix(EXISTING_METADATA_FORMAT)
+                .build()
+        ));
+        
         assertThat(result, xPath("count(//record)", asInteger(equalTo(10))));
+    }
+    
+    @Test
+    public void validResponseWithOnlyOnePage() throws Exception {
+        theRepositoryConfiguration().withMaxListSets(100);
+        theItemRepository().withRandomItems(10);
+        ListRecords handle = underTest.handle(
+            new ResumptionToken.ValueBuilder()
+                .withMetadataPrefix(EXISTING_METADATA_FORMAT)
+                .build()
+        );
+        String result = write(handle);
+        
+        assertThat(result, xPath("count(//record)", asInteger(equalTo(10))));
+        assertThat(result, not(hasXPath("//resumptionToken")));
+    }
+    
+    @Test
+    public void firstPageOfValidResponseWithTwoPages() throws Exception {
+        theRepositoryConfiguration().withMaxListRecords(5);
+        theItemRepository().withRandomItems(10);
+        ListRecords handle = underTest.handle(
+            new ResumptionToken.ValueBuilder()
+                .withMetadataPrefix(EXISTING_METADATA_FORMAT)
+                .build()
+        );
+        String result = write(handle);
+        
+        assertThat(result, xPath("count(//record)", asInteger(equalTo(5))));
+        assertThat(result, hasXPath("//resumptionToken"));
     }
     
     @Test
@@ -84,7 +137,13 @@ public class ListRecordsHandlerTest extends AbstractHandlerTest {
                 .withMetadata(Metadata.copyFromStream(new ByteArrayInputStream("<testdata>Test1234</testdata>".getBytes(StandardCharsets.UTF_8))))
         );
         aContext().withMetadataFormat("custom", MetadataFormat.identity());
-        String result = write(underTest.handle(request().withVerb(ListRecords).withMetadataPrefix("custom")));
+    
+        String result = write(underTest.handle(
+            new ResumptionToken.ValueBuilder()
+                .withMetadataPrefix("custom")
+                .build()
+        ));
+        
         assertThat(result, xPath("count(//record)", asInteger(equalTo(11))));
         assertThat(result, HasXPathMatcher.hasXPath("//record/metadata/testdata"));
     }

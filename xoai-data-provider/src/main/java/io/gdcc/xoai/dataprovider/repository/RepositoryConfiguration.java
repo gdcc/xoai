@@ -8,79 +8,142 @@
 
 package io.gdcc.xoai.dataprovider.repository;
 
+import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
 import io.gdcc.xoai.model.oaipmh.DeletedRecord;
 import io.gdcc.xoai.model.oaipmh.Granularity;
 import io.gdcc.xoai.services.api.DateProvider;
+import io.gdcc.xoai.services.api.ResumptionTokenFormat;
+import io.gdcc.xoai.services.impl.SimpleResumptionTokenFormat;
+import io.gdcc.xoai.xml.WriterContext;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.Arrays.asList;
 
-public class RepositoryConfiguration {
-    private String repositoryName;
+public class RepositoryConfiguration implements WriterContext {
+    
     private final List<String> adminEmails = new ArrayList<>();
+    private final List<String> descriptions = new ArrayList<>();
+    private final List<String> compressions = new ArrayList<>();
+    
+    private Granularity granularity;
+    private ResumptionTokenFormat resumptionTokenFormat;
+    private String repositoryName;
     private String baseUrl;
     private Instant earliestDate;
-    private int maxListIdentifiers;
-    private int maxListSets;
-    private int maxListRecords;
-    private Granularity granularity;
+    private Integer maxListIdentifiers;
+    private Integer maxListSets;
+    private Integer maxListRecords;
     private DeletedRecord deleteMethod;
-    private List<String> descriptions;
-    private List<String> compressions;
+    
+    private RepositoryConfiguration() {}
 
     public String getRepositoryName() {
+        if (repositoryName == null)
+            throw new InternalOAIException("Repository name has not been configured");
         return repositoryName;
     }
 
     public List<String> getAdminEmails() {
-        return adminEmails;
+        return Collections.unmodifiableList(adminEmails);
     }
 
     public String getBaseUrl() {
+        if (baseUrl == null)
+            throw new InternalOAIException("Repository base URL has not been configured");
         return baseUrl;
     }
 
     public Instant getEarliestDate() {
+        if (earliestDate == null)
+            throw new InternalOAIException("Earliest date has not been configured");
         return earliestDate;
     }
 
     public int getMaxListIdentifiers() {
-        return this.maxListIdentifiers;
+        if (maxListIdentifiers == null)
+            throw new InternalOAIException("Maximum number of identifiers has not been configured");
+        return maxListIdentifiers;
     }
 
     public int getMaxListSets() {
-        return this.maxListSets;
+        if (maxListSets == null)
+            throw new InternalOAIException("Maximum number of sets has not been configured");
+        return maxListSets;
     }
 
     public int getMaxListRecords() {
-        return this.maxListRecords;
+        if (maxListRecords == null)
+            throw new InternalOAIException("Maximum number of records has not been configured");
+        return maxListRecords;
     }
 
+    @Override
     public Granularity getGranularity() {
+        if (granularity == null)
+            throw new InternalOAIException("Granularity has not been configured");
         return granularity;
+    }
+    
+    /**
+     * Skew an instant to end of day (granularity Day or Lenient) or by a second (granularity Second).
+     * This is necessary for two reasons:
+     * 1. Day granularity must be inclusive, so we can't leave an "until" at start of day.
+     * 2. Lenient granularity must work like day in this case, as we cannot be sure which is meant.
+     * 3. Second granularity needs skipping a second to avoid not returning {@link io.gdcc.xoai.dataprovider.model.Item}
+     *    from the repository that use an SQL timestamp with nanosecond granularity (so ...:00.5829 would not be
+     *    found when asking for all until ...:00.000)
+     *
+     * @param timestamp The timestamp to skew a little
+     * @return The skewed timestamp
+     */
+    public Instant skewUntil(Instant timestamp) {
+        Objects.requireNonNull(timestamp, "Skewing an 'until' date must not be used with null");
+        switch (getGranularity()) {
+            case Day:
+            case Lenient: return LocalDate.ofInstant(timestamp, ZoneId.of("UTC")).atTime(LocalTime.MAX).toInstant(ZoneOffset.UTC);
+            case Second: return timestamp.plusSeconds(1);
+            default: return timestamp;
+        }
     }
 
     public DeletedRecord getDeleteMethod() {
+        if (deleteMethod == null)
+            throw new InternalOAIException("Delete method has not been configured");
         return deleteMethod;
     }
 
     public List<String> getDescription() {
-        return descriptions;
+        return Collections.unmodifiableList(descriptions);
     }
 
     public List<String> getCompressions () {
-        return compressions;
+        return Collections.unmodifiableList(compressions);
     }
-
-    public RepositoryConfiguration withMaxListSets(int maxListSets) {
-        this.maxListSets = maxListSets;
+    
+    public boolean hasCompressions() {
+        return !compressions.isEmpty();
+    }
+    
+    @Override
+    public ResumptionTokenFormat getResumptionTokenFormat() {
+        if (resumptionTokenFormat == null)
+            throw new InternalOAIException("Resumption token format has not been configured");
+        return this.resumptionTokenFormat;
+    }
+    
+    public RepositoryConfiguration and() {
         return this;
     }
-
+    
     public RepositoryConfiguration withGranularity(Granularity granularity) {
         this.granularity = granularity;
         return this;
@@ -88,10 +151,6 @@ public class RepositoryConfiguration {
 
     public RepositoryConfiguration withRepositoryName(String repositoryName) {
         this.repositoryName = repositoryName;
-        return this;
-    }
-
-    public RepositoryConfiguration and () {
         return this;
     }
 
@@ -110,8 +169,6 @@ public class RepositoryConfiguration {
     }
 
     public RepositoryConfiguration withDescription(String description) {
-        if (descriptions == null)
-            descriptions = new ArrayList<>();
         descriptions.add(description);
         return this;
     }
@@ -126,9 +183,7 @@ public class RepositoryConfiguration {
         return this;
     }
 
-    public RepositoryConfiguration withCompression (String compression) {
-        if (compressions == null)
-            compressions = new ArrayList<>();
+    public RepositoryConfiguration withCompression(String compression) {
         compressions.add(compression);
         return this;
     }
@@ -137,27 +192,33 @@ public class RepositoryConfiguration {
         this.maxListRecords = maxListRecords;
         return this;
     }
-
-    public RepositoryConfiguration withDefaults () {
-        this.repositoryName = "Repository";
-        this.earliestDate = DateProvider.now();
-        this.adminEmails.add("sample@test.com");
-        this.baseUrl = "http://localhost";
-        this.maxListIdentifiers = 100;
-        this.maxListRecords = 100;
-        this.maxListSets = 100;
-        this.granularity = Granularity.Second;
-        this.deleteMethod = DeletedRecord.NO;
-
-        return this;
-    }
-
-    public boolean hasCompressions() {
-        return compressions != null && !compressions.isEmpty();
-    }
-
+    
     public RepositoryConfiguration withMaxListIdentifiers(int maxListIdentifiers) {
         this.maxListIdentifiers = maxListIdentifiers;
         return this;
+    }
+    
+    public RepositoryConfiguration withMaxListSets(int maxListSets) {
+        this.maxListSets = maxListSets;
+        return this;
+    }
+    
+    public RepositoryConfiguration withResumptionTokenFormat(ResumptionTokenFormat format) {
+        this.resumptionTokenFormat = format;
+        return this;
+    }
+    
+    public static RepositoryConfiguration defaults () {
+        return new RepositoryConfiguration()
+            .withGranularity(Granularity.Second)
+            .withRepositoryName("Repository")
+            .withEarliestDate(DateProvider.now())
+            .withAdminEmail("sample@test.com")
+            .withBaseUrl("http://localhost")
+            .withMaxListRecords(100)
+            .withMaxListIdentifiers(100)
+            .withMaxListSets(100)
+            .withDeleteMethod(DeletedRecord.NO)
+            .withResumptionTokenFormat(new SimpleResumptionTokenFormat().withGranularity(Granularity.Second));
     }
 }

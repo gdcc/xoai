@@ -8,9 +8,9 @@
 
 package io.gdcc.xoai.serviceprovider.parsers;
 
-import io.gdcc.xoai.model.oaipmh.About;
-import io.gdcc.xoai.model.oaipmh.Metadata;
-import io.gdcc.xoai.model.oaipmh.Record;
+import io.gdcc.xoai.model.oaipmh.results.record.About;
+import io.gdcc.xoai.model.oaipmh.results.record.Metadata;
+import io.gdcc.xoai.model.oaipmh.results.Record;
 import io.gdcc.xoai.serviceprovider.exceptions.InternalHarvestException;
 import io.gdcc.xoai.serviceprovider.model.Context;
 import io.gdcc.xoai.xml.XSLPipeline;
@@ -21,6 +21,7 @@ import org.hamcrest.Matcher;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.transform.TransformerException;
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 
 import static io.gdcc.xoai.xmlio.matchers.QNameMatchers.localPart;
 import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.aStartElement;
@@ -49,7 +50,7 @@ public class RecordParser {
         if (!record.getHeader().isDeleted()) {
             reader.next(elementName(localPart(equalTo("metadata")))).next(aStartElement());
             String content = reader.retrieveCurrentAsString();
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes());
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
             XSLPipeline pipeline = new XSLPipeline(inputStream, true)
                     .apply(context.getMetadataTransformer(metadataPrefix));
             

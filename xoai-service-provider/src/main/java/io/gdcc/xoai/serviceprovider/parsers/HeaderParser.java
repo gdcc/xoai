@@ -8,14 +8,14 @@
 
 package io.gdcc.xoai.serviceprovider.parsers;
 
-import io.gdcc.xoai.model.oaipmh.Header;
+import io.gdcc.xoai.model.oaipmh.results.record.Header;
 import io.gdcc.xoai.xmlio.XmlReader;
 import io.gdcc.xoai.xmlio.exceptions.XmlReaderException;
 import org.hamcrest.Matcher;
 
 import javax.xml.stream.events.XMLEvent;
 
-import static io.gdcc.xoai.model.oaipmh.Header.Status.DELETED;
+import static io.gdcc.xoai.model.oaipmh.results.record.Header.Status.DELETED;
 import static io.gdcc.xoai.serviceprovider.xml.IslandParsers.dateParser;
 import static io.gdcc.xoai.xmlio.matchers.AttributeMatchers.attributeName;
 import static io.gdcc.xoai.xmlio.matchers.QNameMatchers.localPart;

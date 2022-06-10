@@ -40,39 +40,41 @@ public class Error implements XmlWritable {
         try {
             if (this.code != null)
                 writer.writeAttribute("code", this.code.toString());
-
+    
             writer.writeCharacters(value);
         } catch (XMLStreamException e) {
             throw new XmlWriteException(e);
         }
     }
+    
+    public enum Code {
+        CANNOT_DISSEMINATE_FORMAT("cannotDisseminateFormat", "Cannot disseminate item with the given format"),
+        ID_DOES_NOT_EXIST("idDoesNotExist", "The given id does not exist"),
+        BAD_ARGUMENT("badArgument", null),
+        BAD_VERB("badVerb", "Illegal OAI verb"),
+        NO_METADATA_FORMATS("noMetadataFormats", "The item does not have any metadata format available for dissemination"),
+        NO_RECORDS_MATCH("noRecordsMatch", "No matches for the query"),
+        BAD_RESUMPTION_TOKEN("badResumptionToken", "The resumption token is invalid"),
+        NO_SET_HIERARCHY("noSetHierarchy", "This repository does not support sets");
 
-    public static enum Code {
+        private final String id;
+        private final String message;
 
-        CANNOT_DISSEMINATE_FORMAT("cannotDisseminateFormat"),
-        ID_DOES_NOT_EXIST("idDoesNotExist"),
-        BAD_ARGUMENT("badArgument"),
-        BAD_VERB("badVerb"),
-        NO_METADATA_FORMATS("noMetadataFormats"),
-        NO_RECORDS_MATCH("noRecordsMatch"),
-        BAD_RESUMPTION_TOKEN("badResumptionToken"),
-        NO_SET_HIERARCHY("noSetHierarchy");
-
-        private final String code;
-
-        Code(String code) {
-            this.code = code;
+        Code(String id, String message) {
+            this.id = id;
+            this.message = message;
         }
 
-        public String code() {
-            return code;
+        public String id() {
+            return id;
+        }
+        public String message() {
+            return message;
         }
 
-
-
-        public static Code fromCode(String code) {
+        public static Code from(String code) {
             for (Code c : Code.values()) {
-                if (c.code.equals(code)) {
+                if (c.id.equals(code)) {
                     return c;
                 }
             }
@@ -81,7 +83,7 @@ public class Error implements XmlWritable {
 
         @Override
         public String toString() {
-            return code;
+            return id;
         }
     }
 }

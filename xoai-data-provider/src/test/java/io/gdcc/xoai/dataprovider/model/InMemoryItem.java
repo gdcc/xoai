@@ -8,14 +8,12 @@
 
 package io.gdcc.xoai.dataprovider.model;
 
-import io.gdcc.xoai.model.oaipmh.About;
-import io.gdcc.xoai.model.oaipmh.Metadata;
+import io.gdcc.xoai.model.oaipmh.results.record.Metadata;
 import io.gdcc.xoai.model.xoai.Element;
 import io.gdcc.xoai.model.xoai.XOAIMetadata;
 import io.gdcc.xoai.services.api.DateProvider;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

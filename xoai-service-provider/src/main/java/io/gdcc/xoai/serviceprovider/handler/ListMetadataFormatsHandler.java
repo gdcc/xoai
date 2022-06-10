@@ -8,7 +8,7 @@
 
 package io.gdcc.xoai.serviceprovider.handler;
 
-import io.gdcc.xoai.model.oaipmh.MetadataFormat;
+import io.gdcc.xoai.model.oaipmh.results.MetadataFormat;
 import io.gdcc.xoai.serviceprovider.client.OAIClient;
 import io.gdcc.xoai.serviceprovider.exceptions.IdDoesNotExistException;
 import io.gdcc.xoai.serviceprovider.exceptions.InvalidOAIResponse;
@@ -24,7 +24,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.gdcc.xoai.model.oaipmh.Verb.Type.ListMetadataFormats;
+import static io.gdcc.xoai.model.oaipmh.verbs.Verb.Type.ListMetadataFormats;
 
 public class ListMetadataFormatsHandler {
     private final OAIClient client;

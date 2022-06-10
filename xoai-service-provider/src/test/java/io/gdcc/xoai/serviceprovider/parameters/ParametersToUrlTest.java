@@ -8,7 +8,7 @@
 
 package io.gdcc.xoai.serviceprovider.parameters;
 
-import io.gdcc.xoai.model.oaipmh.Verb.Type;
+import io.gdcc.xoai.model.oaipmh.verbs.Verb.Type;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;

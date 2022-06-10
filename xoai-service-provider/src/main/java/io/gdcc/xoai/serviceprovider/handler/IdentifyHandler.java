@@ -8,7 +8,7 @@
 
 package io.gdcc.xoai.serviceprovider.handler;
 
-import io.gdcc.xoai.model.oaipmh.Identify;
+import io.gdcc.xoai.model.oaipmh.verbs.Identify;
 import io.gdcc.xoai.serviceprovider.client.OAIClient;
 import io.gdcc.xoai.serviceprovider.exceptions.InvalidOAIResponse;
 import io.gdcc.xoai.serviceprovider.exceptions.OAIRequestException;
@@ -19,7 +19,7 @@ import io.gdcc.xoai.serviceprovider.parsers.IdentifyParser;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static io.gdcc.xoai.model.oaipmh.Verb.Type.Identify;
+import static io.gdcc.xoai.model.oaipmh.verbs.Verb.Type.Identify;
 
 public class IdentifyHandler {
     private final OAIClient client;

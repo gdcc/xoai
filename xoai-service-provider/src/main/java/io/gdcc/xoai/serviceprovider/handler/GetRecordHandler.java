@@ -8,7 +8,7 @@
 
 package io.gdcc.xoai.serviceprovider.handler;
 
-import io.gdcc.xoai.model.oaipmh.Record;
+import io.gdcc.xoai.model.oaipmh.results.Record;
 import io.gdcc.xoai.serviceprovider.client.OAIClient;
 import io.gdcc.xoai.serviceprovider.exceptions.CannotDisseminateFormatException;
 import io.gdcc.xoai.serviceprovider.exceptions.IdDoesNotExistException;
@@ -22,7 +22,7 @@ import io.gdcc.xoai.serviceprovider.parsers.GetRecordParser;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static io.gdcc.xoai.model.oaipmh.Verb.Type.GetRecord;
+import static io.gdcc.xoai.model.oaipmh.verbs.Verb.Type.GetRecord;
 
 public class GetRecordHandler {
 

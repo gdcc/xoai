@@ -9,7 +9,7 @@
 package io.gdcc.xoai.serviceprovider.parameters;
 
 import io.gdcc.xoai.model.oaipmh.Granularity;
-import io.gdcc.xoai.model.oaipmh.Verb;
+import io.gdcc.xoai.model.oaipmh.verbs.Verb;
 import io.gdcc.xoai.services.api.DateProvider;
 import io.gdcc.xoai.util.URLEncoder;
 
@@ -24,14 +24,14 @@ public class Parameters {
         return new Parameters();
     }
 
-    private Verb.Type verb;
-    private String metadataPrefix;
-    private String set;
-    private Instant from;
-    private Instant until;
-    private String identifier;
-    private String resumptionToken;
-	private String granularity;
+    private Verb.Type verb = null;
+    private String metadataPrefix = null;
+    private String set = null;
+    private Instant from = null;
+    private Instant until = null;
+    private String identifier = null;
+    private String resumptionToken = null;
+	private String granularity = null;
 
     public Parameters withVerb(Verb.Type verb) {
         this.verb = verb;
@@ -80,7 +80,7 @@ public class Parameters {
     }
 
     public String toUrl(String baseUrl) {
-        List<String> string = new ArrayList<String>();
+        List<String> string = new ArrayList<>();
         string.add("verb=" + this.verb.name());
         Granularity granularity = granularity();
         if (set != null) string.add("set=" + encode(set));
