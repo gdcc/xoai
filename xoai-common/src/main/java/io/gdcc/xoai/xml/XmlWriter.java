@@ -23,12 +23,17 @@ import java.time.Instant;
 import java.util.Optional;
 
 public class XmlWriter extends XmlIoWriter implements AutoCloseable {
+    
     public static String toString(XmlWritable writable) throws XMLStreamException {
+        return toString(writable, defaultContext());
+    }
+    
+    public static String toString(XmlWritable writable, WriterContext context) throws XMLStreamException {
         final OutputStream out = new ByteArrayOutputStream();
         
         try (
             out;
-            XmlWriter writer = new XmlWriter(out, defaultContext())
+            XmlWriter writer = new XmlWriter(out, context)
         ) {
             writable.write(writer);
         } catch (IOException e) {
@@ -54,6 +59,10 @@ public class XmlWriter extends XmlIoWriter implements AutoCloseable {
     public XmlWriter(OutputStream output, WriterContext writerContext) throws XMLStreamException {
         super(output);
         this.writerContext = writerContext;
+    }
+    
+    public WriterContext getWriterContext() {
+        return this.writerContext;
     }
 
     public void writeDate(Instant date) throws XmlWriteException {
