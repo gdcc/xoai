@@ -85,7 +85,7 @@ public abstract class VerbHandler<T extends Verb> {
         Optional.ofNullable(token.getSetSpec())
             .flatMap(setSpec -> getContext().getSet(setSpec))
             .map(Set::getScopedFilter)
-            .map(filters::add);
+            .ifPresent(filters::add);
         
         return filters;
     }
