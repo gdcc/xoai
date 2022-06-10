@@ -30,7 +30,31 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class DataProviderTest extends AbstractHandlerTest {
     private static final String OAI_NAMESPACE = "http://www.openarchives.org/OAI/2.0/";
     private final DataProvider dataProvider = new DataProvider(aContext(), theRepository());
-
+    
+    @Test
+    public void handleFromServletQueryParameters() throws Exception {
+        // when
+        String result = write(
+            dataProvider.handle(
+                Map.of("verb", new String[]{"Identify"})
+            ));
+    
+        // then
+        assertThat(result, xPath("//oai:Identify/oai:baseURL/text()", equalTo(theRepositoryConfiguration().getBaseUrl())));
+    }
+    
+    @Test
+    public void missingVerbFromServletQueryParameters() throws Exception {
+        // when
+        String result = write(
+            dataProvider.handle(
+                Map.of("verb", new String[]{""})
+            ));
+        
+        // then
+        assertThat(result, xPath("//oai:error/@code", equalTo("badVerb")));
+    }
+    
     @Test
     public void missingMetadataFormat() throws Exception {
         // when
