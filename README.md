@@ -35,7 +35,10 @@ This is a breaking changes release with a lot of new features, influenced by the
 #### 💔 BREAKING CHANGES
 - Compatible with Java 11+ only
 - Uses java.time API instead of java.util.Date
-- Data Provider: Changes required to your `ItemRepository`, `Item` and `ItemIdentifier` implementations
+- Data Provider:
+    - Changes required to your `ItemRepository`, `Item` and `ItemIdentifier` implementations
+    - Changes required to your `SetRepository` implementation
+    - Changes required to your usage of `DataProvider` (much simplified!)
 - Service Provider: Changes required to your code using an `OAIClient`, as default implementation changed
 
 #### 🌟 FEATURES
@@ -44,11 +47,20 @@ This is a breaking changes release with a lot of new features, influenced by the
 - Use native JDK HTTP client for OAI requests in service provider, 
   extended with client builder and option to create unsafe SSL connections for testing
 - Add total number of results (inspired by GBIF #8)
+- Larger rewrite of how data provider works:
+    - Enable caching requests by exposing the resumption token to the application and making the pagination of
+      results more explicit and comprehensible using a new type `ResultsPage`
+    - Extended, simplified and more verbose parameter validation for requests
+    - `until` timestamps are tweaked to enable more inclusive requests (avoid spilling milk with database timestamps etc)
+    - Extensible reuse of `RawRequest` and `Request` classes to create non-servlet based endpoints with in-tree
+      verification methods now possible via `RequestBuilder`!
+    - Simplified filtering model for XOAI: easier to setup, default conditions provided
 
 #### 🏹 BUG FIXES
 - Sets now are properly compared, re-enabling `SetRepositoryHelper` to identify available sets
 - Many new try-with-resources to mitigate memory leak risks
 - The StAX XML components have been configured to avoid loading external entities, mitigating potential security risks
+- `from` and `until` timestamps are now correctly verified in data provider #25
 - And more...
 
 ## License
