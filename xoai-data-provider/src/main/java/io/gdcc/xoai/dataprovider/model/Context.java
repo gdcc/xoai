@@ -16,6 +16,7 @@ import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 
 import javax.xml.transform.Transformer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -25,13 +26,13 @@ public class Context {
         return new Context();
     }
 
-    private Transformer metadataTransformer;
+    private Transformer metadataTransformer = null;
     private final List<MetadataFormat> metadataFormats = new ArrayList<>();
     private final List<Set> sets = new ArrayList<>();
-    private Condition condition;
+    private Condition condition = null;
 
     public List<Set> getSets() {
-        return sets;
+        return Collections.unmodifiableList(sets);
     }
 
     public Context withSet(Set set) {

@@ -26,16 +26,12 @@ import io.gdcc.xoai.model.oaipmh.results.record.About;
 import io.gdcc.xoai.model.oaipmh.results.record.Header;
 import io.gdcc.xoai.model.oaipmh.results.record.Metadata;
 import io.gdcc.xoai.model.oaipmh.verbs.ListRecords;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.stream.Stream;
 
 
 public class ListRecordsHandler extends VerbHandler<ListRecords> {
-    private static final Logger log = LoggerFactory.getLogger(ListRecordsHandler.class);
-    
     private final ItemRepository itemRepository;
     
     public ListRecordsHandler(Context context, Repository repository) {

@@ -57,24 +57,24 @@ public class Error implements XmlWritable {
         BAD_RESUMPTION_TOKEN("badResumptionToken", "The resumption token is invalid"),
         NO_SET_HIERARCHY("noSetHierarchy", "This repository does not support sets");
 
-        private final String code;
-        private final String codeMessage;
+        private final String id;
+        private final String message;
 
-        Code(String code, String codeMessage) {
-            this.code = code;
-            this.codeMessage = codeMessage;
+        Code(String id, String message) {
+            this.id = id;
+            this.message = message;
         }
 
-        public String code() {
-            return code;
+        public String id() {
+            return id;
         }
         public String message() {
-            return codeMessage;
+            return message;
         }
 
         public static Code from(String code) {
             for (Code c : Code.values()) {
-                if (c.code.equals(code)) {
+                if (c.id.equals(code)) {
                     return c;
                 }
             }
@@ -83,7 +83,7 @@ public class Error implements XmlWritable {
 
         @Override
         public String toString() {
-            return code;
+            return id;
         }
     }
 }

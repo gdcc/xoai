@@ -20,20 +20,20 @@ public class Description implements XmlWritable {
     }
 
     protected String value;
-    private XOAIMetadata XOAIMetadata;
+    private XOAIMetadata xoaiMetadata;
 
     public Description() {}
 
-    public Description(XOAIMetadata XOAIMetadata) {
-        this.XOAIMetadata = XOAIMetadata;
+    public Description(XOAIMetadata xoaiMetadata) {
+        this.xoaiMetadata = xoaiMetadata;
     }
 
     public Description(String compiledMetadata) {
         value = compiledMetadata;
     }
 
-    public Description withMetadata(XOAIMetadata XOAIMetadata) {
-        this.XOAIMetadata = XOAIMetadata;
+    public Description withMetadata(XOAIMetadata xoaiMetadata) {
+        this.xoaiMetadata = xoaiMetadata;
         return this;
     }
     public Description withMetadata(String metadata) {
@@ -43,8 +43,8 @@ public class Description implements XmlWritable {
 
     @Override
     public void write(XmlWriter writer) throws XmlWriteException {
-        if (XOAIMetadata != null) {
-            this.XOAIMetadata.write(writer);
+        if (xoaiMetadata != null) {
+            this.xoaiMetadata.write(writer);
         } else if (this.value != null) {
             EchoElement echo = new EchoElement(value);
             echo.write(writer);

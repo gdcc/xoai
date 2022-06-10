@@ -8,16 +8,14 @@
 
 package io.gdcc.xoai.dataprovider.repository;
 
-import io.gdcc.xoai.services.api.ResumptionTokenFormat;
-
 public final class Repository {
     public static Repository repository () {
         return new Repository();
     }
 
     private RepositoryConfiguration configuration = RepositoryConfiguration.defaults();
-    private ItemRepository itemRepository;
-    private SetRepository setRepository;
+    private ItemRepository itemRepository = null;
+    private SetRepository setRepository = null;
 
     public RepositoryConfiguration getConfiguration() {
         return configuration;

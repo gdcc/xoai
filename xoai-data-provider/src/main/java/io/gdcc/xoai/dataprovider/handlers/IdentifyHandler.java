@@ -15,7 +15,6 @@ import io.gdcc.xoai.dataprovider.repository.Repository;
 import io.gdcc.xoai.dataprovider.repository.RepositoryConfiguration;
 import io.gdcc.xoai.model.oaipmh.DeletedRecord;
 import io.gdcc.xoai.model.oaipmh.Request;
-import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 import io.gdcc.xoai.model.oaipmh.results.Description;
 import io.gdcc.xoai.model.oaipmh.verbs.Identify;
 import io.gdcc.xoai.xml.XmlWritable;

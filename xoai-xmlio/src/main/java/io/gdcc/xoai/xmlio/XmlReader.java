@@ -44,6 +44,9 @@ import static org.hamcrest.CoreMatchers.not;
 
 public class XmlReader implements AutoCloseable {
     // Using the STaX2 API here, but hiding behind STaX1
+    // Ignore SonarCloud warning here - it's used the way the library says we must use it.
+    // https://sonarcloud.io/organizations/gdcc/rules?open=java%3AS3252&rule_key=java%3AS3252
+    @SuppressWarnings("java:S3252")
     private static final XMLInputFactory XML_INPUT_FACTORY = XMLInputFactory2.newFactory();
     private final XMLEventReader xmlEventParser;
 
@@ -96,7 +99,7 @@ public class XmlReader implements AutoCloseable {
     }
 
     public <T> Map<T, String> getAttributes(ExtractFunction<QName, T> extractFunction) throws XmlReaderException {
-        HashMap<T, String> map = new HashMap<T, String>();
+        HashMap<T, String> map = new HashMap<>();
         if (peek().isStartElement()) {
             Iterator<Attribute> attributes = peek().asStartElement().getAttributes();
             while (attributes.hasNext()) {

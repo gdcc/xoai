@@ -20,7 +20,7 @@ import java.util.List;
 public class Header implements XmlWritable {
     protected String identifier;
     protected Instant datestamp;
-    protected List<String> setSpec = new ArrayList<>();
+    protected List<String> setSpecs = new ArrayList<>();
     protected Status status;
 
     public String getIdentifier() {
@@ -42,7 +42,7 @@ public class Header implements XmlWritable {
     }
 
     public List<String> getSetSpecs() {
-        return this.setSpec;
+        return this.setSpecs;
     }
 
     public Status getStatus() {
@@ -55,7 +55,7 @@ public class Header implements XmlWritable {
     }
 
     public Header withSetSpec(String setSpec) {
-        this.setSpec.add(setSpec);
+        this.setSpecs.add(setSpec);
         return this;
     }
 

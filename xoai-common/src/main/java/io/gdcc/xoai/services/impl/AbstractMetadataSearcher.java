@@ -22,23 +22,24 @@ public abstract class AbstractMetadataSearcher<T> implements MetadataSearch<T> {
 	protected static final String DEFAULT_FIELD = "value";
 	protected Map<String, List<T>> index = new HashMap<>();
 	
-	
-    public AbstractMetadataSearcher (XOAIMetadata metadata) {
+    protected AbstractMetadataSearcher (XOAIMetadata metadata) {
         for (Element element : metadata.getElements()) {
             consume(new ArrayList<>(), element);
         }
     }
+	
 	@Override
 	public T findOne(String xoaiPath){
 		 List<T> elements = index.get(xoaiPath);
 	        if (elements != null && !elements.isEmpty())
 	            return elements.get(0);
 	        return null;
-	};
+	}
+	
 	@Override
 	public List<T> findAll(String xoaiPath){
 		return index.get(xoaiPath);
-	};
+	}
 	
 	@Override
 	public Map<String, List<T>> index() {

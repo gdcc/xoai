@@ -12,6 +12,7 @@ import io.gdcc.xoai.exceptions.BadArgumentException;
 import io.gdcc.xoai.exceptions.BadVerbException;
 import io.gdcc.xoai.xml.XmlWritable;
 
+import java.util.Collections;
 import java.util.Set;
 
 public interface Verb extends XmlWritable {
@@ -80,7 +81,7 @@ public interface Verb extends XmlWritable {
          * @return The set - may be empty, but not null!
          */
         public Set<Argument> reqArgs() {
-            return required;
+            return Collections.unmodifiableSet(required);
         }
     
         /**
@@ -88,7 +89,7 @@ public interface Verb extends XmlWritable {
          * @return The set - may be empty, but not null!
          */
         public Set<Argument> optArgs() {
-            return optional;
+            return Collections.unmodifiableSet(optional);
         }
     
         /**
@@ -97,7 +98,7 @@ public interface Verb extends XmlWritable {
          * @return The list of exclusive options
          */
         public Set<Argument> exclArgs() {
-            return exclusive;
+            return Collections.unmodifiableSet(exclusive);
         }
     }
     

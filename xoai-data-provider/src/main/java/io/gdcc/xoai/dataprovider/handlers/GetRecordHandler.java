@@ -8,7 +8,6 @@
 
 package io.gdcc.xoai.dataprovider.handlers;
 
-import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
 import io.gdcc.xoai.dataprovider.exceptions.handler.CannotDisseminateFormatException;
 import io.gdcc.xoai.dataprovider.exceptions.handler.HandlerException;
 import io.gdcc.xoai.dataprovider.exceptions.handler.IdDoesNotExistException;
@@ -19,7 +18,6 @@ import io.gdcc.xoai.dataprovider.model.MetadataFormat;
 import io.gdcc.xoai.dataprovider.model.Set;
 import io.gdcc.xoai.dataprovider.repository.Repository;
 import io.gdcc.xoai.model.oaipmh.Request;
-import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 import io.gdcc.xoai.model.oaipmh.results.Record;
 import io.gdcc.xoai.model.oaipmh.results.record.About;
 import io.gdcc.xoai.model.oaipmh.results.record.Header;

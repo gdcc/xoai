@@ -18,6 +18,7 @@ import io.gdcc.xoai.xml.XmlWriter;
 import javax.xml.stream.XMLStreamException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -29,8 +30,8 @@ public class OAIPMH implements XmlWritable {
 
     private Instant responseDate = DateProvider.now();
     private final List<Error> errors = new ArrayList<>();
-    private Request request;
-    private Verb verb;
+    private Request request = null;
+    private Verb verb = null;
 
     public Instant getResponseDate() {
         return responseDate;
@@ -51,7 +52,7 @@ public class OAIPMH implements XmlWritable {
     }
 
     public List<Error> getErrors() {
-        return errors;
+        return Collections.unmodifiableList(errors);
     }
 
     public OAIPMH withError(Error error) {

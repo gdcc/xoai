@@ -27,7 +27,7 @@ public interface SetRepository {
      */
     default boolean supportSets() {
         return false;
-    };
+    }
 
     /**
      * Returns a list of all sets that exist within the repository context. This will usually be not very large and
@@ -49,5 +49,5 @@ public interface SetRepository {
      */
     default boolean exists(String setSpec) {
         return false;
-    };
+    }
 }

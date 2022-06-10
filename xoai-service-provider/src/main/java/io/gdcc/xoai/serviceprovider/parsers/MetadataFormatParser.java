@@ -47,9 +47,9 @@ public class MetadataFormatParser {
         }
         if (reader.current(errorElement())) {
             String code = reader.getAttributeValue(localPart(equalTo("code")));
-            if (equalTo(NO_METADATA_FORMATS.code()).matches(code))
+            if (equalTo(NO_METADATA_FORMATS.id()).matches(code))
                 return false;
-            else if (ID_DOES_NOT_EXIST.code().equals(code))
+            else if (ID_DOES_NOT_EXIST.id().equals(code))
                 throw new IdDoesNotExistException();
             else
                 throw new InvalidOAIResponse("OAI responded with code: "+

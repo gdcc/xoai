@@ -3,6 +3,7 @@ package io.gdcc.xoai.dataprovider.repository;
 import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -57,7 +58,7 @@ public final class ResultsPage<T> {
         
         this.requestToken = requestToken;
         this.hasMore = hasMoreResults;
-        this.resultsList = resultsList;
+        this.resultsList = Collections.unmodifiableList(resultsList);
         this.totalResults = totalResults;
     }
     
@@ -66,7 +67,7 @@ public final class ResultsPage<T> {
     }
     
     public List<T> getList() {
-        return List.copyOf(resultsList);
+        return resultsList;
     }
     
     public int getTotal() {

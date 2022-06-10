@@ -43,7 +43,7 @@ public class ListRecordsParser {
         awaitingNextInvocation = true;
         if (reader.current(errorElement())) {
             String code = reader.getAttributeValue(localPart(equalTo("code")));
-            if (equalTo(NO_RECORDS_MATCH.code()).matches(code))
+            if (equalTo(NO_RECORDS_MATCH.id()).matches(code))
                 return false;
             else
                 throw new InvalidOAIResponse("OAI responded with code: "+

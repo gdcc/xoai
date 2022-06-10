@@ -46,9 +46,9 @@ public class ListSetsParser {
         awaitingNextInvocation = true;
         if (reader.current(errorElement())) {
             String code = reader.getAttributeValue(localPart(equalTo("code")));
-            if (equalTo(NO_RECORDS_MATCH.code()).matches(code))
+            if (equalTo(NO_RECORDS_MATCH.id()).matches(code))
                 return false;
-            else if (equalTo(NO_SET_HIERARCHY.code()).matches(code))
+            else if (equalTo(NO_SET_HIERARCHY.id()).matches(code))
                 throw new EncapsulatedKnownException(new NoSetHierarchyException());
             else
                 throw new InvalidOAIResponse("OAI responded with code: " + code);

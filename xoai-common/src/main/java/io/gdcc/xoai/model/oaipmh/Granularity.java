@@ -32,6 +32,7 @@ public enum Granularity {
         this.representation = representation;
     }
 
+    @Override
     public String toString () {
         return representation;
     }

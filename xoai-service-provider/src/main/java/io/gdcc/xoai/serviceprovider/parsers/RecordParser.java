@@ -21,6 +21,7 @@ import org.hamcrest.Matcher;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.transform.TransformerException;
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 
 import static io.gdcc.xoai.xmlio.matchers.QNameMatchers.localPart;
 import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.aStartElement;
@@ -49,7 +50,7 @@ public class RecordParser {
         if (!record.getHeader().isDeleted()) {
             reader.next(elementName(localPart(equalTo("metadata")))).next(aStartElement());
             String content = reader.retrieveCurrentAsString();
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes());
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
             XSLPipeline pipeline = new XSLPipeline(inputStream, true)
                     .apply(context.getMetadataTransformer(metadataPrefix));
             

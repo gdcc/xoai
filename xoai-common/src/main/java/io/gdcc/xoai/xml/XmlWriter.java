@@ -8,14 +8,12 @@
 
 package io.gdcc.xoai.xml;
 
-import io.gdcc.xoai.model.oaipmh.verbs.Verb;
-import io.gdcc.xoai.xmlio.XmlIoWriter;
-import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import io.gdcc.xoai.model.oaipmh.Granularity;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
+import io.gdcc.xoai.model.oaipmh.verbs.Verb;
 import io.gdcc.xoai.services.api.DateProvider;
-import io.gdcc.xoai.services.api.ResumptionTokenFormat;
-import io.gdcc.xoai.services.impl.SimpleResumptionTokenFormat;
+import io.gdcc.xoai.xmlio.XmlIoWriter;
+import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.ByteArrayOutputStream;
