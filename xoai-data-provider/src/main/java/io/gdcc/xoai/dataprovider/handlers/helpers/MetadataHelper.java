@@ -30,7 +30,11 @@ public class MetadataHelper {
                     .apply(format.getTransformer())
                     .process());
             
-            return new Metadata(element);
+            Metadata processed = new Metadata(element);
+            // Copy attributes if present. This is here because of Dataverse 4/5 compatibility.
+            metadata.getAttributes().ifPresent(a -> a.forEach(processed::withAttribute));
+            
+            return processed;
         } catch (XMLStreamException | TransformerException | IOException e) {
             throw new InternalOAIException(e);
         }
