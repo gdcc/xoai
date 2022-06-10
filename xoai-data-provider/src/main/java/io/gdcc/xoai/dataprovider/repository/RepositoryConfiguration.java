@@ -43,9 +43,7 @@ public class RepositoryConfiguration implements WriterContext {
     private Integer maxListSets;
     private Integer maxListRecords;
     private DeletedRecord deleteMethod;
-    // This is used for Dataverse 4/5 backward compatibility, because they added an attribute to the
-    // <record><metadata> element, containing the API URL of a record in their special metadata format
-    // dataverse_json.
+    
     private boolean enableMetadataAttributes = false;
     
     private RepositoryConfiguration() {}
@@ -212,6 +210,15 @@ public class RepositoryConfiguration implements WriterContext {
         return this;
     }
     
+    /**
+     * This is here for Dataverse 4/5 backward compatibility.
+     *
+     * They added an attribute to the <code>&gt;record&lt;&lt;metadata&gt;</code> element,
+     * containing the API URL of a record in their special metadata format "dataverse_json".
+     *
+     * @deprecated Remove when Dataverse 6 is old enough that no ones uses this workaround anymore.
+     */
+    @Deprecated(since = "5.0")
     public RepositoryConfiguration withEnableMetadataAttributes(boolean enable) {
         this.enableMetadataAttributes = enable;
         return this;

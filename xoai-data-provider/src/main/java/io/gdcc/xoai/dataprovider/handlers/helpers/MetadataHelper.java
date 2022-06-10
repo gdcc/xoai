@@ -29,7 +29,11 @@ public class MetadataHelper {
                 pipeline.apply(context.getTransformer())
                     .apply(format.getTransformer())
                     .process());
-            
+    
+            /*
+             * This is here for Dataverse 4/5 backward compatibility.
+             * @deprecated Remove when Dataverse 6 is old enough that no ones uses this workaround anymore.
+             */
             Metadata processed = new Metadata(element);
             // Copy attributes if present. This is here because of Dataverse 4/5 compatibility.
             metadata.getAttributes().ifPresent(a -> a.forEach(processed::withAttribute));

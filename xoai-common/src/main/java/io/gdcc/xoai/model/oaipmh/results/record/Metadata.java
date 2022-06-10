@@ -79,6 +79,15 @@ public class Metadata implements XmlWritable {
             return null;
     }
     
+    /**
+     * This is here for Dataverse 4/5 backward compatibility.
+     *
+     * They added an attribute to the <code>&gt;record&lt;&lt;metadata&gt;</code> element,
+     * containing the API URL of a record in their special metadata format "dataverse_json".
+     *
+     * @deprecated Remove when Dataverse 6 is old enough that no ones uses this workaround anymore.
+     */
+    @Deprecated(since = "5.0")
     public Metadata withAttribute(String name, String value) {
         if (this.attributes == null)
             this.attributes = new ConcurrentHashMap<>(1);
@@ -86,6 +95,15 @@ public class Metadata implements XmlWritable {
         return this;
     }
     
+    /**
+     * This is here for Dataverse 4/5 backward compatibility.
+     *
+     * They added an attribute to the <code>&gt;record&lt;&lt;metadata&gt;</code> element,
+     * containing the API URL of a record in their special metadata format "dataverse_json".
+     *
+     * @deprecated Remove when Dataverse 6 is old enough that no ones uses this workaround anymore.
+     */
+    @Deprecated(since = "5.0")
     public Optional<Map<String,String>> getAttributes() {
         return attributes != null ? Optional.of(Collections.unmodifiableMap(attributes)) : Optional.empty();
     }

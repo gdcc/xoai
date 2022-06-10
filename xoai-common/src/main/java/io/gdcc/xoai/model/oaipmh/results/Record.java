@@ -73,8 +73,11 @@ public class Record implements XmlWritable {
             if (this.metadata != null) {
                 writer.writeStartElement("metadata");
                 
-                // When enabled via context, write attributes to the metadata element if present
-                // This is here for Dataverse 4/5 compatibility.
+                /*
+                 * When enabled via context, write attributes to the metadata element if present
+                 * This is here for Dataverse 4/5 backward compatibility.
+                 * @deprecated Remove when Dataverse 6 is old enough that no ones uses this workaround anymore.
+                 */
                 Optional<Map<String,String>> attributes = this.metadata.getAttributes();
                 if (writer.getWriterContext().isMetadataAttributesEnabled() && attributes.isPresent()) {
                     for (Map.Entry<String,String> entry : attributes.get().entrySet()) {

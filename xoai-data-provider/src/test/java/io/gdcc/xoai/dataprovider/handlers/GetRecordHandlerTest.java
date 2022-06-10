@@ -124,6 +124,10 @@ public class GetRecordHandlerTest extends AbstractHandlerTest {
         assertThat(result, HasXPathMatcher.hasXPath("//record/metadata/testdata"));
     }
     
+    /**
+     * This is here for Dataverse 4/5 backward compatibility.
+     * @deprecated Remove when Dataverse 6 is old enough that no ones uses this workaround anymore.
+     */
     @Test
     void itemWithMetadataAttributes() throws Exception {
         // given
