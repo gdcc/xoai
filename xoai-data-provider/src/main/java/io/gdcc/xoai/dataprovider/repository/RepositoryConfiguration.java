@@ -44,6 +44,8 @@ public class RepositoryConfiguration implements WriterContext {
     private Integer maxListRecords;
     private DeletedRecord deleteMethod;
     
+    private boolean enableMetadataAttributes = false;
+    
     private RepositoryConfiguration() {}
 
     public String getRepositoryName() {
@@ -208,6 +210,25 @@ public class RepositoryConfiguration implements WriterContext {
         return this;
     }
     
+    /**
+     * This is here for Dataverse 4/5 backward compatibility.
+     *
+     * They added an attribute to the <code>&gt;record&lt;&lt;metadata&gt;</code> element,
+     * containing the API URL of a record in their special metadata format "dataverse_json".
+     *
+     * @deprecated Remove when Dataverse 6 is old enough that no ones uses this workaround anymore.
+     */
+    @Deprecated(since = "5.0")
+    public RepositoryConfiguration withEnableMetadataAttributes(boolean enable) {
+        this.enableMetadataAttributes = enable;
+        return this;
+    }
+    
+    @Override
+    public boolean isMetadataAttributesEnabled() {
+        return this.enableMetadataAttributes;
+    }
+    
     public static RepositoryConfiguration defaults () {
         return new RepositoryConfiguration()
             .withGranularity(Granularity.Second)
@@ -219,6 +240,7 @@ public class RepositoryConfiguration implements WriterContext {
             .withMaxListIdentifiers(100)
             .withMaxListSets(100)
             .withDeleteMethod(DeletedRecord.NO)
-            .withResumptionTokenFormat(new SimpleResumptionTokenFormat().withGranularity(Granularity.Second));
+            .withResumptionTokenFormat(new SimpleResumptionTokenFormat().withGranularity(Granularity.Second))
+            .withEnableMetadataAttributes(false);
     }
 }

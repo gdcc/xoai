@@ -8,7 +8,7 @@
 
 package io.gdcc.xoai.dataprovider.handlers;
 
-import io.gdcc.xoai.exceptions.BadArgumentException;
+import io.gdcc.xoai.dataprovider.repository.RepositoryConfiguration;
 import io.gdcc.xoai.dataprovider.exceptions.handler.CannotDisseminateFormatException;
 import io.gdcc.xoai.dataprovider.exceptions.handler.IdDoesNotExistException;
 import io.gdcc.xoai.dataprovider.model.InMemoryItem;
@@ -16,6 +16,7 @@ import io.gdcc.xoai.dataprovider.model.MetadataFormat;
 import io.gdcc.xoai.model.oaipmh.verbs.GetRecord;
 import io.gdcc.xoai.model.oaipmh.results.record.Metadata;
 import io.gdcc.xoai.xml.EchoElement;
+import io.gdcc.xoai.xml.XmlWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -121,5 +122,34 @@ public class GetRecordHandlerTest extends AbstractHandlerTest {
         assertThat(result, xPath("//header/identifier", is(equalTo("copy"))));
         assertThat(result, HasXPathMatcher.hasXPath("//record/metadata"));
         assertThat(result, HasXPathMatcher.hasXPath("//record/metadata/testdata"));
+    }
+    
+    /**
+     * This is here for Dataverse 4/5 backward compatibility.
+     * @deprecated Remove when Dataverse 6 is old enough that no ones uses this workaround anymore.
+     */
+    @Test
+    void itemWithMetadataAttributes() throws Exception {
+        // given
+        theItemRepository().withItem(
+            randomItem()
+                .withDeleted(false)
+                .withIdentifier("attributes")
+                .withMetadata(
+                    new Metadata(new EchoElement("<test>I have Attributes!</test>"))
+                        .withAttribute("test","foobar"))
+        );
+        RepositoryConfiguration configuration = RepositoryConfiguration.defaults().withEnableMetadataAttributes(true);
+        aContext().withMetadataFormat("custom", MetadataFormat.identity());
+        GetRecord handle = underTest.handle(request().withVerb(GetRecord)
+            .withMetadataPrefix("custom")
+            .withIdentifier("attributes"));
+        
+        // when
+        String result = XmlWriter.toString(handle, configuration);
+        
+        // then
+        assertThat(result, HasXPathMatcher.hasXPath("//metadata/@test"));
+        assertThat(result, xPath("//metadata/@test", is(equalTo("foobar"))));
     }
 }

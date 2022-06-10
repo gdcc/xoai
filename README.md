@@ -1,5 +1,10 @@
 # XOAI
 
+ [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=gdcc_xoai&metric=alert_status)](https://sonarcloud.io/dashboard?id=gdcc_xoai)
+ [![SonarCloud Coverage](https://sonarcloud.io/api/project_badges/measure?project=gdcc_xoai&metric=coverage)](https://sonarcloud.io/component_measures/metric/coverage/list?id=gdcc_xoai)
+ [![SonarCloud Bugs](https://sonarcloud.io/api/project_badges/measure?project=gdcc_xoai&metric=bugs)](https://sonarcloud.io/component_measures/metric/reliability_rating/list?id=gdcc_xoai)
+ [![SonarCloud Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=gdcc_xoai&metric=vulnerabilities)](https://sonarcloud.io/component_measures/metric/security_rating/list?id=gdcc_xoai)
+
 What is XOAI?
 
 XOAI is the most powerful and flexible OAI-PMH Java Toolkit (initially developed by [Lyncode](https://github.com/lyncode),
