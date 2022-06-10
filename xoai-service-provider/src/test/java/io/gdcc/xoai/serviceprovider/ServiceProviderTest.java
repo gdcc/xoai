@@ -10,7 +10,7 @@ package io.gdcc.xoai.serviceprovider;
 
 import io.gdcc.xoai.dataprovider.filter.Filter;
 import io.gdcc.xoai.dataprovider.model.ItemIdentifier;
-import io.gdcc.xoai.dataprovider.model.conditions.Condition;
+import io.gdcc.xoai.dataprovider.filter.Condition;
 import io.gdcc.xoai.model.oaipmh.verbs.Identify;
 import io.gdcc.xoai.model.oaipmh.results.MetadataFormat;
 import io.gdcc.xoai.serviceprovider.exceptions.CannotDisseminateFormatException;

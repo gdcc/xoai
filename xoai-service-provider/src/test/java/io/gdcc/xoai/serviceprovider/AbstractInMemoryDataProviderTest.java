@@ -9,20 +9,18 @@
 package io.gdcc.xoai.serviceprovider;
 
 import io.gdcc.xoai.dataprovider.DataProvider;
-import io.gdcc.xoai.dataprovider.builder.OAIRequestParametersBuilder;
-import io.gdcc.xoai.exceptions.OAIException;
 import io.gdcc.xoai.dataprovider.model.Context;
 import io.gdcc.xoai.dataprovider.repository.InMemoryItemRepository;
 import io.gdcc.xoai.dataprovider.repository.InMemorySetRepository;
 import io.gdcc.xoai.dataprovider.repository.Repository;
 import io.gdcc.xoai.dataprovider.repository.RepositoryConfiguration;
+import io.gdcc.xoai.model.oaipmh.Request;
 import io.gdcc.xoai.serviceprovider.client.OAIClient;
 import io.gdcc.xoai.serviceprovider.exceptions.OAIRequestException;
 import io.gdcc.xoai.serviceprovider.parameters.Parameters;
 import io.gdcc.xoai.services.api.ResumptionTokenFormat;
 import io.gdcc.xoai.services.impl.SimpleResumptionTokenFormat;
 import io.gdcc.xoai.xml.XmlWriter;
-import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.ByteArrayInputStream;
@@ -40,13 +38,13 @@ public abstract class AbstractInMemoryDataProviderTest {
     private final ResumptionTokenFormat resumptionTokenFormat = new SimpleResumptionTokenFormat();
     private final RepositoryConfiguration repositoryConfiguration = RepositoryConfiguration
         .defaults()
-        .withBaseUrl(BASE_URL);
+        .withBaseUrl(BASE_URL)
+        .withResumptionTokenFormat(resumptionTokenFormat);
     private final Context context = new Context().withMetadataFormat(FORMAT, identity());
     private final Repository repository = new Repository()
             .withConfiguration(repositoryConfiguration)
             .withSetRepository(setRepository)
-            .withItemRepository(itemRepository)
-            .withResumptionTokenFormatter(resumptionTokenFormat);
+            .withItemRepository(itemRepository);
     private final DataProvider dataProvider = new DataProvider(theDataProviderContext(), theDataRepository());
 
     protected Context theDataProviderContext () {
@@ -73,25 +71,24 @@ public abstract class AbstractInMemoryDataProviderTest {
         return new OAIClient() {
             @Override
             public InputStream execute(Parameters parameters) throws OAIRequestException {
-                OAIRequestParametersBuilder requestBuilder = new OAIRequestParametersBuilder();
-                requestBuilder.withVerb(parameters.getVerb())
-                        .withFrom(parameters.getFrom())
-                        .withUntil(parameters.getUntil())
-                        .withIdentifier(parameters.getIdentifier())
-                        .withMetadataPrefix(parameters.getMetadataPrefix())
-                        .withResumptionToken(parameters.getResumptionToken())
-                        .withSet(parameters.getSet());
+                Request request = new Request(BASE_URL)
+                    .withVerb(parameters.getVerb())
+                    .withFrom(parameters.getFrom())
+                    .withUntil(parameters.getUntil())
+                    .withIdentifier(parameters.getIdentifier())
+                    .withMetadataPrefix(parameters.getMetadataPrefix())
+                    .withResumptionToken(parameters.getResumptionToken())
+                    .withSet(parameters.getSet());
+                
                 try {
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     XmlWriter writer = new XmlWriter(outputStream);
-                    dataProvider.handle(requestBuilder).write(writer);
+                    dataProvider.handle(request).write(writer);
                     writer.close();
-//                    System.out.println(outputStream.toString());
                     return new ByteArrayInputStream(outputStream.toByteArray());
-                } catch (OAIException | XMLStreamException e) {
+                } catch (XMLStreamException e) {
                     throw new OAIRequestException(e);
                 }
-    
             }
         };
     }
