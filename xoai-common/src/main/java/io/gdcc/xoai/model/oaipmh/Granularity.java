@@ -8,15 +8,15 @@
 
 package io.gdcc.xoai.model.oaipmh;
 
-import java.time.format.DateTimeFormatter;
-
 /**
  * @author Development @ Lyncode
  * @version 3.1.0
  */
 public enum Granularity {
     Day("YYYY-MM-DD"),
-    Second("YYYY-MM-DDThh:mm:ssZ");
+    Second("YYYY-MM-DDThh:mm:ssZ"),
+    // Lenient defaults to Second granularity, but can be used to accept Day granularity, too
+    Lenient(Second.representation);
 
     public static Granularity fromRepresentation (String representation) {
         for (Granularity granularity : Granularity.values())
@@ -32,6 +32,7 @@ public enum Granularity {
         this.representation = representation;
     }
 
+    @Override
     public String toString () {
         return representation;
     }

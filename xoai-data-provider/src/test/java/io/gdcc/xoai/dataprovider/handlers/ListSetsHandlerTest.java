@@ -8,17 +8,22 @@
 
 package io.gdcc.xoai.dataprovider.handlers;
 
-import io.gdcc.xoai.dataprovider.exceptions.DoesNotSupportSetsException;
-import io.gdcc.xoai.dataprovider.exceptions.IllegalVerbException;
-import io.gdcc.xoai.dataprovider.exceptions.NoMatchesException;
-import io.gdcc.xoai.model.oaipmh.ListSets;
+import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
+import io.gdcc.xoai.dataprovider.exceptions.handler.DoesNotSupportSetsException;
+import io.gdcc.xoai.dataprovider.filter.Condition;
+import io.gdcc.xoai.dataprovider.repository.InMemorySetRepository;
+import io.gdcc.xoai.dataprovider.repository.SetRepository;
+import io.gdcc.xoai.exceptions.BadVerbException;
+import io.gdcc.xoai.dataprovider.exceptions.handler.NoMatchesException;
+import io.gdcc.xoai.model.oaipmh.Request;
+import io.gdcc.xoai.model.oaipmh.verbs.ListSets;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.xmlunit.matchers.HasXPathMatcher.hasXPath;
 import static io.gdcc.xoai.dataprovider.model.Set.set;
-import static io.gdcc.xoai.model.oaipmh.Verb.Type.ListSets;
+import static io.gdcc.xoai.model.oaipmh.verbs.Verb.Type.ListSets;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -27,36 +32,52 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ListSetsHandlerTest extends AbstractHandlerTest {
     protected ListSetsHandler underTest;
+    protected InMemorySetRepository setRepository;
 
     @BeforeEach
     public void setup() {
+        this.setRepository = new InMemorySetRepository();
+        theRepository().withSetRepository(setRepository);
         underTest = new ListSetsHandler(aContext(), theRepository());
     }
-
+    
     @Test
-    public void setVerbExpected() throws Exception {
-        assertThrows(IllegalVerbException.class,
-            () -> underTest.handle(a(request())));
+    public void noEmptyOrNullToken () {
+        ResumptionToken.Value subject = new ResumptionToken.ValueBuilder().build();
+        assertThrows(InternalOAIException.class, () -> underTest.handle(subject));
+        assertThrows(InternalOAIException.class, () -> underTest.handle((ResumptionToken.Value) null));
+    }
+    
+    @Test
+    public void doesNotSupportSets() {
+        setRepository.doesNotSupportSets();
+        assertThrows(DoesNotSupportSetsException.class,
+            () -> underTest.handle(
+                ResumptionToken.ValueBuilder.build(
+                    request().withVerb(ListSets)
+                )
+            ));
     }
 
     @Test
     public void emptyRepositoryShouldGiveNoMatches() throws Exception {
         assertThrows(NoMatchesException.class,
-            () -> underTest.handle(a(request().withVerb(ListSets))));
-    }
-
-    @Test
-    public void doesNotSupportSets() throws Exception {
-        theSetRepository().doesNotSupportSets();
-        assertThrows(DoesNotSupportSetsException.class,
-            () -> underTest.handle(a(request().withVerb(ListSets))));
+            () -> underTest.handle(
+                ResumptionToken.ValueBuilder.build(
+                    request().withVerb(ListSets)
+                )
+            ));
     }
 
     @Test
     public void validResponseWithOnlyOnePage() throws Exception {
         theRepositoryConfiguration().withMaxListSets(100);
-        theSetRepository().withRandomSets(10);
-        ListSets handle = underTest.handle(a(request().withVerb(ListSets)));
+        setRepository.withRandomSets(10);
+        ListSets handle = underTest.handle(
+            ResumptionToken.ValueBuilder.build(
+                request().withVerb(ListSets)
+            )
+        );
         String result = write(handle);
 
         assertThat(result, xPath("count(//set)", asInteger(equalTo(10))));
@@ -65,10 +86,14 @@ public class ListSetsHandlerTest extends AbstractHandlerTest {
 
     @Test
     public void showsVirtualSetsFirst () throws Exception {
-        theSetRepository().withSet("set", "hello");
-        theContext().withSet(set("virtual").withName("new").withCondition(alwaysFalseCondition()));
+        setRepository.withSet("set", "hello");
+        theContext().withSet(set("virtual").withName("new").withCondition(Condition.ALWAYS_FALSE));
 
-        ListSets handle = underTest.handle(a(request().withVerb(ListSets)));
+        ListSets handle = underTest.handle(
+            ResumptionToken.ValueBuilder.build(
+                request().withVerb(ListSets)
+            )
+        );
         String result = write(handle);
 
         assertThat(result, xPath("count(//set)", asInteger(equalTo(2))));
@@ -79,8 +104,12 @@ public class ListSetsHandlerTest extends AbstractHandlerTest {
     @Test
     public void firstPageOfValidResponseWithTwoPages() throws Exception {
         theRepositoryConfiguration().withMaxListSets(5);
-        theSetRepository().withRandomSets(10);
-        ListSets handle = underTest.handle(a(request().withVerb(ListSets)));
+        setRepository.withRandomSets(10);
+        ListSets handle = underTest.handle(
+            ResumptionToken.ValueBuilder.build(
+                request().withVerb(ListSets)
+            )
+        );
         String result = write(handle);
 
         assertThat(result, xPath("count(//set)", asInteger(equalTo(5))));
@@ -90,9 +119,12 @@ public class ListSetsHandlerTest extends AbstractHandlerTest {
     @Test
     public void lastPageOfVResponseWithTwoPages() throws Exception {
         theRepositoryConfiguration().withMaxListSets(5);
-        theSetRepository().withRandomSets(10);
-        ListSets handle = underTest.handle(a(request().withVerb(ListSets)
-                .withResumptionToken(valueOf(new ResumptionToken.Value().withOffset(5)))));
+        setRepository.withRandomSets(10);
+        ListSets handle = underTest.handle(
+            new ResumptionToken.ValueBuilder()
+                .withOffset(5)
+                .build()
+        );
         String result = write(handle);
 
         assertThat(result, xPath("count(//set)", asInteger(equalTo(5))));

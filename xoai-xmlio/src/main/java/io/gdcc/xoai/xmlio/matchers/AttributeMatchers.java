@@ -26,15 +26,15 @@ import javax.xml.stream.events.Attribute;
 
 public class AttributeMatchers {
     public static Matcher<Attribute> attributeName (Matcher<QName> matcher) {
-        return new MatcherExtractor<Attribute, QName>(matcher, extractName());
+        return new MatcherExtractor<>(matcher, extractName());
     }
 
     public static Matcher<Attribute> attributeValue (Matcher<String> valueMatcher) {
-        return new MatcherExtractor<Attribute, String>(valueMatcher, extractValue());
+        return new MatcherExtractor<>(valueMatcher, extractValue());
     }
 
     private static ExtractFunction<Attribute, String> extractValue() {
-        return new ExtractFunction<Attribute, String>() {
+        return new ExtractFunction<>() {
             @Override
             public String apply(Attribute input) {
                 return input.getValue();
@@ -48,7 +48,7 @@ public class AttributeMatchers {
     }
 
     private static ExtractFunction<Attribute, QName> extractName() {
-        return new ExtractFunction<Attribute, QName>() {
+        return new ExtractFunction<>() {
             @Override
             public QName apply(Attribute input) {
                 return input.getName();

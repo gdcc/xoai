@@ -71,6 +71,18 @@ public class DateProviderTest {
     }
     
     @Test
+    void parseDatesLenient() {
+        String localDate = "2022-05-19";
+        String timestamp = "2022-05-19T10:01:02Z";
+        
+        Instant expected = LocalDate.of(2022, 5, 19).atTime(0, 0).toInstant(ZoneOffset.UTC);
+        Instant expected10 = LocalDate.of(2022, 5, 19).atTime(10, 1, 2).toInstant(ZoneOffset.UTC);
+        
+        assertEquals(expected, DateProvider.parse(localDate, Granularity.Lenient));
+        assertEquals(expected10, DateProvider.parse(timestamp, Granularity.Lenient));
+    }
+    
+    @Test
     void formatDayGranularity() {
         Instant subject = LocalDate.of(2022, 5, 19).atTime(10, 1, 2).toInstant(ZoneOffset.UTC);
         String expected = "2022-05-19";
@@ -84,6 +96,14 @@ public class DateProviderTest {
         String expected = "2022-05-19T10:01:02Z";
         
         assertEquals(expected, DateProvider.format(subject, Granularity.Second));
+    }
+    
+    @Test
+    void formatLenientGranularity() {
+        Instant subject = LocalDate.of(2022, 5, 19).atTime(10, 1, 2).toInstant(ZoneOffset.UTC);
+        String expected = "2022-05-19T10:01:02Z";
+        
+        assertEquals(expected, DateProvider.format(subject, Granularity.Lenient));
     }
     
     /**

@@ -22,7 +22,8 @@ import java.util.Map;
 public interface DateProvider {
     Map<Granularity, DateTimeFormatter> formatMap = Map.of(
         Granularity.Day, DateTimeFormatter.ofPattern("yyyy-MM-dd"),
-        Granularity.Second, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        Granularity.Second, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"),
+        Granularity.Lenient, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
     );
     
     /**
@@ -64,9 +65,19 @@ public interface DateProvider {
      */
     static Instant parse(String date, Granularity granularity) {
         if (granularity == Granularity.Day)
-            return LocalDate.parse(date, formatMap.get(granularity)).atStartOfDay().toInstant(ZoneOffset.UTC);
+            return LocalDate.parse(date, formatMap.get(Granularity.Day)).atStartOfDay().toInstant(ZoneOffset.UTC);
         else
-            return LocalDateTime.parse(date, formatMap.get(granularity)).toInstant(ZoneOffset.UTC);
+            // first try to parse with second granularity
+            try {
+                return LocalDateTime.parse(date, formatMap.get(Granularity.Second)).toInstant(ZoneOffset.UTC);
+            } catch (DateTimeException e) {
+                // if that failed, and we configured to be lenient, try again with day precision
+                if (granularity == Granularity.Lenient)
+                    return parse(date, Granularity.Day);
+                // ... or rethrow the exception
+                else
+                    throw e;
+            }
     }
     
     /**

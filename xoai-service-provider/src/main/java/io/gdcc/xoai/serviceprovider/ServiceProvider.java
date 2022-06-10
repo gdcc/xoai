@@ -8,15 +8,14 @@
 
 package io.gdcc.xoai.serviceprovider;
 
-import io.gdcc.xoai.model.oaipmh.Header;
-import io.gdcc.xoai.model.oaipmh.Identify;
-import io.gdcc.xoai.model.oaipmh.MetadataFormat;
-import io.gdcc.xoai.model.oaipmh.Record;
-import io.gdcc.xoai.model.oaipmh.Set;
+import io.gdcc.xoai.model.oaipmh.results.record.Header;
+import io.gdcc.xoai.model.oaipmh.verbs.Identify;
+import io.gdcc.xoai.model.oaipmh.results.MetadataFormat;
+import io.gdcc.xoai.model.oaipmh.results.Record;
+import io.gdcc.xoai.model.oaipmh.results.Set;
 import io.gdcc.xoai.serviceprovider.exceptions.BadArgumentException;
 import io.gdcc.xoai.serviceprovider.exceptions.CannotDisseminateFormatException;
 import io.gdcc.xoai.serviceprovider.exceptions.EncapsulatedKnownException;
-import io.gdcc.xoai.serviceprovider.exceptions.HarvestException;
 import io.gdcc.xoai.serviceprovider.exceptions.IdDoesNotExistException;
 import io.gdcc.xoai.serviceprovider.exceptions.NoSetHierarchyException;
 import io.gdcc.xoai.serviceprovider.handler.GetRecordHandler;

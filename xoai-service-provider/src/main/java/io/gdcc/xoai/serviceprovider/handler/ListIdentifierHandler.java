@@ -8,7 +8,7 @@
 
 package io.gdcc.xoai.serviceprovider.handler;
 
-import io.gdcc.xoai.model.oaipmh.Header;
+import io.gdcc.xoai.model.oaipmh.results.record.Header;
 import io.gdcc.xoai.serviceprovider.client.OAIClient;
 import io.gdcc.xoai.serviceprovider.exceptions.InvalidOAIResponse;
 import io.gdcc.xoai.serviceprovider.exceptions.OAIRequestException;
@@ -27,7 +27,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.gdcc.xoai.model.oaipmh.Verb.Type.ListIdentifiers;
+import static io.gdcc.xoai.model.oaipmh.verbs.Verb.Type.ListIdentifiers;
 import static io.gdcc.xoai.xmlio.matchers.QNameMatchers.localPart;
 import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.aStartElement;
 import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.anEndElement;

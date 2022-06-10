@@ -8,7 +8,7 @@
 
 package io.gdcc.xoai.serviceprovider.parsers;
 
-import io.gdcc.xoai.model.oaipmh.MetadataFormat;
+import io.gdcc.xoai.model.oaipmh.results.MetadataFormat;
 import io.gdcc.xoai.serviceprovider.exceptions.IdDoesNotExistException;
 import io.gdcc.xoai.serviceprovider.exceptions.InvalidOAIResponse;
 import io.gdcc.xoai.xmlio.XmlReader;
@@ -47,9 +47,9 @@ public class MetadataFormatParser {
         }
         if (reader.current(errorElement())) {
             String code = reader.getAttributeValue(localPart(equalTo("code")));
-            if (equalTo(NO_METADATA_FORMATS.code()).matches(code))
+            if (equalTo(NO_METADATA_FORMATS.id()).matches(code))
                 return false;
-            else if (ID_DOES_NOT_EXIST.code().equals(code))
+            else if (ID_DOES_NOT_EXIST.id().equals(code))
                 throw new IdDoesNotExistException();
             else
                 throw new InvalidOAIResponse("OAI responded with code: "+

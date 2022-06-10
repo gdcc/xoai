@@ -8,8 +8,6 @@
 
 package io.gdcc.xoai.dataprovider.filter;
 
-import io.gdcc.xoai.dataprovider.model.conditions.Condition;
-
 /**
  * @author Development @ Lyncode
  * @version 3.1.0

@@ -9,9 +9,9 @@
 package io.gdcc.xoai.serviceprovider.parsers;
 
 import io.gdcc.xoai.model.oaipmh.DeletedRecord;
-import io.gdcc.xoai.model.oaipmh.Description;
+import io.gdcc.xoai.model.oaipmh.results.Description;
 import io.gdcc.xoai.model.oaipmh.Granularity;
-import io.gdcc.xoai.model.oaipmh.Identify;
+import io.gdcc.xoai.model.oaipmh.verbs.Identify;
 import io.gdcc.xoai.serviceprovider.exceptions.InvalidOAIResponse;
 import io.gdcc.xoai.xmlio.XmlReader;
 import io.gdcc.xoai.xmlio.exceptions.XmlReaderException;

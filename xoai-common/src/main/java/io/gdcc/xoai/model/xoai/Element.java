@@ -15,9 +15,9 @@
 
 package io.gdcc.xoai.model.xoai;
 
-import io.gdcc.xoai.xmlio.XmlReader;
 import io.gdcc.xoai.xml.XmlWritable;
 import io.gdcc.xoai.xml.XmlWriter;
+import io.gdcc.xoai.xmlio.XmlReader;
 import io.gdcc.xoai.xmlio.exceptions.XmlReaderException;
 import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 
@@ -27,13 +27,19 @@ import java.util.List;
 
 import static io.gdcc.xoai.xmlio.matchers.AttributeMatchers.attributeName;
 import static io.gdcc.xoai.xmlio.matchers.QNameMatchers.localPart;
-import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.*;
+import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.aStartElement;
+import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.anElement;
+import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.anEndElement;
+import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.elementName;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.AllOf.allOf;
 
 public class Element implements XmlWritable {
+    
+    private static final String entityName = "element";
+    
     public static Element parse(XmlReader reader) throws XmlReaderException {
-        if (!reader.current(allOf(aStartElement(), elementName(localPart(equalTo("element"))))))
+        if (!reader.current(allOf(aStartElement(), elementName(localPart(equalTo(entityName))))))
             throw new XmlReaderException("Invalid XML. Expecting entity 'element'");
 
         if (!reader.hasAttribute(attributeName(localPart(equalTo("name")))))
@@ -43,14 +49,14 @@ public class Element implements XmlWritable {
 
 
         while (reader.next(anElement()).current(aStartElement())) {
-            if (reader.current(elementName(localPart(equalTo("element"))))) // Nested element
+            if (reader.current(elementName(localPart(equalTo(entityName))))) // Nested element
                 element.withElement(parse(reader));
             else if (reader.current(elementName(localPart(equalTo("field")))))
                 element.withField(Field.parse(reader));
             else throw new XmlReaderException("Unexpected element");
         }
 
-        if (!reader.current(allOf(anEndElement(), elementName(localPart(equalTo("element"))))))
+        if (!reader.current(allOf(anEndElement(), elementName(localPart(equalTo(entityName))))))
             throw new XmlReaderException("Invalid XML. Expecting end of entity 'element'");
 
         return element;
@@ -107,7 +113,7 @@ public class Element implements XmlWritable {
                 writer.writeEndElement();
             }
             for (Element element : this.getElements()) {
-                writer.writeStartElement("element");
+                writer.writeStartElement(entityName);
                 element.write(writer);
                 writer.writeEndElement();
             }

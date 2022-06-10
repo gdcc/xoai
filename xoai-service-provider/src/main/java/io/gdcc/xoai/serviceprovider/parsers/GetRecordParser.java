@@ -8,7 +8,7 @@
 
 package io.gdcc.xoai.serviceprovider.parsers;
 
-import io.gdcc.xoai.model.oaipmh.Record;
+import io.gdcc.xoai.model.oaipmh.results.Record;
 import io.gdcc.xoai.serviceprovider.exceptions.CannotDisseminateFormatException;
 import io.gdcc.xoai.serviceprovider.exceptions.IdDoesNotExistException;
 import io.gdcc.xoai.serviceprovider.exceptions.InvalidOAIResponse;
@@ -47,9 +47,9 @@ public class GetRecordParser {
             reader.next(errorElement(), recordElement());
             if (reader.current(errorElement())) {
                 String code = reader.getAttributeValue(localPart(equalTo("code")));
-                if (ID_DOES_NOT_EXIST.code().equals(code))
+                if (ID_DOES_NOT_EXIST.id().equals(code))
                     throw new IdDoesNotExistException();
-                else if (CANNOT_DISSEMINATE_FORMAT.code().equals(code))
+                else if (CANNOT_DISSEMINATE_FORMAT.id().equals(code))
                     throw new CannotDisseminateFormatException();
                 else
                     throw new InvalidOAIResponse("OAI responded with error code: "+code);

@@ -9,7 +9,9 @@
 package io.gdcc.xoai.dataprovider;
 
 import io.gdcc.xoai.dataprovider.handlers.AbstractHandlerTest;
+import io.gdcc.xoai.dataprovider.request.RequestBuilder;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
+import io.gdcc.xoai.model.oaipmh.verbs.Verb;
 import io.gdcc.xoai.xml.XmlWritable;
 import io.gdcc.xoai.xml.XmlWriter;
 import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
@@ -21,61 +23,115 @@ import org.xmlunit.matchers.HasXPathMatcher;
 import javax.xml.stream.XMLStreamException;
 import java.util.Map;
 
-import static io.gdcc.xoai.model.oaipmh.Verb.Type.ListRecords;
+import static io.gdcc.xoai.model.oaipmh.verbs.Verb.Type.ListRecords;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class DataProviderTest extends AbstractHandlerTest {
     private static final String OAI_NAMESPACE = "http://www.openarchives.org/OAI/2.0/";
     private final DataProvider dataProvider = new DataProvider(aContext(), theRepository());
-
+    
+    @Test
+    public void handleFromServletQueryParameters() throws Exception {
+        // when
+        String result = write(
+            dataProvider.handle(
+                Map.of("verb", new String[]{"Identify"})
+            ));
+    
+        // then
+        assertThat(result, xPath("//oai:Identify/oai:baseURL/text()", equalTo(theRepositoryConfiguration().getBaseUrl())));
+    }
+    
+    @Test
+    public void missingVerbFromServletQueryParameters() throws Exception {
+        // when
+        String result = write(
+            dataProvider.handle(
+                Map.of("verb", new String[]{""})
+            ));
+        
+        // then
+        assertThat(result, xPath("//oai:error/@code", equalTo("badVerb")));
+    }
+    
     @Test
     public void missingMetadataFormat() throws Exception {
-        String result = write(dataProvider.handle(request().withVerb(ListRecords)));
+        // when
+        String result = write(
+            dataProvider.handle(
+                new RequestBuilder.RawRequest(ListRecords)
+            ));
         
+        // then
         assertThat(result, xPath("//oai:error/@code", equalTo("badArgument")));
     }
 
     @Test
     public void noMatchRecords() throws Exception {
-        String result = write(dataProvider.handle(request()
-                .withVerb(ListRecords)
-                .withMetadataPrefix(EXISTING_METADATA_FORMAT)));
+        // when
+        String result = write(
+            dataProvider.handle(
+                new RequestBuilder.RawRequest(ListRecords)
+                    .withArgument(Verb.Argument.MetadataPrefix, EXISTING_METADATA_FORMAT)
+            ));
         
+        // then
         assertThat(result, xPath("//oai:error/@code", equalTo("noRecordsMatch")));
     }
 
     @Test
     public void oneRecordMatch() throws Exception {
+        // given
         theItemRepository().withRandomItems(1);
-        String result = write(dataProvider.handle(request()
-                .withVerb(ListRecords)
-                .withMetadataPrefix(EXISTING_METADATA_FORMAT)));
         
+        // when
+        String result = write(
+            dataProvider.handle(
+                new RequestBuilder.RawRequest(ListRecords)
+                    .withArgument(Verb.Argument.MetadataPrefix, EXISTING_METADATA_FORMAT)
+            ));
+        
+        // then
         assertThat(result, xPath("count(//oai:record)", asInteger(equalTo(1))));
     }
 
     @Test
     public void incompleteResponseFirstPage () throws Exception {
+        // given
         theItemRepository().withRandomItems(10);
         theRepositoryConfiguration().withMaxListRecords(5);
-        String result = write(dataProvider.handle(request()
-                .withVerb(ListRecords)
-                .withMetadataPrefix(EXISTING_METADATA_FORMAT)));
+        
+        // when
+        String result = write(
+            dataProvider.handle(
+                request()
+                    .withVerb(ListRecords)
+                    .withMetadataPrefix(EXISTING_METADATA_FORMAT)
+            ));
     
+        // then
         assertThat(result, xPath("count(//oai:record)", asInteger(equalTo(5))));
         assertThat(result, hasXPath("//oai:resumptionToken"));
     }
 
     @Test
     public void incompleteResponseLastPage () throws Exception {
+        // given
         theItemRepository().withRandomItems(10);
         theRepositoryConfiguration().withMaxListRecords(5);
-        String result = write(dataProvider.handle(request()
-                .withVerb(ListRecords)
-                .withResumptionToken(valueOf(new ResumptionToken.Value()
+        
+        //when
+        String result = write(
+            dataProvider.handle(
+                request()
+                    .withVerb(ListRecords)
+                    .withMetadataPrefix(EXISTING_METADATA_FORMAT)
+                    .withResumptionToken(valueOf(new ResumptionToken.ValueBuilder()
                         .withMetadataPrefix(EXISTING_METADATA_FORMAT)
-                        .withOffset(5)))));
+                        .withOffset(5)
+                        .build()))
+            ));
         
         assertThat(result, xPath("count(//oai:record)", equalTo("5")));
         assertThat(result, xPath("//oai:resumptionToken", equalTo("")));

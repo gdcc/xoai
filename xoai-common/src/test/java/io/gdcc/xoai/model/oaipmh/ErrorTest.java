@@ -21,7 +21,7 @@ public class ErrorTest extends AbstractOAIPMHTest {
         Error error = new Error("Message").withCode(Error.Code.BAD_ARGUMENT);
 
         String result = writingResult(error);
-        assertThat(result, xPath("/@code", CoreMatchers.is(equalTo(Error.Code.BAD_ARGUMENT.code()))));
+        assertThat(result, xPath("/@code", CoreMatchers.is(equalTo(Error.Code.BAD_ARGUMENT.id()))));
         assertThat(result, xPath("/text()", is(equalTo("Message"))));
     }
 }

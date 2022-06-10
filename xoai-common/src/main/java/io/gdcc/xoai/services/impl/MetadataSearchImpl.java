@@ -29,7 +29,6 @@ import io.gdcc.xoai.services.api.MetadataSearch;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class MetadataSearchImpl extends AbstractMetadataSearcher<String> implements MetadataSearch<String> {
 
@@ -59,24 +58,7 @@ public class MetadataSearchImpl extends AbstractMetadataSearcher<String> impleme
     }
 
     private void add(String name, String value) {
-        if (!index.containsKey(name))
-            index.put(name, new ArrayList<>());
-
+        index.computeIfAbsent(name, key -> new ArrayList<>());
         index.get(name).add(value);
     }
-
-    @Override
-    public String findOne(String xoaiPath) {
-    	return super.findOne(xoaiPath);
-    }
-
-    @Override
-    public List<String> findAll(String xoaiPath) {
-        return super.findAll(xoaiPath);
-    }
-
-	@Override
-	public Map<String, List<String>> index() {
-		return index;
-	}
 }

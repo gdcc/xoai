@@ -8,21 +8,18 @@
 
 package io.gdcc.xoai.dataprovider.handlers;
 
-import io.gdcc.xoai.dataprovider.exceptions.HandlerException;
 import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
-import io.gdcc.xoai.dataprovider.exceptions.OAIException;
+import io.gdcc.xoai.dataprovider.exceptions.handler.HandlerException;
 import io.gdcc.xoai.dataprovider.model.Context;
-import io.gdcc.xoai.dataprovider.parameters.OAICompiledRequest;
 import io.gdcc.xoai.dataprovider.repository.Repository;
 import io.gdcc.xoai.dataprovider.repository.RepositoryConfiguration;
-
 import io.gdcc.xoai.model.oaipmh.DeletedRecord;
-import io.gdcc.xoai.model.oaipmh.Description;
-import io.gdcc.xoai.model.oaipmh.Identify;
+import io.gdcc.xoai.model.oaipmh.Request;
+import io.gdcc.xoai.model.oaipmh.results.Description;
+import io.gdcc.xoai.model.oaipmh.verbs.Identify;
 import io.gdcc.xoai.xml.XmlWritable;
 import io.gdcc.xoai.xml.XmlWriter;
 import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +29,7 @@ import java.net.URL;
 import java.util.List;
 
 
-public class IdentifyHandler extends VerbHandler<Identify> {
+public final class IdentifyHandler extends VerbHandler<Identify> {
     private static final Logger log = LoggerFactory.getLogger(IdentifyHandler.class);
 
     private static final String PROTOCOL_VERSION = "2.0";
@@ -68,9 +65,9 @@ public class IdentifyHandler extends VerbHandler<Identify> {
             throw new InternalOAIException("The repository configuration must return a valid repository name");
 
     }
-
+    
     @Override
-    public Identify handle(OAICompiledRequest params) throws OAIException, HandlerException {
+    public Identify handle(Request request) throws HandlerException {
         Identify identify = new Identify();
         RepositoryConfiguration configuration = getRepository().getConfiguration();
         identify.withBaseURL(configuration.getBaseUrl());
@@ -91,7 +88,7 @@ public class IdentifyHandler extends VerbHandler<Identify> {
         if (descriptions == null) {
             try {
                 identify.withDescription(new Description(XmlWriter.toString(new XOAIDescription().withValue(XOAI_DESC))));
-            } catch (XmlWriteException | XMLStreamException e) {
+            } catch (XMLStreamException e) {
                 log.warn("Description not added", e);
             }
         } else {

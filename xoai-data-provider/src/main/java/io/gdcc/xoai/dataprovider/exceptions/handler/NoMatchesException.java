@@ -1,0 +1,42 @@
+/*
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
+
+package io.gdcc.xoai.dataprovider.exceptions.handler;
+
+import io.gdcc.xoai.model.oaipmh.Error;
+
+/**
+ * @author Development @ Lyncode
+ * @version 3.1.0
+ */
+public class NoMatchesException extends HandlerException {
+
+    private static final long serialVersionUID = 7051492953854730413L;
+    
+    @Override
+    public Error.Code getErrorCode() {
+        return Error.Code.NO_RECORDS_MATCH;
+    }
+    
+    /**
+     * Creates a new instance of <code>NoMatchesException</code> without detail
+     * message.
+     */
+    public NoMatchesException() {
+    }
+
+    /**
+     * Constructs an instance of <code>NoMatchesException</code> with the
+     * specified detail message.
+     *
+     * @param msg the detail message.
+     */
+    public NoMatchesException(String msg) {
+        super(msg);
+    }
+}

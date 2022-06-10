@@ -8,60 +8,68 @@
 
 package io.gdcc.xoai.dataprovider.handlers;
 
-import io.gdcc.xoai.dataprovider.exceptions.BadArgumentException;
-import io.gdcc.xoai.dataprovider.exceptions.BadResumptionToken;
-import io.gdcc.xoai.dataprovider.exceptions.CannotDisseminateFormatException;
-import io.gdcc.xoai.dataprovider.exceptions.DoesNotSupportSetsException;
-import io.gdcc.xoai.dataprovider.exceptions.DuplicateDefinitionException;
-import io.gdcc.xoai.dataprovider.exceptions.HandlerException;
-import io.gdcc.xoai.dataprovider.exceptions.IdDoesNotExistException;
-import io.gdcc.xoai.dataprovider.exceptions.IllegalVerbException;
-import io.gdcc.xoai.dataprovider.exceptions.NoMatchesException;
-import io.gdcc.xoai.dataprovider.exceptions.NoMetadataFormatsException;
-import io.gdcc.xoai.dataprovider.exceptions.OAIException;
-import io.gdcc.xoai.dataprovider.exceptions.UnknownParameterException;
-
+import io.gdcc.xoai.dataprovider.request.RequestBuilder;
+import io.gdcc.xoai.dataprovider.repository.RepositoryConfiguration;
+import io.gdcc.xoai.exceptions.OAIException;
 import io.gdcc.xoai.model.oaipmh.Error;
+import io.gdcc.xoai.model.oaipmh.OAIPMH;
+import io.gdcc.xoai.model.oaipmh.Request;
+import io.gdcc.xoai.services.api.DateProvider;
 
+import java.util.Objects;
 
 public class ErrorHandler {
-
-    public Error handle(HandlerException ex) throws OAIException {
-        if (ex instanceof IllegalVerbException) {
-            return new Error("Illegal verb")
-                    .withCode(Error.Code.BAD_VERB);
-        } else if (ex instanceof DoesNotSupportSetsException) {
-            return new Error("This repository does not support sets")
-                    .withCode(Error.Code.NO_SET_HIERARCHY);
-        } else if (ex instanceof NoMatchesException) {
-            return new Error("No matches for the query")
-                    .withCode(Error.Code.NO_RECORDS_MATCH);
-
-        } else if (ex instanceof BadResumptionToken) {
-            return new Error("The resumption token is invalid")
-                    .withCode(Error.Code.BAD_RESUMPTION_TOKEN);
-        } else if (ex instanceof IdDoesNotExistException) {
-            return new Error("The given id does not exist")
-                    .withCode(Error.Code.ID_DOES_NOT_EXIST);
-        } else if (ex instanceof NoMetadataFormatsException) {
-            return new Error("The item does not have any metadata format available for dissemination")
-                    .withCode(Error.Code.NO_METADATA_FORMATS);
-        } else if (ex instanceof BadArgumentException) {
-            return new Error(ex.getMessage())
-                    .withCode(Error.Code.BAD_ARGUMENT);
-        } else if (ex instanceof CannotDisseminateFormatException) {
-            return new Error("Cannot disseminate item with the given format")
-                    .withCode(Error.Code.CANNOT_DISSEMINATE_FORMAT);
-        } else if (ex instanceof DuplicateDefinitionException) {
-            return new Error(ex.getMessage())
-                .withCode(Error.Code.BAD_ARGUMENT);
-        } else if (ex instanceof UnknownParameterException) {
-            return new Error(ex.getMessage())
-                .withCode(Error.Code.BAD_ARGUMENT);
-        } else {
-            return new Error(ex.getMessage())
-                .withCode(Error.Code.BAD_ARGUMENT);
-        }
+    
+    private final RepositoryConfiguration configuration;
+    public ErrorHandler(RepositoryConfiguration configuration) {
+        this.configuration = configuration;
     }
-
+    
+    /**
+     * Create an OAI-PMH response with an emtpy request, a response date and add an error element.
+     * The handler will override anything present (except other errors) to ensure a proper message.
+     *
+     * @param oaipmh The pre-existing model instance, content will be overridden
+     * @param ex The error to handle
+     * @return The OAI-PMH model with the error message
+     */
+    public OAIPMH handle(final OAIPMH oaipmh, final OAIException ex) {
+        Objects.requireNonNull(oaipmh);
+        Objects.requireNonNull(ex);
+        
+        return oaipmh
+            .withRequest(new Request(configuration.getBaseUrl()))
+            .withResponseDate(DateProvider.now())
+            .withVerb(null)
+            .withError(handle(ex));
+    }
+    
+    /**
+     * Create an OAI-PMH response with an emtpy request, a response date and a (potentially error-carrying) raw request.
+     * This is here for convenience - the handler will override anything present to ensure a proper message if and
+     * only if the raw request does actually contain errors. Will return unchanged otherwise.
+     *
+     * @param oaipmh The pre-existing model instance, content will be overridden
+     * @param rawRequest The error to handle
+     * @return The OAI-PMH model with the error message
+     */
+    public OAIPMH handle(final OAIPMH oaipmh, final RequestBuilder.RawRequest rawRequest) {
+        Objects.requireNonNull(oaipmh);
+        Objects.requireNonNull(rawRequest);
+        
+        if (rawRequest.hasErrors()) {
+            oaipmh
+                .withRequest(new Request(configuration.getBaseUrl()))
+                .withResponseDate(DateProvider.now())
+                .withVerb(null);
+    
+            rawRequest.getErrors().forEach(ex -> oaipmh.withError(handle(ex)));
+        }
+        return oaipmh;
+    }
+    
+    public Error handle(final OAIException ex) {
+        Objects.requireNonNull(ex);
+        return new Error(ex.getMessage()).withCode(ex.getErrorCode());
+    }
 }

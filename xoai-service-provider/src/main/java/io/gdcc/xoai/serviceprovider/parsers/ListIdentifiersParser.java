@@ -8,7 +8,7 @@
 
 package io.gdcc.xoai.serviceprovider.parsers;
 
-import io.gdcc.xoai.model.oaipmh.Header;
+import io.gdcc.xoai.model.oaipmh.results.record.Header;
 import io.gdcc.xoai.serviceprovider.exceptions.InvalidOAIResponse;
 import io.gdcc.xoai.xmlio.XmlReader;
 import io.gdcc.xoai.xmlio.exceptions.XmlReaderException;
@@ -38,7 +38,7 @@ public class ListIdentifiersParser {
         awaitingNextInvocation = true;
         if (reader.current(errorElement())) {
             String code = reader.getAttributeValue(localPart(equalTo("code")));
-            if (equalTo(NO_RECORDS_MATCH.code()).matches(code))
+            if (equalTo(NO_RECORDS_MATCH.id()).matches(code))
                 return false;
             else
                 throw new InvalidOAIResponse("OAI responded with code: " + code);

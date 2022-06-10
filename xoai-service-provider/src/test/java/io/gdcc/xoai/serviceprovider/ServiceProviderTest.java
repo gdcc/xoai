@@ -9,11 +9,10 @@
 package io.gdcc.xoai.serviceprovider;
 
 import io.gdcc.xoai.dataprovider.filter.Filter;
-import io.gdcc.xoai.dataprovider.filter.FilterResolver;
 import io.gdcc.xoai.dataprovider.model.ItemIdentifier;
-import io.gdcc.xoai.dataprovider.model.conditions.Condition;
-import io.gdcc.xoai.model.oaipmh.Identify;
-import io.gdcc.xoai.model.oaipmh.MetadataFormat;
+import io.gdcc.xoai.dataprovider.filter.Condition;
+import io.gdcc.xoai.model.oaipmh.verbs.Identify;
+import io.gdcc.xoai.model.oaipmh.results.MetadataFormat;
 import io.gdcc.xoai.serviceprovider.exceptions.CannotDisseminateFormatException;
 import io.gdcc.xoai.serviceprovider.exceptions.IdDoesNotExistException;
 import io.gdcc.xoai.serviceprovider.exceptions.NoSetHierarchyException;
@@ -146,7 +145,7 @@ public class ServiceProviderTest extends AbstractServiceProviderTest {
     private Condition alwaysFalseCondition() {
         return new Condition() {
             @Override
-            public Filter getFilter(FilterResolver filterResolver) {
+            public Filter getFilter() {
                 return new Filter() {
                     @Override
                     public boolean isItemShown(ItemIdentifier item) {
