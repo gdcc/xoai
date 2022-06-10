@@ -16,6 +16,10 @@ import io.gdcc.xoai.xml.XmlWritable;
 import io.gdcc.xoai.xml.XmlWriter;
 
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Model class representing <OAI-PMH><ListRecords|GetRecord><record><metadata> elements.
@@ -24,6 +28,7 @@ import java.io.InputStream;
 public class Metadata implements XmlWritable {
     
     private final XmlWritable element;
+    protected Map<String,String> attributes = null;
     
     public Metadata(final XOAIMetadata value) {
         this.element = value;
@@ -72,5 +77,16 @@ public class Metadata implements XmlWritable {
             return (XOAIMetadata) element;
         else
             return null;
+    }
+    
+    public Metadata withAttribute(String name, String value) {
+        if (this.attributes == null)
+            this.attributes = new ConcurrentHashMap<>(1);
+        this.attributes.put(name, value);
+        return this;
+    }
+    
+    public Optional<Map<String,String>> getAttributes() {
+        return attributes != null ? Optional.of(Collections.unmodifiableMap(attributes)) : Optional.empty();
     }
 }

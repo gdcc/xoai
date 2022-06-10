@@ -18,18 +18,20 @@ package io.gdcc.xoai.model.oaipmh.results;
 import io.gdcc.xoai.model.oaipmh.results.record.About;
 import io.gdcc.xoai.model.oaipmh.results.record.Header;
 import io.gdcc.xoai.model.oaipmh.results.record.Metadata;
-import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import io.gdcc.xoai.xml.XmlWritable;
 import io.gdcc.xoai.xml.XmlWriter;
+import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 
 import javax.xml.stream.XMLStreamException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class Record implements XmlWritable {
 
-    protected Header header;
-    protected Metadata metadata;
+    protected Header header = null;
+    protected Metadata metadata = null;
     protected List<About> abouts = new ArrayList<>();
 
     public Header getHeader() {
@@ -70,6 +72,16 @@ public class Record implements XmlWritable {
 
             if (this.metadata != null) {
                 writer.writeStartElement("metadata");
+                
+                // When enabled via context, write attributes to the metadata element if present
+                // This is here for Dataverse 4/5 compatibility.
+                Optional<Map<String,String>> attributes = this.metadata.getAttributes();
+                if (writer.getWriterContext().isMetadataAttributesEnabled() && attributes.isPresent()) {
+                    for (Map.Entry<String,String> entry : attributes.get().entrySet()) {
+                        writer.writeAttribute(entry.getKey(), entry.getValue());
+                    }
+                }
+                
                 this.metadata.write(writer);
                 writer.writeEndElement();
             }

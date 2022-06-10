@@ -14,4 +14,18 @@ public interface WriterContext {
         return new SimpleResumptionTokenFormat().withGranularity(getGranularity());
     }
     
+    /**
+     * This is used for Dataverse 4/5 backward compatibility, because they added an attribute to the
+     * <code>&lt;record&gt;&lt;metadata&gt;</code> element, containing the API URL of a record in their
+     * special metadata format "dataverse_json".
+     *
+     * The data provider repository configuration uses this to make the behaviour configurable.
+     *
+     * @return true when {@link io.gdcc.xoai.model.oaipmh.results.Record} should add attributes to <code>&lt;metadata&gt;</code>,
+     *         false otherwise (default)
+     */
+    default boolean isMetadataAttributesEnabled() {
+        return false;
+    }
+    
 }
