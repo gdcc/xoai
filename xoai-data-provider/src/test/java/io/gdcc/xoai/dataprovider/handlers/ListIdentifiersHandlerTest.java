@@ -12,12 +12,12 @@ import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
 import io.gdcc.xoai.dataprovider.exceptions.handler.CannotDisseminateFormatException;
 import io.gdcc.xoai.dataprovider.exceptions.handler.DoesNotSupportSetsException;
 import io.gdcc.xoai.dataprovider.exceptions.handler.NoMatchesException;
+import io.gdcc.xoai.dataprovider.filter.Condition;
+import io.gdcc.xoai.dataprovider.model.InMemoryItem;
 import io.gdcc.xoai.dataprovider.model.MetadataFormat;
+import io.gdcc.xoai.dataprovider.model.Set;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 import io.gdcc.xoai.model.oaipmh.verbs.ListIdentifiers;
-import io.gdcc.xoai.model.oaipmh.verbs.ListRecords;
-import io.gdcc.xoai.model.oaipmh.verbs.ListSets;
-import io.gdcc.xoai.model.oaipmh.verbs.Verb;
 import org.junit.jupiter.api.Test;
 
 import static io.gdcc.xoai.dataprovider.model.InMemoryItem.randomItem;
@@ -100,6 +100,43 @@ public class ListIdentifiersHandlerTest extends AbstractHandlerTest {
         ));
 
         assertThat(result, xPath("count(//header)", asInteger(equalTo(10))));
+    }
+    
+    @Test
+    public void responseWithItemHavingSet() throws Exception {
+        InMemoryItem item = InMemoryItem.randomItem();
+        theItemRepository().withItem(item);
+        
+        String setSpec = item.getSets().get(0).getSpec();
+        theSetRepository().withSet("test", setSpec);
+        
+        String result = write(underTest.handle(
+            new ResumptionToken.ValueBuilder()
+                .withMetadataPrefix(EXISTING_METADATA_FORMAT)
+                .withSetSpec(setSpec)
+                .build()
+        ));
+    
+        assertThat(result, xPath("count(//header)", asInteger(equalTo(1))));
+        assertThat(result, xPath("//header/setSpec/text()", equalTo(setSpec)));
+    }
+    
+    @Test
+    public void responseWithItemHavingVirtualSet() throws Exception {
+        InMemoryItem item = InMemoryItem.randomItem();
+        theItemRepository().withItem(item);
+        
+        String setSpec = "virtualset";
+        theContext().withSet(new Set(setSpec).withCondition(Condition.ALWAYS_TRUE));
+        
+        String result = write(underTest.handle(
+            new ResumptionToken.ValueBuilder()
+                .withMetadataPrefix(EXISTING_METADATA_FORMAT)
+                .build()
+        ));
+        
+        assertThat(result, xPath("count(//header)", asInteger(equalTo(1))));
+        assertThat(result, xPath("//header/setSpec/text()", equalTo(setSpec)));
     }
     
     @Test
