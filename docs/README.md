@@ -31,11 +31,11 @@ more than that.
 ### Concepts (XOAI Core Library)
 
 To understand how XOAI works, one must understand the concept of Filter, Transformer
-and Context. 
+and Context.
 
 - With a Filter it is possible to select information from the data source.
 - A Transformer allows one to make some changes in the metadata before showing it in
-  the OAI interface. 
+  the OAI interface.
 - XOAI also adds a new concept to the OAI-PMH basic specification,
   the concept of context. A context is identified in the URL:
   `http://www.example.com/oai/<context>`
@@ -141,7 +141,7 @@ format, if Base64 does not suit your needs.)
 This fork contains a change to how metadata can be served to the OAI-PMH response.
 Instead of always doing an XSLT transformation, we a) indicate the metadata
 format when asking the item repository for items and b) provide the ability
-to add a `CopyElement` to the `Metadata` model. 
+to add a `CopyElement` to the `Metadata` model.
 
 It happily accepts an `InputStream`, being read and written as a raw response to the
 `<metadata>` section of the result. This allows us to pre-generate metadata

@@ -13,15 +13,15 @@
         <groupId>io.gdcc</groupId>
         <version>${revision}</version>
     </parent>
-    
+
     <modelVersion>4.0.0</modelVersion>
-    
+
     <name>Report Aggregator</name>
     <artifactId>report</artifactId>
     <description>Only used to aggregate some reports into one</description>
-    
+
     <packaging>pom</packaging>
-    
+
     <profiles>
         <profile>
             <id>coverage</id>
@@ -52,7 +52,7 @@
             </build>
         </profile>
     </profiles>
-    
+
     <dependencies>
         <dependency>
             <groupId>io.gdcc</groupId>

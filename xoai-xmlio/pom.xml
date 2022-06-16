@@ -6,7 +6,7 @@
         <artifactId>xoai</artifactId>
         <version>${revision}</version>
     </parent>
-    
+
     <artifactId>xoai-xmlio</artifactId>
     <packaging>jar</packaging>
     <name>XOAI XML IO Commons</name>
@@ -36,13 +36,13 @@
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
-    
+
         <!-- This library is not just used within tests, we also use it to match within real code! -->
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest</artifactId>
         </dependency>
-    
+
         <!-- TESTING DEPENDENCIES -->
         <dependency>
             <groupId>org.xmlunit</groupId>
