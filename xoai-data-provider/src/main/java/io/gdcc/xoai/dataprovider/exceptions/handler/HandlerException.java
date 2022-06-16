@@ -16,15 +16,15 @@ public abstract class HandlerException extends OAIException {
     protected HandlerException() {
         super();
     }
-    
+
     protected HandlerException(String message, Throwable cause) {
         super(message, cause);
     }
-    
+
     protected HandlerException(String message) {
         super(message);
     }
-    
+
     protected HandlerException(Throwable cause) {
         super(cause);
     }

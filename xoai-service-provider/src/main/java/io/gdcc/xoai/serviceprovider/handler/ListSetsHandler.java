@@ -8,6 +8,15 @@
 
 package io.gdcc.xoai.serviceprovider.handler;
 
+import static io.gdcc.xoai.model.oaipmh.verbs.Verb.Type.ListSets;
+import static io.gdcc.xoai.xmlio.matchers.QNameMatchers.localPart;
+import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.aStartElement;
+import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.anEndElement;
+import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.elementName;
+import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.text;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.core.AllOf.allOf;
+
 import io.gdcc.xoai.model.oaipmh.results.Set;
 import io.gdcc.xoai.serviceprovider.client.OAIClient;
 import io.gdcc.xoai.serviceprovider.exceptions.InvalidOAIResponse;
@@ -18,21 +27,11 @@ import io.gdcc.xoai.serviceprovider.parameters.Parameters;
 import io.gdcc.xoai.serviceprovider.parsers.ListSetsParser;
 import io.gdcc.xoai.xmlio.XmlReader;
 import io.gdcc.xoai.xmlio.exceptions.XmlReaderException;
-import org.hamcrest.Matcher;
-
-import javax.xml.stream.events.XMLEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-
-import static io.gdcc.xoai.model.oaipmh.verbs.Verb.Type.ListSets;
-import static io.gdcc.xoai.xmlio.matchers.QNameMatchers.localPart;
-import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.aStartElement;
-import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.anEndElement;
-import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.elementName;
-import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.text;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.core.AllOf.allOf;
+import javax.xml.stream.events.XMLEvent;
+import org.hamcrest.Matcher;
 
 public class ListSetsHandler implements Source<Set> {
     private final OAIClient client;
@@ -51,24 +50,21 @@ public class ListSetsHandler implements Source<Set> {
         if (resumptionToken != null) {
             requestParams.withResumptionToken(resumptionToken);
         }
-        
-        try (
-            InputStream stream = client.execute(requestParams);
-            XmlReader reader = new XmlReader(stream);
-        ) {
+
+        try (InputStream stream = client.execute(requestParams);
+                XmlReader reader = new XmlReader(stream); ) {
             List<Set> sets = new ListSetsParser(reader).parse();
-    
-            // TODO: this is the same as in ListRecordsHandler and ListIdentifierHandler. Deduplicate.
+
+            // TODO: this is the same as in ListRecordsHandler and ListIdentifierHandler.
+            // Deduplicate.
             if (reader.current(resumptionToken())) {
                 if (reader.next(text(), anEndElement()).current(text())) {
                     String text = reader.getText();
-                    if (text == null || "".equals(text.trim()))
-                        ended = true;
-                    else
-                        resumptionToken = text;
+                    if (text == null || "".equals(text.trim())) ended = true;
+                    else resumptionToken = text;
                 } else ended = true;
             } else ended = true;
-            
+
             return sets;
         } catch (XmlReaderException | IOException | OAIRequestException e) {
             throw new InvalidOAIResponse(e);

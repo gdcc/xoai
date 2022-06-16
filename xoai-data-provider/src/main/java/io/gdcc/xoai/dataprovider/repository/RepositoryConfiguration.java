@@ -8,6 +8,8 @@
 
 package io.gdcc.xoai.dataprovider.repository;
 
+import static java.util.Arrays.asList;
+
 import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
 import io.gdcc.xoai.model.oaipmh.DeletedRecord;
 import io.gdcc.xoai.model.oaipmh.Granularity;
@@ -15,7 +17,6 @@ import io.gdcc.xoai.services.api.DateProvider;
 import io.gdcc.xoai.services.api.ResumptionTokenFormat;
 import io.gdcc.xoai.services.impl.SimpleResumptionTokenFormat;
 import io.gdcc.xoai.xml.WriterContext;
-
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -26,14 +27,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import static java.util.Arrays.asList;
-
 public class RepositoryConfiguration implements WriterContext {
-    
+
     private final List<String> adminEmails = new ArrayList<>();
     private final List<String> descriptions = new ArrayList<>();
     private final List<String> compressions = new ArrayList<>();
-    
+
     private Granularity granularity;
     private ResumptionTokenFormat resumptionTokenFormat;
     private String repositoryName;
@@ -43,9 +42,9 @@ public class RepositoryConfiguration implements WriterContext {
     private Integer maxListSets;
     private Integer maxListRecords;
     private DeletedRecord deleteMethod;
-    
+
     private boolean enableMetadataAttributes = false;
-    
+
     private RepositoryConfiguration() {}
 
     public String getRepositoryName() {
@@ -94,15 +93,15 @@ public class RepositoryConfiguration implements WriterContext {
             throw new InternalOAIException("Granularity has not been configured");
         return granularity;
     }
-    
+
     /**
-     * Skew an instant to end of day (granularity Day or Lenient) or by a second (granularity Second).
-     * This is necessary for two reasons:
-     * 1. Day granularity must be inclusive, so we can't leave an "until" at start of day.
-     * 2. Lenient granularity must work like day in this case, as we cannot be sure which is meant.
-     * 3. Second granularity needs skipping a second to avoid not returning {@link io.gdcc.xoai.dataprovider.model.Item}
-     *    from the repository that use an SQL timestamp with nanosecond granularity (so ...:00.5829 would not be
-     *    found when asking for all until ...:00.000)
+     * Skew an instant to end of day (granularity Day or Lenient) or by a second (granularity
+     * Second). This is necessary for two reasons: 1. Day granularity must be inclusive, so we can't
+     * leave an "until" at start of day. 2. Lenient granularity must work like day in this case, as
+     * we cannot be sure which is meant. 3. Second granularity needs skipping a second to avoid not
+     * returning {@link io.gdcc.xoai.dataprovider.model.Item} from the repository that use an SQL
+     * timestamp with nanosecond granularity (so ...:00.5829 would not be found when asking for all
+     * until ...:00.000)
      *
      * @param timestamp The timestamp to skew a little
      * @return The skewed timestamp
@@ -111,9 +110,14 @@ public class RepositoryConfiguration implements WriterContext {
         Objects.requireNonNull(timestamp, "Skewing an 'until' date must not be used with null");
         switch (getGranularity()) {
             case Day:
-            case Lenient: return LocalDate.ofInstant(timestamp, ZoneId.of("UTC")).atTime(LocalTime.MAX).toInstant(ZoneOffset.UTC);
-            case Second: return timestamp.plusSeconds(1);
-            default: return timestamp;
+            case Lenient:
+                return LocalDate.ofInstant(timestamp, ZoneId.of("UTC"))
+                        .atTime(LocalTime.MAX)
+                        .toInstant(ZoneOffset.UTC);
+            case Second:
+                return timestamp.plusSeconds(1);
+            default:
+                return timestamp;
         }
     }
 
@@ -127,25 +131,25 @@ public class RepositoryConfiguration implements WriterContext {
         return Collections.unmodifiableList(descriptions);
     }
 
-    public List<String> getCompressions () {
+    public List<String> getCompressions() {
         return Collections.unmodifiableList(compressions);
     }
-    
+
     public boolean hasCompressions() {
         return !compressions.isEmpty();
     }
-    
+
     @Override
     public ResumptionTokenFormat getResumptionTokenFormat() {
         if (resumptionTokenFormat == null)
             throw new InternalOAIException("Resumption token format has not been configured");
         return this.resumptionTokenFormat;
     }
-    
+
     public RepositoryConfiguration and() {
         return this;
     }
-    
+
     public RepositoryConfiguration withGranularity(Granularity granularity) {
         this.granularity = granularity;
         return this;
@@ -165,6 +169,7 @@ public class RepositoryConfiguration implements WriterContext {
         this.adminEmails.add(email);
         return this;
     }
+
     public RepositoryConfiguration withDeleteMethod(DeletedRecord deleteMethod) {
         this.deleteMethod = deleteMethod;
         return this;
@@ -194,26 +199,26 @@ public class RepositoryConfiguration implements WriterContext {
         this.maxListRecords = maxListRecords;
         return this;
     }
-    
+
     public RepositoryConfiguration withMaxListIdentifiers(int maxListIdentifiers) {
         this.maxListIdentifiers = maxListIdentifiers;
         return this;
     }
-    
+
     public RepositoryConfiguration withMaxListSets(int maxListSets) {
         this.maxListSets = maxListSets;
         return this;
     }
-    
+
     public RepositoryConfiguration withResumptionTokenFormat(ResumptionTokenFormat format) {
         this.resumptionTokenFormat = format;
         return this;
     }
-    
+
     /**
      * This is here for Dataverse 4/5 backward compatibility.
      *
-     * They added an attribute to the <code>&gt;record&lt;&lt;metadata&gt;</code> element,
+     * <p>They added an attribute to the <code>&gt;record&lt;&lt;metadata&gt;</code> element,
      * containing the API URL of a record in their special metadata format "dataverse_json".
      *
      * @deprecated Remove when Dataverse 6 is old enough that no ones uses this workaround anymore.
@@ -223,24 +228,25 @@ public class RepositoryConfiguration implements WriterContext {
         this.enableMetadataAttributes = enable;
         return this;
     }
-    
+
     @Override
     public boolean isMetadataAttributesEnabled() {
         return this.enableMetadataAttributes;
     }
-    
-    public static RepositoryConfiguration defaults () {
+
+    public static RepositoryConfiguration defaults() {
         return new RepositoryConfiguration()
-            .withGranularity(Granularity.Second)
-            .withRepositoryName("Repository")
-            .withEarliestDate(DateProvider.now())
-            .withAdminEmail("sample@test.com")
-            .withBaseUrl("http://localhost")
-            .withMaxListRecords(100)
-            .withMaxListIdentifiers(100)
-            .withMaxListSets(100)
-            .withDeleteMethod(DeletedRecord.NO)
-            .withResumptionTokenFormat(new SimpleResumptionTokenFormat().withGranularity(Granularity.Second))
-            .withEnableMetadataAttributes(false);
+                .withGranularity(Granularity.Second)
+                .withRepositoryName("Repository")
+                .withEarliestDate(DateProvider.now())
+                .withAdminEmail("sample@test.com")
+                .withBaseUrl("http://localhost")
+                .withMaxListRecords(100)
+                .withMaxListIdentifiers(100)
+                .withMaxListSets(100)
+                .withDeleteMethod(DeletedRecord.NO)
+                .withResumptionTokenFormat(
+                        new SimpleResumptionTokenFormat().withGranularity(Granularity.Second))
+                .withEnableMetadataAttributes(false);
     }
 }

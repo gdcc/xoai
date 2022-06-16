@@ -8,12 +8,12 @@
 
 package io.gdcc.xoai.model.oaipmh;
 
-import org.hamcrest.CoreMatchers;
-import org.junit.jupiter.api.Test;
-
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+
+import org.hamcrest.CoreMatchers;
+import org.junit.jupiter.api.Test;
 
 public class ErrorTest extends AbstractOAIPMHTest {
     @Test

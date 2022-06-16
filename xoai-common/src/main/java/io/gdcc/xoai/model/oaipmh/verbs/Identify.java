@@ -9,11 +9,10 @@
 package io.gdcc.xoai.model.oaipmh.verbs;
 
 import io.gdcc.xoai.model.oaipmh.DeletedRecord;
-import io.gdcc.xoai.model.oaipmh.results.Description;
 import io.gdcc.xoai.model.oaipmh.Granularity;
-import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
+import io.gdcc.xoai.model.oaipmh.results.Description;
 import io.gdcc.xoai.xml.XmlWriter;
-
+import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,26 +94,32 @@ public class Identify implements Verb {
         return this.descriptions;
     }
 
-    public Identify withAdminEmail (String adminEmail) {
+    public Identify withAdminEmail(String adminEmail) {
         this.adminEmails.add(adminEmail);
         return this;
     }
-    public Identify withCompression (String compression) {
+
+    public Identify withCompression(String compression) {
         this.compressions.add(compression);
         return this;
     }
-    public Identify withDescription (Description description) {
+
+    public Identify withDescription(Description description) {
         this.descriptions.add(description);
         return this;
     }
 
     @Override
     public void write(XmlWriter writer) throws XmlWriteException {
-        if (this.repositoryName == null) throw new XmlWriteException("Repository Name cannot be null");
+        if (this.repositoryName == null)
+            throw new XmlWriteException("Repository Name cannot be null");
         if (this.baseURL == null) throw new XmlWriteException("Base URL cannot be null");
-        if (this.protocolVersion == null) throw new XmlWriteException("Protocol version cannot be null");
-        if (this.earliestDatestamp == null) throw new XmlWriteException("Eerliest datestamp cannot be null");
-        if (this.deletedRecord == null) throw new XmlWriteException("Deleted record persistency cannot be null");
+        if (this.protocolVersion == null)
+            throw new XmlWriteException("Protocol version cannot be null");
+        if (this.earliestDatestamp == null)
+            throw new XmlWriteException("Eerliest datestamp cannot be null");
+        if (this.deletedRecord == null)
+            throw new XmlWriteException("Deleted record persistency cannot be null");
         if (this.granularity == null) throw new XmlWriteException("Granularity cannot be null");
         if (this.adminEmails == null || this.adminEmails.isEmpty())
             throw new XmlWriteException("List of admin emails cannot be null or empty");
@@ -123,8 +128,7 @@ public class Identify implements Verb {
         writer.writeElement("baseURL", baseURL);
         writer.writeElement("protocolVersion", protocolVersion);
 
-        for (String email : this.adminEmails)
-            writer.writeElement("adminEmail", email);
+        for (String email : this.adminEmails) writer.writeElement("adminEmail", email);
 
         writer.writeElement("earliestDatestamp", earliestDatestamp, Granularity.Second);
         writer.writeElement("deletedRecord", deletedRecord.value());

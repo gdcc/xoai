@@ -10,13 +10,12 @@ package io.gdcc.xoai.serviceprovider.model;
 
 import io.gdcc.xoai.model.oaipmh.Granularity;
 import io.gdcc.xoai.serviceprovider.client.OAIClient;
-
+import java.util.HashMap;
+import java.util.Map;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Context {
     private static final TransformerFactory factory = TransformerFactory.newInstance();
@@ -35,33 +34,33 @@ public class Context {
         }
     }
 
-    public Context withTransformer (Transformer transformer) {
+    public Context withTransformer(Transformer transformer) {
         this.transformer = transformer;
         return this;
     }
 
-    public boolean hasTransformer () {
+    public boolean hasTransformer() {
         return transformer != null;
     }
 
-    public Transformer getTransformer () {
+    public Transformer getTransformer() {
         return transformer;
     }
 
-    public boolean hasMetadataTransformerForPrefix (String prefix) {
+    public boolean hasMetadataTransformerForPrefix(String prefix) {
         return metadataTransformers.containsKey(prefix);
     }
 
-    public Context withMetadataTransformer (String prefix, Transformer transformer) {
+    public Context withMetadataTransformer(String prefix, Transformer transformer) {
         metadataTransformers.put(prefix, transformer);
         return this;
     }
 
-    public Context withMetadataTransformer (String prefix, KnownTransformer knownTransformer) {
+    public Context withMetadataTransformer(String prefix, KnownTransformer knownTransformer) {
         return withMetadataTransformer(prefix, knownTransformer.transformer());
     }
 
-    public Transformer getMetadataTransformer (String prefix) {
+    public Transformer getMetadataTransformer(String prefix) {
         return metadataTransformers.get(prefix);
     }
 
@@ -83,12 +82,12 @@ public class Context {
         return this;
     }
 
-    public Context withOAIClient (OAIClient client) {
+    public Context withOAIClient(OAIClient client) {
         this.client = client;
         return this;
     }
 
-    public OAIClient getClient () {
+    public OAIClient getClient() {
         return client;
     }
 
@@ -101,11 +100,14 @@ public class Context {
             this.location = location;
         }
 
-        public Transformer transformer () {
+        public Transformer transformer() {
             try {
-                return Context.factory.newTransformer(new StreamSource(this.getClass().getClassLoader().getResourceAsStream(location)));
+                return Context.factory.newTransformer(
+                        new StreamSource(
+                                this.getClass().getClassLoader().getResourceAsStream(location)));
             } catch (TransformerConfigurationException e) {
-                throw new IllegalStateException("Unable to load resource file '" + location + "'", e);
+                throw new IllegalStateException(
+                        "Unable to load resource file '" + location + "'", e);
             }
         }
     }

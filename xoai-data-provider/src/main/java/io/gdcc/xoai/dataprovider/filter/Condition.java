@@ -17,9 +17,9 @@ import io.gdcc.xoai.dataprovider.model.ItemIdentifier;
 public interface Condition {
     Condition ALWAYS_TRUE = () -> Filter.ALWAYS_TRUE;
     Condition ALWAYS_FALSE = () -> Filter.ALWAYS_FALSE;
-    
+
     Filter getFilter();
-    
+
     default boolean isItemShown(ItemIdentifier item) {
         return item != null && getFilter() != null && getFilter().isItemShown(item);
     }

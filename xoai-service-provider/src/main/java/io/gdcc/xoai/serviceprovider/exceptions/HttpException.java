@@ -9,8 +9,7 @@
 package io.gdcc.xoai.serviceprovider.exceptions;
 
 public class HttpException extends OAIRequestException {
-    public HttpException() {
-    }
+    public HttpException() {}
 
     public HttpException(String message) {
         super(message);

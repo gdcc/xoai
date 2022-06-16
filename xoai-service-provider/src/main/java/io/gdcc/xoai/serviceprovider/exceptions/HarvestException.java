@@ -8,7 +8,6 @@
 
 package io.gdcc.xoai.serviceprovider.exceptions;
 
-
 /**
  * @author Development @ Lyncode
  * @version 3.1.0
@@ -33,10 +32,10 @@ public class HarvestException extends Exception {
         super(arg0, arg1);
     }
 
-
     public void setURL(String url) {
         this.url = url;
     }
+
     public String getURL() {
         return this.url;
     }

@@ -10,20 +10,17 @@ package io.gdcc.xoai.model.oaipmh;
 
 import io.gdcc.xoai.model.oaipmh.verbs.Verb;
 import io.gdcc.xoai.services.api.DateProvider;
-import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import io.gdcc.xoai.xml.XSISchema;
 import io.gdcc.xoai.xml.XmlWritable;
 import io.gdcc.xoai.xml.XmlWriter;
-
-import javax.xml.stream.XMLStreamException;
+import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.xml.stream.XMLStreamException;
 
-/**
- * The modeling class representing the responses topmost XML root <OAI-PMH>
- */
+/** The modeling class representing the responses topmost XML root <OAI-PMH> */
 public class OAIPMH implements XmlWritable {
     public static final String NAMESPACE_URI = "http://www.openarchives.org/OAI/2.0/";
     public static final String SCHEMA_LOCATION = "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd";
@@ -60,7 +57,7 @@ public class OAIPMH implements XmlWritable {
         return this;
     }
 
-    public boolean hasErrors () {
+    public boolean hasErrors() {
         return !this.errors.isEmpty();
     }
 
@@ -79,17 +76,20 @@ public class OAIPMH implements XmlWritable {
             writer.writeStartElement("OAI-PMH");
             writer.writeDefaultNamespace(NAMESPACE_URI);
             writer.writeNamespace(XSISchema.PREFIX, XSISchema.NAMESPACE_URI);
-            writer.writeAttribute(XSISchema.PREFIX, XSISchema.NAMESPACE_URI, "schemaLocation",
+            writer.writeAttribute(
+                    XSISchema.PREFIX,
+                    XSISchema.NAMESPACE_URI,
+                    "schemaLocation",
                     NAMESPACE_URI + " " + SCHEMA_LOCATION);
 
             writer.writeElement("responseDate", this.responseDate, Granularity.Second);
             writer.writeElement("request", request);
 
             if (!errors.isEmpty()) {
-                for (Error error : errors)
-                    writer.writeElement("error", error);
+                for (Error error : errors) writer.writeElement("error", error);
             } else {
-                if (verb == null) throw new XmlWriteException("An error or a valid response must be set");
+                if (verb == null)
+                    throw new XmlWriteException("An error or a valid response must be set");
                 writer.writeElement(verb.getType().displayName(), verb);
             }
 

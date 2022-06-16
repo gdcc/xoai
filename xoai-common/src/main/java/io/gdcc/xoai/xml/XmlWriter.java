@@ -14,41 +14,41 @@ import io.gdcc.xoai.model.oaipmh.verbs.Verb;
 import io.gdcc.xoai.services.api.DateProvider;
 import io.gdcc.xoai.xmlio.XmlIoWriter;
 import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
-
-import javax.xml.stream.XMLStreamException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.Instant;
 import java.util.Optional;
+import javax.xml.stream.XMLStreamException;
 
 public class XmlWriter extends XmlIoWriter implements AutoCloseable {
-    
+
     public static String toString(XmlWritable writable) throws XMLStreamException {
         return toString(writable, defaultContext());
     }
-    
-    public static String toString(XmlWritable writable, WriterContext context) throws XMLStreamException {
+
+    public static String toString(XmlWritable writable, WriterContext context)
+            throws XMLStreamException {
         final OutputStream out = new ByteArrayOutputStream();
-        
-        try (
-            out;
-            XmlWriter writer = new XmlWriter(out, context)
-        ) {
+
+        try (out;
+                XmlWriter writer = new XmlWriter(out, context)) {
             writable.write(writer);
         } catch (IOException e) {
             throw new XmlWriteException(e);
         }
-    
-        // the try-with-resources above will take care that writer and stream are closed before reading back
+
+        // the try-with-resources above will take care that writer and stream are closed before
+        // reading
+        // back
         // the data, making sure everything has been flushed.
         return out.toString();
     }
 
-    public static WriterContext defaultContext () {
-        return new WriterContext(){};
+    public static WriterContext defaultContext() {
+        return new WriterContext() {};
     }
-    
+
     private final WriterContext writerContext;
 
     public XmlWriter(OutputStream output) throws XMLStreamException {
@@ -60,7 +60,7 @@ public class XmlWriter extends XmlIoWriter implements AutoCloseable {
         super(output);
         this.writerContext = writerContext;
     }
-    
+
     public WriterContext getWriterContext() {
         return this.writerContext;
     }
@@ -91,7 +91,7 @@ public class XmlWriter extends XmlIoWriter implements AutoCloseable {
         }
     }
 
-    public void writeElement (String elementName, XmlWritable writable) throws XmlWriteException {
+    public void writeElement(String elementName, XmlWritable writable) throws XmlWriteException {
         try {
             if (writable != null) {
                 this.writeStartElement(elementName);
@@ -103,13 +103,15 @@ public class XmlWriter extends XmlIoWriter implements AutoCloseable {
         }
     }
 
-    public void writeElement(String elementName, Instant date, Granularity granularity) throws XmlWriteException {
+    public void writeElement(String elementName, Instant date, Granularity granularity)
+            throws XmlWriteException {
         this.writeElement(elementName, DateProvider.format(date, granularity));
     }
+
     public void writeElement(String elementName, Instant date) throws XmlWriteException {
         this.writeElement(elementName, DateProvider.format(date, writerContext.getGranularity()));
     }
-    
+
     public void writeAttribute(String name, Instant date) throws XmlWriteException {
         try {
             this.writeAttribute(name, DateProvider.format(date, writerContext.getGranularity()));
@@ -118,39 +120,36 @@ public class XmlWriter extends XmlIoWriter implements AutoCloseable {
         }
     }
 
-    public void writeAttribute(String name, Instant value, Granularity granularity) throws XmlWriteException {
+    public void writeAttribute(String name, Instant value, Granularity granularity)
+            throws XmlWriteException {
         try {
             this.writeAttribute(name, DateProvider.format(value, granularity));
         } catch (XMLStreamException e) {
             throw new XmlWriteException(e);
         }
     }
-    
-    public <T> void writeAttribute(Verb.Argument argument, Optional<T> optional) throws XMLStreamException {
+
+    public <T> void writeAttribute(Verb.Argument argument, Optional<T> optional)
+            throws XMLStreamException {
         if (optional.isPresent()) {
             T value = optional.get();
-            if (value instanceof String)
-                writeAttribute(argument.toString(), (String) value);
-            else if (value instanceof Instant)
-                writeAttribute(argument.toString(), (Instant) value);
+            if (value instanceof String) writeAttribute(argument.toString(), (String) value);
+            else if (value instanceof Instant) writeAttribute(argument.toString(), (Instant) value);
         }
     }
 
     @Override
     public void writeAttribute(String localName, String value) throws XMLStreamException {
-        if (value != null)
-            super.writeAttribute(localName, value);
+        if (value != null) super.writeAttribute(localName, value);
     }
 
     @Override
     public void writeCharacters(String text) throws XMLStreamException {
-        if (text != null)
-            super.writeCharacters(text);
+        if (text != null) super.writeCharacters(text);
     }
 
     public void write(XmlWritable writable) throws XmlWriteException {
-        if (writable != null)
-            writable.write(this);
+        if (writable != null) writable.write(this);
     }
 
     public void write(ResumptionToken.Value value) throws XmlWriteException {

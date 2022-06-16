@@ -9,8 +9,7 @@
 package io.gdcc.xoai.serviceprovider.exceptions;
 
 public class NoMetadataFormatsException extends HarvestException {
-    public NoMetadataFormatsException() {
-    }
+    public NoMetadataFormatsException() {}
 
     public NoMetadataFormatsException(String arg0) {
         super(arg0);

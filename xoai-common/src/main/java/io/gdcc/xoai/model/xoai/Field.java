@@ -8,22 +8,21 @@
 
 package io.gdcc.xoai.model.xoai;
 
-import io.gdcc.xoai.xmlio.XmlReader;
-import io.gdcc.xoai.xml.XmlWritable;
-import io.gdcc.xoai.xml.XmlWriter;
-import io.gdcc.xoai.xmlio.exceptions.XmlReaderException;
-import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
-
-import javax.xml.stream.XMLStreamException;
-
 import static io.gdcc.xoai.xmlio.matchers.AttributeMatchers.attributeName;
 import static io.gdcc.xoai.xmlio.matchers.QNameMatchers.localPart;
 import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.AllOf.allOf;
 
+import io.gdcc.xoai.xml.XmlWritable;
+import io.gdcc.xoai.xml.XmlWriter;
+import io.gdcc.xoai.xmlio.XmlReader;
+import io.gdcc.xoai.xmlio.exceptions.XmlReaderException;
+import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
+import javax.xml.stream.XMLStreamException;
+
 public class Field implements XmlWritable {
-    public static Field parse (XmlReader reader) throws XmlReaderException {
+    public static Field parse(XmlReader reader) throws XmlReaderException {
         if (!reader.current(allOf(aStartElement(), elementName(localPart(equalTo("field"))))))
             throw new XmlReaderException("Invalid XML. Expecting entity 'field'");
 
@@ -43,8 +42,7 @@ public class Field implements XmlWritable {
         return field;
     }
 
-    public Field() {
-    }
+    public Field() {}
 
     public Field(String value, String name) {
         this.value = value;
@@ -75,11 +73,9 @@ public class Field implements XmlWritable {
     @Override
     public void write(XmlWriter writer) throws XmlWriteException {
         try {
-            if (this.name != null)
-                writer.writeAttribute("name", this.getName());
+            if (this.name != null) writer.writeAttribute("name", this.getName());
 
-            if (this.value != null)
-                writer.writeCharacters(value);
+            if (this.value != null) writer.writeCharacters(value);
 
         } catch (XMLStreamException e) {
             throw new XmlWriteException(e);

@@ -17,22 +17,17 @@ import io.gdcc.xoai.model.oaipmh.Error;
 public class BadVerbException extends OAIException {
 
     private static final long serialVersionUID = 2748244610538429452L;
-    
+
     @Override
     public Error.Code getErrorCode() {
         return Error.Code.BAD_VERB;
     }
-    
-    /**
-     * Creates a new instance of <code>BadVerbException</code> without
-     * detail message.
-     */
-    public BadVerbException() {
-    }
+
+    /** Creates a new instance of <code>BadVerbException</code> without detail message. */
+    public BadVerbException() {}
 
     /**
-     * Constructs an instance of <code>BadVerbException</code> with the
-     * specified detail message.
+     * Constructs an instance of <code>BadVerbException</code> with the specified detail message.
      *
      * @param msg the detail message.
      */

@@ -24,8 +24,7 @@ public class ItemIterator<T> implements Iterator<T> {
 
     @Override
     public boolean hasNext() {
-        if (items.size() > position)
-            return true;
+        if (items.size() > position) return true;
         else {
             if (source.endReached()) return false;
             else {

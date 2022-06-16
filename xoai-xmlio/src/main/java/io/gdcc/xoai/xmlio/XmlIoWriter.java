@@ -1,32 +1,28 @@
 /**
  * Copyright 2012 Lyncode
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.gdcc.xoai.xmlio;
 
-import org.codehaus.stax2.XMLOutputFactory2;
-
+import java.io.OutputStream;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import java.io.OutputStream;
+import org.codehaus.stax2.XMLOutputFactory2;
 
 public class XmlIoWriter implements XMLStreamWriter, AutoCloseable {
     private final XMLStreamWriter writer;
     private final OutputStream outputStream;
-    
+
     // Ignore SonarCloud warning here - it's used the way the library says we must use it.
     // https://sonarcloud.io/organizations/gdcc/rules?open=java%3AS3252&rule_key=java%3AS3252
     @SuppressWarnings("java:S3252")
@@ -46,7 +42,8 @@ public class XmlIoWriter implements XMLStreamWriter, AutoCloseable {
     }
 
     @Override
-    public void writeStartElement(String prefix, String localName, String namespaceURI) throws XMLStreamException {
+    public void writeStartElement(String prefix, String localName, String namespaceURI)
+            throws XMLStreamException {
         writer.writeStartElement(prefix, localName, namespaceURI);
     }
 
@@ -56,7 +53,8 @@ public class XmlIoWriter implements XMLStreamWriter, AutoCloseable {
     }
 
     @Override
-    public void writeEmptyElement(String prefix, String localName, String namespaceURI) throws XMLStreamException {
+    public void writeEmptyElement(String prefix, String localName, String namespaceURI)
+            throws XMLStreamException {
         writer.writeEmptyElement(prefix, localName, namespaceURI);
     }
 
@@ -91,12 +89,14 @@ public class XmlIoWriter implements XMLStreamWriter, AutoCloseable {
     }
 
     @Override
-    public void writeAttribute(String prefix, String namespaceURI, String localName, String value) throws XMLStreamException {
+    public void writeAttribute(String prefix, String namespaceURI, String localName, String value)
+            throws XMLStreamException {
         writer.writeAttribute(prefix, namespaceURI, localName, value);
     }
 
     @Override
-    public void writeAttribute(String namespaceURI, String localName, String value) throws XMLStreamException {
+    public void writeAttribute(String namespaceURI, String localName, String value)
+            throws XMLStreamException {
         writer.writeAttribute(namespaceURI, localName, value);
     }
 

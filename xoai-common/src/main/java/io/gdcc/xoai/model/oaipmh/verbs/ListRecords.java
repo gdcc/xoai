@@ -8,11 +8,10 @@
 
 package io.gdcc.xoai.model.oaipmh.verbs;
 
-import io.gdcc.xoai.model.oaipmh.results.Record;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
-import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
+import io.gdcc.xoai.model.oaipmh.results.Record;
 import io.gdcc.xoai.xml.XmlWriter;
-
+import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,8 +41,7 @@ public class ListRecords implements Verb {
     @Override
     public void write(XmlWriter writer) throws XmlWriteException {
         if (!this.records.isEmpty())
-            for (Record record : this.records)
-                writer.writeElement("record", record);
+            for (Record record : this.records) writer.writeElement("record", record);
         writer.writeElement("resumptionToken", resumptionToken);
     }
 

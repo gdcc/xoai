@@ -8,16 +8,17 @@
 
 package io.gdcc.xoai.serviceprovider;
 
-import io.gdcc.xoai.serviceprovider.model.Context;
-
 import static io.gdcc.xoai.dataprovider.model.MetadataFormat.identity;
+
+import io.gdcc.xoai.serviceprovider.model.Context;
 
 public abstract class AbstractServiceProviderTest extends AbstractInMemoryDataProviderTest {
 
-    private final Context context = new Context()
-            .withOAIClient(oaiClient())
-            .withBaseUrl(BASE_URL)
-            .withMetadataTransformer(FORMAT, identity());
+    private final Context context =
+            new Context()
+                    .withOAIClient(oaiClient())
+                    .withBaseUrl(BASE_URL)
+                    .withMetadataTransformer(FORMAT, identity());
 
     protected Context theContext() {
         return context;

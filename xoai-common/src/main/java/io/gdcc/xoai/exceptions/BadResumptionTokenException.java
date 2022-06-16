@@ -15,9 +15,8 @@ public class BadResumptionTokenException extends OAIException {
     public Error.Code getErrorCode() {
         return Error.Code.BAD_RESUMPTION_TOKEN;
     }
-    
-    public BadResumptionTokenException() {
-    }
+
+    public BadResumptionTokenException() {}
 
     public BadResumptionTokenException(String message) {
         super(message);

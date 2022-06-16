@@ -11,12 +11,6 @@ package io.gdcc.xoai.xml;
 import io.gdcc.xoai.xmlio.XmlReader;
 import io.gdcc.xoai.xmlio.exceptions.XmlReaderException;
 import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.Attribute;
-import javax.xml.stream.events.Namespace;
-import javax.xml.stream.events.XMLEvent;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +20,11 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.Namespace;
+import javax.xml.stream.events.XMLEvent;
 
 public class EchoElement implements XmlWritable {
     private final Deque<Set<String>> declaredPrefixes = new ArrayDeque<>();
@@ -36,12 +35,12 @@ public class EchoElement implements XmlWritable {
         this.xmlString = xmlString;
         this.xmlInputStream = null;
     }
-    
+
     public EchoElement(final InputStream xmlInputStream) {
         this.xmlInputStream = xmlInputStream;
         this.xmlString = null;
     }
-    
+
     @Override
     public void write(final XmlWriter writer) throws XmlWriteException {
         if (xmlInputStream != null) {
@@ -49,15 +48,15 @@ public class EchoElement implements XmlWritable {
         } else if (xmlString != null) {
             write(writer, new ByteArrayInputStream(xmlString.getBytes(StandardCharsets.UTF_8)));
         } else {
-            throw new XmlWriteException("Cannot write XML when none given (both stream and string null)");
+            throw new XmlWriteException(
+                    "Cannot write XML when none given (both stream and string null)");
         }
     }
-    
-    private void write(final XmlWriter writer, final InputStream inStream) throws XmlWriteException {
-        try (
-            inStream;
-            XmlReader reader = new XmlReader(inStream)
-        ){
+
+    private void write(final XmlWriter writer, final InputStream inStream)
+            throws XmlWriteException {
+        try (inStream;
+                XmlReader reader = new XmlReader(inStream)) {
             while (reader.hasNext()) {
                 XMLEvent event = reader.nextEvent();
 
@@ -65,14 +64,17 @@ public class EchoElement implements XmlWritable {
                     declaredPrefixes.push(new HashSet<>());
 
                     QName name = event.asStartElement().getName();
-                    writer.writeStartElement(name.getPrefix(), name.getLocalPart(), name.getNamespaceURI());
+                    writer.writeStartElement(
+                            name.getPrefix(), name.getLocalPart(), name.getNamespaceURI());
                     addNamespaceIfRequired(writer, name);
 
                     // Copy any other namespace declarations
                     Iterator<Namespace> itNamespaces = event.asStartElement().getNamespaces();
                     while (itNamespaces.hasNext()) {
                         Namespace namespace = itNamespaces.next();
-                        addNamespaceIfRequired(writer, new QName(namespace.getNamespaceURI(), "", namespace.getPrefix()));
+                        addNamespaceIfRequired(
+                                writer,
+                                new QName(namespace.getNamespaceURI(), "", namespace.getPrefix()));
                     }
 
                     // Copy attributes
@@ -81,7 +83,11 @@ public class EchoElement implements XmlWritable {
                         Attribute attr = itAttributes.next();
                         QName attrName = attr.getName();
                         addNamespaceIfRequired(writer, attrName);
-                        writer.writeAttribute(attrName.getPrefix(), attrName.getNamespaceURI(), attrName.getLocalPart(), attr.getValue());
+                        writer.writeAttribute(
+                                attrName.getPrefix(),
+                                attrName.getNamespaceURI(),
+                                attrName.getLocalPart(),
+                                attr.getValue());
                     }
                 } else if (event.isEndElement()) {
                     declaredPrefixes.pop();
@@ -98,7 +104,8 @@ public class EchoElement implements XmlWritable {
     private void addNamespaceIfRequired(XmlWriter writer, QName name) throws XMLStreamException {
         // Search for namespace in scope, starting from the root.
         for (Set<String> ancestorNamespaces : declaredPrefixes) {
-            if (ancestorNamespaces.contains(name.getPrefix() + name.getNamespaceURI())) { // Prefixes might be reused.
+            if (ancestorNamespaces.contains(
+                    name.getPrefix() + name.getNamespaceURI())) { // Prefixes might be reused.
                 return;
             }
         }

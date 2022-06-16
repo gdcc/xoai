@@ -22,77 +22,70 @@ import io.gdcc.xoai.dataprovider.repository.ResultsPage;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 import io.gdcc.xoai.model.oaipmh.results.record.Header;
 import io.gdcc.xoai.model.oaipmh.verbs.ListIdentifiers;
-
 import java.util.List;
-
 
 public class ListIdentifiersHandler extends VerbHandler<ListIdentifiers> {
 
     private final ItemRepository itemRepository;
-    
+
     public ListIdentifiersHandler(Context context, Repository repository) {
         super(context, repository);
         this.itemRepository = repository.getItemRepository();
     }
-    
+
     @Override
     public ListIdentifiers handle(ResumptionToken.Value token) throws HandlerException {
-        
+
         if (token == null || token.isEmpty())
-            throw new InternalOAIException("Resumption token must not be null or empty - check your implementation!");
-    
+            throw new InternalOAIException(
+                    "Resumption token must not be null or empty - check your implementation!");
+
         // Check for set support if set argument is present (skip lot's of CPU cycles if not)
         verifySet(token);
-        
+
         // Get the format
         MetadataFormat format = verifyFormat(token);
-        
+
         // Create filters
         final List<ScopedFilter> filters = createFilters(token, format);
-        
+
         // Execute the lookup with the repository
         ResultsPage<ItemIdentifier> results =
-            itemRepository.getItemIdentifiers(
-                filters,
-                format,
-                getConfiguration().getMaxListIdentifiers(),
-                token);
-    
+                itemRepository.getItemIdentifiers(
+                        filters, format, getConfiguration().getMaxListIdentifiers(), token);
+
         // If no results present, send error message
-        if (results.getTotal() == 0)
-            throw new NoMatchesException();
+        if (results.getTotal() == 0) throw new NoMatchesException();
 
         final ListIdentifiers response = new ListIdentifiers();
-        // TODO make the getHeaders an unmodifiable list and add withHeader() method to ListIdentifiers
-        results.getList().forEach(
-            item -> response.getHeaders().add(createHeader(item, format))
-        );
-    
+        // TODO make the getHeaders an unmodifiable list and add withHeader() method to
+        // ListIdentifiers
+        results.getList().forEach(item -> response.getHeaders().add(createHeader(item, format)));
+
         // Create the OAIPMH model for the <resumptionToken>
         results.getResponseToken(getConfiguration().getMaxListIdentifiers())
-            // TODO: add expiration date here, based on repository configuration
-            .ifPresent(response::withResumptionToken);
+                // TODO: add expiration date here, based on repository configuration
+                .ifPresent(response::withResumptionToken);
 
         return response;
     }
 
-
     private Header createHeader(ItemIdentifier itemIdentifier, MetadataFormat format) {
-        if (!itemIdentifier.isDeleted() && ! format.isItemShown(itemIdentifier))
-            throw new InternalOAIException("The item repository is currently providing items which cannot be disseminated with format "+format.getPrefix());
+        if (!itemIdentifier.isDeleted() && !format.isItemShown(itemIdentifier))
+            throw new InternalOAIException(
+                    "The item repository is currently providing items which cannot be disseminated"
+                            + " with format "
+                            + format.getPrefix());
 
         Header header = new Header();
         header.withDatestamp(itemIdentifier.getDatestamp());
         header.withIdentifier(itemIdentifier.getIdentifier());
-        if (itemIdentifier.isDeleted())
-            header.withStatus(Header.Status.DELETED);
+        if (itemIdentifier.isDeleted()) header.withStatus(Header.Status.DELETED);
 
         for (Set set : getContext().getSets())
-            if (set.isItemShown(itemIdentifier))
-                header.withSetSpec(set.getSpec());
+            if (set.isItemShown(itemIdentifier)) header.withSetSpec(set.getSpec());
 
-        for (Set set : itemIdentifier.getSets())
-            header.withSetSpec(set.getSpec());
+        for (Set set : itemIdentifier.getSets()) header.withSetSpec(set.getSpec());
 
         return header;
     }

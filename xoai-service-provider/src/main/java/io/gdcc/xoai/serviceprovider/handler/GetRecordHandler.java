@@ -8,6 +8,8 @@
 
 package io.gdcc.xoai.serviceprovider.handler;
 
+import static io.gdcc.xoai.model.oaipmh.verbs.Verb.Type.GetRecord;
+
 import io.gdcc.xoai.model.oaipmh.results.Record;
 import io.gdcc.xoai.serviceprovider.client.OAIClient;
 import io.gdcc.xoai.serviceprovider.exceptions.CannotDisseminateFormatException;
@@ -18,11 +20,8 @@ import io.gdcc.xoai.serviceprovider.model.Context;
 import io.gdcc.xoai.serviceprovider.parameters.GetRecordParameters;
 import io.gdcc.xoai.serviceprovider.parameters.Parameters;
 import io.gdcc.xoai.serviceprovider.parsers.GetRecordParser;
-
 import java.io.IOException;
 import java.io.InputStream;
-
-import static io.gdcc.xoai.model.oaipmh.verbs.Verb.Type.GetRecord;
 
 public class GetRecordHandler {
 
@@ -34,10 +33,12 @@ public class GetRecordHandler {
         this.client = context.getClient();
     }
 
-    public Record handle(GetRecordParameters parameters) throws IdDoesNotExistException, CannotDisseminateFormatException {
-        Parameters requestParameters = Parameters.parameters().withVerb(GetRecord).include(parameters);
-        
-        try ( InputStream stream = client.execute(requestParameters) ){
+    public Record handle(GetRecordParameters parameters)
+            throws IdDoesNotExistException, CannotDisseminateFormatException {
+        Parameters requestParameters =
+                Parameters.parameters().withVerb(GetRecord).include(parameters);
+
+        try (InputStream stream = client.execute(requestParameters)) {
             return new GetRecordParser(stream, context, parameters.getMetadataPrefix()).parse();
         } catch (OAIRequestException | IOException e) {
             throw new InvalidOAIResponse(e);

@@ -19,11 +19,9 @@ import io.gdcc.xoai.dataprovider.repository.ResultsPage;
 import io.gdcc.xoai.dataprovider.repository.SetRepository;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 import io.gdcc.xoai.model.oaipmh.verbs.ListSets;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 
 public class ListSetsHandler extends VerbHandler<ListSets> {
     private final SetRepository setRepository;
@@ -35,54 +33,56 @@ public class ListSetsHandler extends VerbHandler<ListSets> {
 
     @Override
     public ListSets handle(ResumptionToken.Value token) throws HandlerException {
-    
+
         if (token == null || token.isEmpty())
-            throw new InternalOAIException("Resumption token must not be null or empty - check your implementation!");
-        
+            throw new InternalOAIException(
+                    "Resumption token must not be null or empty - check your implementation!");
+
         if (!setRepository.supportSets()) {
             throw new DoesNotSupportSetsException();
         }
-    
+
         // Execute the lookup with the repository, get all sets
         List<Set> repositorySets = setRepository.getSets();
         List<Set> contextSets = getContext().getSets();
-        
+
         int totalResults = repositorySets.size() + contextSets.size();
         int maxResults = getConfiguration().getMaxListSets();
-    
-        // Create an ordered stream of sets (as both are coming from lists, they are ordered by design)
+
+        // Create an ordered stream of sets (as both are coming from lists, they are ordered by
+        // design)
         // and create a slice for the paginated result
-        List<Set> pagedSetList = Stream
-            .concat(contextSets.stream(), repositorySets.stream())
-                .skip(token.getOffset())
-                .limit(maxResults)
-                .collect(Collectors.toUnmodifiableList());
-        
+        List<Set> pagedSetList =
+                Stream.concat(contextSets.stream(), repositorySets.stream())
+                        .skip(token.getOffset())
+                        .limit(maxResults)
+                        .collect(Collectors.toUnmodifiableList());
+
         // Create the paged result
-        ResultsPage<Set> results = new ResultsPage<>(
-            token,
-            // more results available when page size == maxlength - but only when this is not also the end of the list (edge case where maxlength is a multiple of total size)
-            pagedSetList.size() == maxResults && totalResults != maxResults + token.getOffset(),
-            pagedSetList,
-            totalResults
-        );
-    
+        ResultsPage<Set> results =
+                new ResultsPage<>(
+                        token,
+                        // more results available when page size == maxlength - but only when this
+                        // is not also
+                        // the end of the list (edge case where maxlength is a multiple of total
+                        // size)
+                        pagedSetList.size() == maxResults
+                                && totalResults != maxResults + token.getOffset(),
+                        pagedSetList,
+                        totalResults);
+
         // If no results present, send error message
-        if (results.getTotal() == 0)
-            throw new NoMatchesException();
-    
+        if (results.getTotal() == 0) throw new NoMatchesException();
+
         final ListSets response = new ListSets();
         // TODO make the getSets an unmodifiable list and add withSet() method to ListSets
-        results.getList().forEach(
-            item -> response.getSets().add(item.toOAIPMH())
-        );
-    
+        results.getList().forEach(item -> response.getSets().add(item.toOAIPMH()));
+
         // Create the OAIPMH model for the <resumptionToken>
         results.getResponseToken(getConfiguration().getMaxListSets())
-            // TODO: add expiration date here, based on repository configuration
-            .ifPresent(response::withResumptionToken);
-    
+                // TODO: add expiration date here, based on repository configuration
+                .ifPresent(response::withResumptionToken);
+
         return response;
     }
-
 }

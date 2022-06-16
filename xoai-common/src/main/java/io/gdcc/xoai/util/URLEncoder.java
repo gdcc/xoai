@@ -10,7 +10,6 @@ package io.gdcc.xoai.util;
 
 import java.nio.charset.StandardCharsets;
 
-
 /**
  * @author Development @ Lyncode
  * @version 3.1.0

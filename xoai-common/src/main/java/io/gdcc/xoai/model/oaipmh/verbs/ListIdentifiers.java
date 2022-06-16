@@ -8,14 +8,13 @@
 
 package io.gdcc.xoai.model.oaipmh.verbs;
 
-import io.gdcc.xoai.model.oaipmh.results.record.Header;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
-import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
+import io.gdcc.xoai.model.oaipmh.results.record.Header;
 import io.gdcc.xoai.xml.XmlWriter;
-
-import javax.xml.stream.XMLStreamException;
+import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.stream.XMLStreamException;
 
 public class ListIdentifiers implements Verb {
 

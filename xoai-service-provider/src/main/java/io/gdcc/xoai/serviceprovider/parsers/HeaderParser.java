@@ -8,13 +8,6 @@
 
 package io.gdcc.xoai.serviceprovider.parsers;
 
-import io.gdcc.xoai.model.oaipmh.results.record.Header;
-import io.gdcc.xoai.xmlio.XmlReader;
-import io.gdcc.xoai.xmlio.exceptions.XmlReaderException;
-import org.hamcrest.Matcher;
-
-import javax.xml.stream.events.XMLEvent;
-
 import static io.gdcc.xoai.model.oaipmh.results.record.Header.Status.DELETED;
 import static io.gdcc.xoai.serviceprovider.xml.IslandParsers.dateParser;
 import static io.gdcc.xoai.xmlio.matchers.AttributeMatchers.attributeName;
@@ -26,8 +19,14 @@ import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.text;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.AllOf.allOf;
 
+import io.gdcc.xoai.model.oaipmh.results.record.Header;
+import io.gdcc.xoai.xmlio.XmlReader;
+import io.gdcc.xoai.xmlio.exceptions.XmlReaderException;
+import javax.xml.stream.events.XMLEvent;
+import org.hamcrest.Matcher;
+
 public class HeaderParser {
-    public Header parse (XmlReader reader) throws XmlReaderException {
+    public Header parse(XmlReader reader) throws XmlReaderException {
         Header header = new Header();
         if (reader.hasAttribute(attributeName(localPart(equalTo("status")))))
             header.withStatus(DELETED);
@@ -39,7 +38,6 @@ public class HeaderParser {
             header.withSetSpec(reader.next(text()).getText());
         return header;
     }
-
 
     private Matcher<XMLEvent> setSpecElement() {
         return allOf(aStartElement(), elementName(localPart(equalTo("setSpec"))));

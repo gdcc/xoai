@@ -11,13 +11,11 @@ package io.gdcc.xoai.types;
 public class TinyType<T> {
     private T value = null;
 
-    public TinyType() {
-    }
+    public TinyType() {}
 
     public TinyType(T val) {
         this.value = val;
     }
-
 
     public T getValue() {
         return value;

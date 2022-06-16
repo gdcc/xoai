@@ -8,14 +8,14 @@
 
 package io.gdcc.xoai.model.oaipmh.results;
 
-import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import io.gdcc.xoai.model.xoai.XOAIMetadata;
 import io.gdcc.xoai.xml.EchoElement;
 import io.gdcc.xoai.xml.XmlWritable;
 import io.gdcc.xoai.xml.XmlWriter;
+import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 
 public class Description implements XmlWritable {
-    public static Description description (XOAIMetadata metadata) {
+    public static Description description(XOAIMetadata metadata) {
         return new Description(metadata);
     }
 
@@ -36,6 +36,7 @@ public class Description implements XmlWritable {
         this.xoaiMetadata = xoaiMetadata;
         return this;
     }
+
     public Description withMetadata(String metadata) {
         this.value = metadata;
         return this;
@@ -50,5 +51,4 @@ public class Description implements XmlWritable {
             echo.write(writer);
         }
     }
-
 }

@@ -8,19 +8,18 @@
 
 package io.gdcc.xoai.serviceprovider.parameters;
 
+import static io.gdcc.xoai.util.URLEncoder.encode;
+
 import io.gdcc.xoai.model.oaipmh.Granularity;
 import io.gdcc.xoai.model.oaipmh.verbs.Verb;
 import io.gdcc.xoai.services.api.DateProvider;
 import io.gdcc.xoai.util.URLEncoder;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.gdcc.xoai.util.URLEncoder.encode;
-
 public class Parameters {
-    public static Parameters parameters () {
+    public static Parameters parameters() {
         return new Parameters();
     }
 
@@ -31,7 +30,7 @@ public class Parameters {
     private Instant until = null;
     private String identifier = null;
     private String resumptionToken = null;
-	private String granularity = null;
+    private String granularity = null;
 
     public Parameters withVerb(Verb.Type verb) {
         this.verb = verb;
@@ -43,7 +42,6 @@ public class Parameters {
         return this;
     }
 
-
     public Parameters withFrom(Instant from) {
         this.from = from;
         return this;
@@ -53,7 +51,6 @@ public class Parameters {
         this.set = value;
         return this;
     }
-
 
     public Parameters identifier(String value) {
         this.identifier = value;
@@ -69,7 +66,7 @@ public class Parameters {
         return this;
     }
 
-    public Parameters withoutResumptionToken () {
+    public Parameters withoutResumptionToken() {
         this.resumptionToken = null;
         return this;
     }
@@ -93,23 +90,23 @@ public class Parameters {
     }
 
     /**
-     * If a valid granularity field exists, return corresponding granularity.
-     * Defaults to: Second
+     * If a valid granularity field exists, return corresponding granularity. Defaults to: Second
+     *
      * @return
      */
     private Granularity granularity() {
-		if(granularity != null){
-			for (int i = 0; i < Granularity.values().length; i++) {
-				Granularity possibleGranularity = Granularity.values()[i];
-				if(granularity.equals(possibleGranularity.toString())){
-					return possibleGranularity;
-				}
-			}
-		}
-		return Granularity.Second;
-	}
+        if (granularity != null) {
+            for (int i = 0; i < Granularity.values().length; i++) {
+                Granularity possibleGranularity = Granularity.values()[i];
+                if (granularity.equals(possibleGranularity.toString())) {
+                    return possibleGranularity;
+                }
+            }
+        }
+        return Granularity.Second;
+    }
 
-	public Parameters include(ListMetadataParameters parameters) {
+    public Parameters include(ListMetadataParameters parameters) {
         this.identifier = parameters.getIdentifier();
         return this;
     }
@@ -168,12 +165,12 @@ public class Parameters {
         return resumptionToken;
     }
 
-	public Parameters withGranularity(String granularity) {
-		this.granularity = granularity;
+    public Parameters withGranularity(String granularity) {
+        this.granularity = granularity;
         return this;
     }
 
-	public Object getGranularity() {
-		return granularity;
-	}
+    public Object getGranularity() {
+        return granularity;
+    }
 }
