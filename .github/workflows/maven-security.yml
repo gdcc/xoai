@@ -26,7 +26,7 @@ jobs:
                   key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
                   restore-keys: ${{ runner.os }}-m2
             - name: Scan with OWASP
-              run: mvn -B -Powasp dependency-check:check
+              run: mvn -B -Powasp compile dependency-check:check -pl '!report'
             - name: Upload scan results as SARIF report to GitHub Security Tab
               uses: github/codeql-action/upload-sarif@v2
               if: always() # do not skip this step if OWASP fails the mvn build
