@@ -32,6 +32,25 @@ explaining the concepts of this library, and put into [docs/README.md](docs/READ
 It also contains some minimal explanation of this forks special changes.
 Feel free to extend the documentation, pull requests welcome.
 
+## Development
+
+This project uses [Spotless Maven Plugin](https://github.com/diffplug/spotless),
+[google-format-java](https://github.com/google/google-java-format) and
+[pre-commit](https://pre-commit.com/) to ensure a standardized and well-formatted codebase.
+
+After cloning the repo, please make sure to install `pre-commit`, which will take care of everything for you:
+```shell
+pip install pre-commit
+pre-commit install
+```
+
+If you want to run spotless directly, use Maven:
+```shell
+mvn spotless:apply
+# - or to just check for consistency use -
+mvn spotless:check
+```
+
 ## Release notes
 
 ### v5.0.0
