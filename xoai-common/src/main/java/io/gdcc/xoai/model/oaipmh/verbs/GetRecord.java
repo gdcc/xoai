@@ -9,9 +9,8 @@
 package io.gdcc.xoai.model.oaipmh.verbs;
 
 import io.gdcc.xoai.model.oaipmh.results.Record;
-import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import io.gdcc.xoai.xml.XmlWriter;
-
+import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import javax.xml.stream.XMLStreamException;
 
 public class GetRecord implements Verb {

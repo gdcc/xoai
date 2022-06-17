@@ -8,17 +8,16 @@
 
 package io.gdcc.xoai.model.oaipmh;
 
-import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import io.gdcc.xoai.xml.XmlWritable;
 import io.gdcc.xoai.xml.XmlWriter;
-
+import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import javax.xml.stream.XMLStreamException;
 
 public class Error implements XmlWritable {
     private final String value;
     private Code code;
 
-    public Error (String message) {
+    public Error(String message) {
         this.value = message;
     }
 
@@ -38,21 +37,23 @@ public class Error implements XmlWritable {
     @Override
     public void write(XmlWriter writer) throws XmlWriteException {
         try {
-            if (this.code != null)
-                writer.writeAttribute("code", this.code.toString());
-    
+            if (this.code != null) writer.writeAttribute("code", this.code.toString());
+
             writer.writeCharacters(value);
         } catch (XMLStreamException e) {
             throw new XmlWriteException(e);
         }
     }
-    
+
     public enum Code {
-        CANNOT_DISSEMINATE_FORMAT("cannotDisseminateFormat", "Cannot disseminate item with the given format"),
+        CANNOT_DISSEMINATE_FORMAT(
+                "cannotDisseminateFormat", "Cannot disseminate item with the given format"),
         ID_DOES_NOT_EXIST("idDoesNotExist", "The given id does not exist"),
         BAD_ARGUMENT("badArgument", null),
         BAD_VERB("badVerb", "Illegal OAI verb"),
-        NO_METADATA_FORMATS("noMetadataFormats", "The item does not have any metadata format available for dissemination"),
+        NO_METADATA_FORMATS(
+                "noMetadataFormats",
+                "The item does not have any metadata format available for dissemination"),
         NO_RECORDS_MATCH("noRecordsMatch", "No matches for the query"),
         BAD_RESUMPTION_TOKEN("badResumptionToken", "The resumption token is invalid"),
         NO_SET_HIERARCHY("noSetHierarchy", "This repository does not support sets");
@@ -68,6 +69,7 @@ public class Error implements XmlWritable {
         public String id() {
             return id;
         }
+
         public String message() {
             return message;
         }

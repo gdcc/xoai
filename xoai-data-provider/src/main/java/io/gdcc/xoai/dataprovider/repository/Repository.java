@@ -9,7 +9,7 @@
 package io.gdcc.xoai.dataprovider.repository;
 
 public final class Repository {
-    public static Repository repository () {
+    public static Repository repository() {
         return new Repository();
     }
 

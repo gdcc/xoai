@@ -17,15 +17,15 @@ import io.gdcc.xoai.model.oaipmh.Error;
 public class BadArgumentException extends OAIException {
 
     private static final long serialVersionUID = 6436751364163509217L;
-    
+
     @Override
     public Error.Code getErrorCode() {
         return Error.Code.BAD_ARGUMENT;
     }
 
     /**
-     * Constructs an instance of <code>BadArgumentException</code> with the
-     * specified detail message.
+     * Constructs an instance of <code>BadArgumentException</code> with the specified detail
+     * message.
      *
      * @param msg the detail message.
      */

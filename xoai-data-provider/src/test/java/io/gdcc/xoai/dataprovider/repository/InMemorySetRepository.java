@@ -8,12 +8,11 @@
 
 package io.gdcc.xoai.dataprovider.repository;
 
-import io.gdcc.xoai.dataprovider.model.Set;
+import static io.gdcc.xoai.util.Randoms.randomAlphabetic;
 
+import io.gdcc.xoai.dataprovider.model.Set;
 import java.util.ArrayList;
 import java.util.List;
-
-import static io.gdcc.xoai.util.Randoms.randomAlphabetic;
 
 public class InMemorySetRepository implements SetRepository {
     private boolean supportSets = true;
@@ -40,7 +39,7 @@ public class InMemorySetRepository implements SetRepository {
     public boolean supportSets() {
         return supportSets;
     }
-    
+
     @Override
     public List<Set> getSets() {
         return List.copyOf(this.sets);
@@ -48,9 +47,7 @@ public class InMemorySetRepository implements SetRepository {
 
     @Override
     public boolean exists(String setSpec) {
-        for (Set s : this.sets)
-            if (s.getSpec().equals(setSpec))
-                return true;
+        for (Set s : this.sets) if (s.getSpec().equals(setSpec)) return true;
 
         return false;
     }

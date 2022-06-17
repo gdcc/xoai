@@ -13,5 +13,8 @@ package io.gdcc.xoai.dataprovider.filter;
  * @version 3.1.0
  */
 public enum Scope {
-    Context, MetadataFormat, Set, Query
+    Context,
+    MetadataFormat,
+    Set,
+    Query
 }

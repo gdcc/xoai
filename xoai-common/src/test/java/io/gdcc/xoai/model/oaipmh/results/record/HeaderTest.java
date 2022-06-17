@@ -8,17 +8,15 @@
 
 package io.gdcc.xoai.model.oaipmh.results.record;
 
-import io.gdcc.xoai.model.oaipmh.AbstractOAIPMHTest;
-import io.gdcc.xoai.model.oaipmh.results.record.Header;
-import io.gdcc.xoai.services.api.DateProvider;
-import org.hamcrest.CoreMatchers;
-import org.junit.jupiter.api.Test;
-
-import java.time.Instant;
-
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+
+import io.gdcc.xoai.model.oaipmh.AbstractOAIPMHTest;
+import io.gdcc.xoai.services.api.DateProvider;
+import java.time.Instant;
+import org.hamcrest.CoreMatchers;
+import org.junit.jupiter.api.Test;
 
 public class HeaderTest extends AbstractOAIPMHTest {
 
@@ -26,19 +24,20 @@ public class HeaderTest extends AbstractOAIPMHTest {
 
     @Test
     public void testWrite() throws Exception {
-        Header header = new Header()
-                .withDatestamp(DATE)
-                .withIdentifier("Id")
-                .withSetSpec("Set1")
-                .withSetSpec("Set2")
-                .withStatus(Header.Status.DELETED);
+        Header header =
+                new Header()
+                        .withDatestamp(DATE)
+                        .withIdentifier("Id")
+                        .withSetSpec("Set1")
+                        .withSetSpec("Set2")
+                        .withStatus(Header.Status.DELETED);
 
         String result = writingResult(header);
-        assertThat(result, xPath("/@status", CoreMatchers.is(equalTo(Header.Status.DELETED.value()))));
+        assertThat(
+                result, xPath("/@status", CoreMatchers.is(equalTo(Header.Status.DELETED.value()))));
         assertThat(result, xPath("/identifier", is(equalTo("Id"))));
         assertThat(result, xPath("/datestamp", is(toDateTime(DATE))));
         assertThat(result, hasXPath("/setSpec[text()='Set1']"));
         assertThat(result, hasXPath("/setSpec[text()='Set2']"));
     }
-
 }

@@ -8,17 +8,6 @@
 
 package io.gdcc.xoai.serviceprovider.parsers;
 
-import io.gdcc.xoai.model.xoai.Element;
-import io.gdcc.xoai.model.xoai.Field;
-import io.gdcc.xoai.model.xoai.XOAIMetadata;
-import io.gdcc.xoai.xmlio.XmlReader;
-import io.gdcc.xoai.xmlio.exceptions.XmlReaderException;
-import org.hamcrest.Matcher;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.events.XMLEvent;
-import java.io.InputStream;
-
 import static io.gdcc.xoai.xmlio.matchers.QNameMatchers.localPart;
 import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.aStartElement;
 import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.anEndElement;
@@ -28,13 +17,24 @@ import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.theEndOfDocument;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.AllOf.allOf;
 
+import io.gdcc.xoai.model.xoai.Element;
+import io.gdcc.xoai.model.xoai.Field;
+import io.gdcc.xoai.model.xoai.XOAIMetadata;
+import io.gdcc.xoai.xmlio.XmlReader;
+import io.gdcc.xoai.xmlio.exceptions.XmlReaderException;
+import java.io.InputStream;
+import javax.xml.namespace.QName;
+import javax.xml.stream.events.XMLEvent;
+import org.hamcrest.Matcher;
+
 public class MetadataParser {
     public XOAIMetadata parse(InputStream input) throws XmlReaderException {
         XOAIMetadata metadata = new XOAIMetadata();
         XmlReader reader = new XmlReader(input);
         reader.next(elementName(localPart(equalTo("metadata"))));
 
-        while (reader.next(theEndOfDocument(), anEndElement(), startElement()).current(startElement())) {
+        while (reader.next(theEndOfDocument(), anEndElement(), startElement())
+                .current(startElement())) {
             metadata.withElement(parseElement(reader));
         }
 
@@ -48,8 +48,7 @@ public class MetadataParser {
         }
 
         while (reader.current(startField())) {
-            Field field = new Field()
-                    .withName(reader.getAttributeValue(name()));
+            Field field = new Field().withName(reader.getAttributeValue(name()));
 
             if (reader.next(anEndElement(), text()).current(text()))
                 field.withValue(reader.getText());
@@ -76,6 +75,7 @@ public class MetadataParser {
     private Matcher<XMLEvent> startElement() {
         return allOf(aStartElement(), elementName(localPart(equalTo("element"))));
     }
+
     private Matcher<XMLEvent> endElement() {
         return allOf(anEndElement(), elementName(localPart(equalTo("element"))));
     }

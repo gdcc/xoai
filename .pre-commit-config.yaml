@@ -1,0 +1,18 @@
+repos:
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v4.3.0
+      hooks:
+            # Forbid UTF-8 byte-order markers
+            - id: fix-byte-order-marker
+            # Check for files with names that would conflict on a case-insensitive
+            # filesystem like MacOS HFS+ or Windows FAT.
+            - id: check-case-conflict
+            - id: trailing-whitespace
+            - id: end-of-file-fixer
+            - id: check-yaml
+            - id: check-json
+            - id: check-added-large-files
+    -   repo: https://github.com/ejba/pre-commit-maven
+        rev: v0.3.3
+        hooks:
+            - id: maven-spotless-apply

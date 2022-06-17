@@ -11,6 +11,7 @@ package io.gdcc.xoai.serviceprovider.lazy;
 import java.util.List;
 
 public interface Source<T> {
-    List<T> nextIteration ();
-    boolean endReached ();
+    List<T> nextIteration();
+
+    boolean endReached();
 }

@@ -15,13 +15,11 @@ public class ListIdentifiersParameters {
         return new ListIdentifiersParameters();
     }
 
-
-
     private String metadataPrefix;
     private String setSpec;
     private Instant from;
     private Instant until;
-	private String granularity;
+    private String granularity;
 
     public String getMetadataPrefix() {
         return metadataPrefix;
@@ -63,12 +61,11 @@ public class ListIdentifiersParameters {
         return metadataPrefix != null;
     }
 
-	public void withGranularity(String granularity) {
-		this.granularity = granularity;
-		
-	}
+    public void withGranularity(String granularity) {
+        this.granularity = granularity;
+    }
 
-	public String getGranularity() {
-		return granularity;
-	}
+    public String getGranularity() {
+        return granularity;
+    }
 }

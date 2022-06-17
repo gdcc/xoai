@@ -9,8 +9,7 @@
 package io.gdcc.xoai.dataprovider.exceptions;
 
 public class InternalOAIException extends RuntimeException {
-    public InternalOAIException() {
-    }
+    public InternalOAIException() {}
 
     public InternalOAIException(String message) {
         super(message);

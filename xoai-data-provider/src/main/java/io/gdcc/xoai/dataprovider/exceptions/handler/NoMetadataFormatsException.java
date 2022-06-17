@@ -17,22 +17,18 @@ import io.gdcc.xoai.model.oaipmh.Error;
 public class NoMetadataFormatsException extends HandlerException {
 
     private static final long serialVersionUID = 7091872607176190034L;
-    
+
     @Override
     public Error.Code getErrorCode() {
         return Error.Code.NO_METADATA_FORMATS;
     }
-    
-    /**
-     * Creates a new instance of <code>NoMetadataFormatsException</code> without
-     * detail message.
-     */
-    public NoMetadataFormatsException() {
-    }
+
+    /** Creates a new instance of <code>NoMetadataFormatsException</code> without detail message. */
+    public NoMetadataFormatsException() {}
 
     /**
-     * Constructs an instance of <code>NoMetadataFormatsException</code> with
-     * the specified detail message.
+     * Constructs an instance of <code>NoMetadataFormatsException</code> with the specified detail
+     * message.
      *
      * @param msg the detail message.
      */

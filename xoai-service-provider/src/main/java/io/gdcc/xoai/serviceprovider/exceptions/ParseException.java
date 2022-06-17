@@ -8,11 +8,10 @@
 
 package io.gdcc.xoai.serviceprovider.exceptions;
 
-
 public class ParseException extends Exception {
 
     private static final long serialVersionUID = 7075522729104665532L;
-    
+
     public ParseException() {}
 
     public ParseException(String arg0) {

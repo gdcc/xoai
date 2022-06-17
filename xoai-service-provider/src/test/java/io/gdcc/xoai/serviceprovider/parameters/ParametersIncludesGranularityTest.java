@@ -8,30 +8,30 @@
 
 package io.gdcc.xoai.serviceprovider.parameters;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import io.gdcc.xoai.model.oaipmh.Granularity;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 public class ParametersIncludesGranularityTest {
-	
-	@Test
-	public void listRecordsParametersGranularity(){
-		Parameters parameters = new Parameters();
-		ListRecordsParameters listRecordParameters = new ListRecordsParameters();
-		listRecordParameters.withGranularity(Granularity.Day.toString());
-		
-		parameters.include(listRecordParameters);
-		assertEquals(Granularity.Day.toString(),parameters.getGranularity());
-	}
 
-	@Test
-	public void listIdentifiersParametersGranularity(){
-		Parameters parameters = new Parameters();
-		ListIdentifiersParameters listIdentifiersParameters = new ListIdentifiersParameters();
-		listIdentifiersParameters.withGranularity(Granularity.Day.toString());
-		
-		parameters.include(listIdentifiersParameters);
-		assertEquals(Granularity.Day.toString(),parameters.getGranularity());
-	}
+    @Test
+    public void listRecordsParametersGranularity() {
+        Parameters parameters = new Parameters();
+        ListRecordsParameters listRecordParameters = new ListRecordsParameters();
+        listRecordParameters.withGranularity(Granularity.Day.toString());
+
+        parameters.include(listRecordParameters);
+        assertEquals(Granularity.Day.toString(), parameters.getGranularity());
+    }
+
+    @Test
+    public void listIdentifiersParametersGranularity() {
+        Parameters parameters = new Parameters();
+        ListIdentifiersParameters listIdentifiersParameters = new ListIdentifiersParameters();
+        listIdentifiersParameters.withGranularity(Granularity.Day.toString());
+
+        parameters.include(listIdentifiersParameters);
+        assertEquals(Granularity.Day.toString(), parameters.getGranularity());
+    }
 }

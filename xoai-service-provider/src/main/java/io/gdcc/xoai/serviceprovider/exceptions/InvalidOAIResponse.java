@@ -9,8 +9,7 @@
 package io.gdcc.xoai.serviceprovider.exceptions;
 
 public class InvalidOAIResponse extends RuntimeException {
-    public InvalidOAIResponse() {
-    }
+    public InvalidOAIResponse() {}
 
     public InvalidOAIResponse(String message) {
         super(message);

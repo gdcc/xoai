@@ -9,10 +9,9 @@
 package io.gdcc.xoai.model.oaipmh;
 
 public enum DeletedRecord {
-
-	NO("no"),
-	PERSISTENT("persistent"),
-	TRANSIENT("transient");
+    NO("no"),
+    PERSISTENT("persistent"),
+    TRANSIENT("transient");
 
     public static DeletedRecord fromValue(String value) {
         for (DeletedRecord c : DeletedRecord.values()) {
@@ -23,16 +22,15 @@ public enum DeletedRecord {
         throw new IllegalArgumentException(value);
     }
 
-	private final String value;
+    private final String value;
 
-	DeletedRecord(String value) {
-		this.value = value;
-	}
+    DeletedRecord(String value) {
+        this.value = value;
+    }
 
-	public String value() {
-		return value;
-	}
-
+    public String value() {
+        return value;
+    }
 
     @Override
     public String toString() {

@@ -30,12 +30,12 @@
             <artifactId>xoai-xmlio</artifactId>
             <version>${revision}</version>
         </dependency>
-    
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-    
+
         <!-- TESTING DEPENDENCIES -->
         <dependency>
             <groupId>io.gdcc</groupId>

@@ -9,7 +9,7 @@
 package io.gdcc.xoai.serviceprovider.parameters;
 
 public class GetRecordParameters {
-    public static GetRecordParameters request () {
+    public static GetRecordParameters request() {
         return new GetRecordParameters();
     }
 

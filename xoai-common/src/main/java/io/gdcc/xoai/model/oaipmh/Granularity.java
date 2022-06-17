@@ -18,22 +18,21 @@ public enum Granularity {
     // Lenient defaults to Second granularity, but can be used to accept Day granularity, too
     Lenient(Second.representation);
 
-    public static Granularity fromRepresentation (String representation) {
+    public static Granularity fromRepresentation(String representation) {
         for (Granularity granularity : Granularity.values())
-            if (granularity.toString().equals(representation))
-                return granularity;
+            if (granularity.toString().equals(representation)) return granularity;
 
         throw new IllegalArgumentException(representation);
     }
 
     private final String representation;
 
-    Granularity (String representation) {
+    Granularity(String representation) {
         this.representation = representation;
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return representation;
     }
 }

@@ -8,10 +8,10 @@
 
 package io.gdcc.xoai.model.oaipmh.results.record;
 
-import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import io.gdcc.xoai.xml.EchoElement;
 import io.gdcc.xoai.xml.XmlWritable;
 import io.gdcc.xoai.xml.XmlWriter;
+import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 
 public class About implements XmlWritable {
     private final String value;

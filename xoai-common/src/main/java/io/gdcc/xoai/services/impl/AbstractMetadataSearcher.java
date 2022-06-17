@@ -11,47 +11,44 @@ package io.gdcc.xoai.services.impl;
 import io.gdcc.xoai.model.xoai.Element;
 import io.gdcc.xoai.model.xoai.XOAIMetadata;
 import io.gdcc.xoai.services.api.MetadataSearch;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractMetadataSearcher<T> implements MetadataSearch<T> {
-	
-	protected static final String DEFAULT_FIELD = "value";
-	protected Map<String, List<T>> index = new HashMap<>();
-	
-    protected AbstractMetadataSearcher (XOAIMetadata metadata) {
+
+    protected static final String DEFAULT_FIELD = "value";
+    protected Map<String, List<T>> index = new HashMap<>();
+
+    protected AbstractMetadataSearcher(XOAIMetadata metadata) {
         for (Element element : metadata.getElements()) {
             consume(new ArrayList<>(), element);
         }
     }
-	
-	@Override
-	public T findOne(String xoaiPath){
-		 List<T> elements = index.get(xoaiPath);
-	        if (elements != null && !elements.isEmpty())
-	            return elements.get(0);
-	        return null;
-	}
-	
-	@Override
-	public List<T> findAll(String xoaiPath){
-		return index.get(xoaiPath);
-	}
-	
-	@Override
-	public Map<String, List<T>> index() {
-		return index;
-	}
 
-	protected void init(XOAIMetadata metadata) {
-		for (Element element : metadata.getElements()) {
+    @Override
+    public T findOne(String xoaiPath) {
+        List<T> elements = index.get(xoaiPath);
+        if (elements != null && !elements.isEmpty()) return elements.get(0);
+        return null;
+    }
+
+    @Override
+    public List<T> findAll(String xoaiPath) {
+        return index.get(xoaiPath);
+    }
+
+    @Override
+    public Map<String, List<T>> index() {
+        return index;
+    }
+
+    protected void init(XOAIMetadata metadata) {
+        for (Element element : metadata.getElements()) {
             consume(new ArrayList<>(), element);
         }
-		
-	}
-	protected abstract void consume(List<String> newNames, Element element);
+    }
 
+    protected abstract void consume(List<String> newNames, Element element);
 }

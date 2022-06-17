@@ -8,14 +8,10 @@
 
 package io.gdcc.xoai.serviceprovider.exceptions;
 
-
 public class KnownParseException extends ParseException {
 
-    /**
-     *
-     */
+    /** */
     private static final long serialVersionUID = 3017062595324205745L;
-
 
     public KnownParseException(String message) {
         super(message);
@@ -26,5 +22,4 @@ public class KnownParseException extends ParseException {
         super(message, cause);
         // TODO Auto-generated constructor stub
     }
-
 }

@@ -8,14 +8,12 @@
 
 package io.gdcc.xoai.serviceprovider.exceptions;
 
-
 /**
  * @author Development @ Lyncode
  * @version 3.1.0
  */
 public class InternalHarvestException extends RuntimeException {
-    public InternalHarvestException() {
-    }
+    public InternalHarvestException() {}
 
     public InternalHarvestException(String message) {
         super(message);

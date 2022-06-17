@@ -20,14 +20,12 @@ import io.gdcc.xoai.model.oaipmh.verbs.Identify;
 import io.gdcc.xoai.xml.XmlWritable;
 import io.gdcc.xoai.xml.XmlWriter;
 import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.xml.stream.XMLStreamException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-
+import javax.xml.stream.XMLStreamException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class IdentifyHandler extends VerbHandler<Identify> {
     private static final Logger log = LoggerFactory.getLogger(IdentifyHandler.class);
@@ -43,51 +41,59 @@ public final class IdentifyHandler extends VerbHandler<Identify> {
         if (configuration == null)
             throw new InternalOAIException("No repository configuration provided");
         if (configuration.getMaxListSets() <= 0)
-            throw new InternalOAIException("The repository configuration must return maxListSets greater then 0");
+            throw new InternalOAIException(
+                    "The repository configuration must return maxListSets greater then 0");
         if (configuration.getMaxListIdentifiers() <= 0)
-            throw new InternalOAIException("The repository configuration must return maxListIdentifiers greater then 0");
+            throw new InternalOAIException(
+                    "The repository configuration must return maxListIdentifiers greater then 0");
         if (configuration.getMaxListRecords() <= 0)
-            throw new InternalOAIException("The repository configuration must return maxListRecords greater then 0");
+            throw new InternalOAIException(
+                    "The repository configuration must return maxListRecords greater then 0");
         if (configuration.getAdminEmails() == null || configuration.getAdminEmails().isEmpty())
-            throw new InternalOAIException("The repository configuration must return at least one admin email");
+            throw new InternalOAIException(
+                    "The repository configuration must return at least one admin email");
         try {
             if (configuration.getBaseUrl() == null)
-                throw new InternalOAIException("The repository configuration must return a valid base url (absolute)");
+                throw new InternalOAIException(
+                        "The repository configuration must return a valid base url (absolute)");
             new URL(configuration.getBaseUrl());
         } catch (MalformedURLException e) {
-            throw new InternalOAIException("The repository configuration must return a valid base url (absolute)", e);
+            throw new InternalOAIException(
+                    "The repository configuration must return a valid base url (absolute)", e);
         }
         if (configuration.getDeleteMethod() == null)
-            throw new InternalOAIException("The repository configuration must return a valid delete method");
+            throw new InternalOAIException(
+                    "The repository configuration must return a valid delete method");
         if (configuration.getEarliestDate() == null)
-            throw new InternalOAIException("The repository configuration must return a valid earliest date. That's the date of the first inserted item");
+            throw new InternalOAIException(
+                    "The repository configuration must return a valid earliest date. That's the"
+                            + " date of the first inserted item");
         if (configuration.getRepositoryName() == null)
-            throw new InternalOAIException("The repository configuration must return a valid repository name");
-
+            throw new InternalOAIException(
+                    "The repository configuration must return a valid repository name");
     }
-    
+
     @Override
     public Identify handle(Request request) throws HandlerException {
         Identify identify = new Identify();
         RepositoryConfiguration configuration = getRepository().getConfiguration();
         identify.withBaseURL(configuration.getBaseUrl());
         identify.withRepositoryName(configuration.getRepositoryName());
-        for (String mail : configuration.getAdminEmails())
-            identify.getAdminEmails().add(mail);
+        for (String mail : configuration.getAdminEmails()) identify.getAdminEmails().add(mail);
         identify.withEarliestDatestamp(configuration.getEarliestDate());
         identify.withDeletedRecord(DeletedRecord.valueOf(configuration.getDeleteMethod().name()));
 
         identify.withGranularity(configuration.getGranularity());
         identify.withProtocolVersion(PROTOCOL_VERSION);
         if (configuration.hasCompressions())
-            for (String com : configuration.getCompressions())
-                identify.getCompressions().add(com);
-
+            for (String com : configuration.getCompressions()) identify.getCompressions().add(com);
 
         List<String> descriptions = configuration.getDescription();
         if (descriptions == null) {
             try {
-                identify.withDescription(new Description(XmlWriter.toString(new XOAIDescription().withValue(XOAI_DESC))));
+                identify.withDescription(
+                        new Description(
+                                XmlWriter.toString(new XOAIDescription().withValue(XOAI_DESC))));
             } catch (XMLStreamException e) {
                 log.warn("Description not added", e);
             }

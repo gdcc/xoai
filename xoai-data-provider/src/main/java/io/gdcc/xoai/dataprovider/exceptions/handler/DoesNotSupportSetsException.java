@@ -17,22 +17,20 @@ import io.gdcc.xoai.model.oaipmh.Error;
 public class DoesNotSupportSetsException extends HandlerException {
 
     private static final long serialVersionUID = -7008970964208110045L;
-    
+
     @Override
     public Error.Code getErrorCode() {
         return Error.Code.NO_SET_HIERARCHY;
     }
-    
-    /**
-     * Creates a new instance of <code>DoesNotSupportSetsException</code>
-     * without detail message.
-     */
-    public DoesNotSupportSetsException() {
-    }
 
     /**
-     * Constructs an instance of <code>DoesNotSupportSetsException</code> with
-     * the specified detail message.
+     * Creates a new instance of <code>DoesNotSupportSetsException</code> without detail message.
+     */
+    public DoesNotSupportSetsException() {}
+
+    /**
+     * Constructs an instance of <code>DoesNotSupportSetsException</code> with the specified detail
+     * message.
      *
      * @param msg the detail message.
      */

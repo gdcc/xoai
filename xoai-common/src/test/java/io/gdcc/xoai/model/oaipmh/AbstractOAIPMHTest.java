@@ -9,21 +9,20 @@
 package io.gdcc.xoai.model.oaipmh;
 
 import io.gdcc.xoai.services.api.DateProvider;
-import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import io.gdcc.xoai.xml.XmlWritable;
 import io.gdcc.xoai.xml.XmlWriter;
+import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
+import java.io.ByteArrayOutputStream;
+import java.time.Instant;
+import javax.xml.stream.XMLStreamException;
 import org.hamcrest.Matcher;
 import org.xmlunit.matchers.EvaluateXPathMatcher;
 import org.xmlunit.matchers.HasXPathMatcher;
 
-import javax.xml.stream.XMLStreamException;
-import java.io.ByteArrayOutputStream;
-import java.time.Instant;
-
-
 public abstract class AbstractOAIPMHTest {
 
-    protected String writingResult (XmlWritable writable) throws XMLStreamException, XmlWriteException {
+    protected String writingResult(XmlWritable writable)
+            throws XMLStreamException, XmlWriteException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         XmlWriter writer = new XmlWriter(stream);
         writer.writeStartDocument();

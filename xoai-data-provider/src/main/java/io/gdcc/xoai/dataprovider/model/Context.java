@@ -13,16 +13,15 @@ import io.gdcc.xoai.dataprovider.filter.Condition;
 import io.gdcc.xoai.dataprovider.filter.Scope;
 import io.gdcc.xoai.dataprovider.filter.ScopedFilter;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
-
-import javax.xml.transform.Transformer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+import javax.xml.transform.Transformer;
 
 public class Context {
-    public static Context context () {
+    public static Context context() {
         return new Context();
     }
 
@@ -41,23 +40,21 @@ public class Context {
         this.sets.add(set);
         return this;
     }
-    
+
     public boolean hasSet(String setSpec) {
         return isStaticSet(setSpec);
     }
+
     public boolean isStaticSet(String setSpec) {
         return this.sets.stream().anyMatch(set -> set.getSpec().equals(setSpec));
     }
-    
+
     public Optional<Set> getSet(String setSpec) {
-        return this.sets.stream()
-            .filter(set -> set.getSpec().equals(setSpec))
-            .findAny();
+        return this.sets.stream().filter(set -> set.getSpec().equals(setSpec)).findAny();
     }
-    
+
     public Stream<Set> getSetsForItem(ItemIdentifier item) {
-        return this.sets.stream()
-            .filter(set -> set.isItemShown(item));
+        return this.sets.stream().filter(set -> set.isItemShown(item));
     }
 
     public Transformer getTransformer() {
@@ -75,11 +72,9 @@ public class Context {
 
     public Context withMetadataFormat(MetadataFormat metadataFormat) {
         int remove = -1;
-        for (int i = 0;i<metadataFormats.size();i++)
-            if (metadataFormats.get(i).getPrefix().equals(metadataFormat.getPrefix()))
-                remove = i;
-        if (remove >= 0)
-            this.metadataFormats.remove(remove);
+        for (int i = 0; i < metadataFormats.size(); i++)
+            if (metadataFormats.get(i).getPrefix().equals(metadataFormat.getPrefix())) remove = i;
+        if (remove >= 0) this.metadataFormats.remove(remove);
         this.metadataFormats.add(metadataFormat);
         return this;
     }
@@ -88,27 +83,32 @@ public class Context {
         this.condition = condition;
         return this;
     }
-    
+
     public boolean isItemShown(ItemIdentifier item) {
-        // null item means false (not shown), otherwise true (no condition), when condition present check filter
+        // null item means false (not shown), otherwise true (no condition), when condition present
+        // check filter
         return item != null && condition == null || condition.isItemShown(item);
     }
-    
+
     /**
-     * Create a scoped {@link io.gdcc.xoai.dataprovider.filter.Filter} to hide items not matching the {@link Condition}.
+     * Create a scoped {@link io.gdcc.xoai.dataprovider.filter.Filter} to hide items not matching
+     * the {@link Condition}.
      *
-     * @return The scoped filter used with {@link io.gdcc.xoai.dataprovider.repository.ItemRepository#getItems(List, MetadataFormat, int, ResumptionToken.Value)}
-     *         or {@link io.gdcc.xoai.dataprovider.repository.ItemRepository#getItemIdentifiers(List, MetadataFormat, int, ResumptionToken.Value)}.
-     *         Will default to a transparent filter by using {@link Condition#ALWAYS_TRUE}.
+     * @return The scoped filter used with {@link
+     *     io.gdcc.xoai.dataprovider.repository.ItemRepository#getItems(List, MetadataFormat, int,
+     *     ResumptionToken.Value)} or {@link
+     *     io.gdcc.xoai.dataprovider.repository.ItemRepository#getItemIdentifiers(List,
+     *     MetadataFormat, int, ResumptionToken.Value)}. Will default to a transparent filter by
+     *     using {@link Condition#ALWAYS_TRUE}.
      */
     public ScopedFilter getScopedFilter() {
-        return new ScopedFilter(condition != null ? condition : Condition.ALWAYS_TRUE, Scope.Context);
+        return new ScopedFilter(
+                condition != null ? condition : Condition.ALWAYS_TRUE, Scope.Context);
     }
 
     public MetadataFormat formatForPrefix(String metadataPrefix) {
         for (MetadataFormat format : this.metadataFormats)
-            if (format.getPrefix().equals(metadataPrefix))
-                return format;
+            if (format.getPrefix().equals(metadataPrefix)) return format;
 
         return null;
     }
@@ -118,7 +118,12 @@ public class Context {
     }
 
     public Context withMetadataFormat(String prefix, Transformer transformer) {
-        withMetadataFormat(new MetadataFormat().withNamespace(prefix).withPrefix(prefix).withSchemaLocation(prefix).withTransformer(transformer));
+        withMetadataFormat(
+                new MetadataFormat()
+                        .withNamespace(prefix)
+                        .withPrefix(prefix)
+                        .withSchemaLocation(prefix)
+                        .withTransformer(transformer));
         return this;
     }
 
@@ -129,8 +134,7 @@ public class Context {
                         .withPrefix(prefix)
                         .withSchemaLocation(prefix)
                         .withTransformer(transformer)
-                        .withCondition(condition)
-        );
+                        .withCondition(condition));
         return this;
     }
 
@@ -142,8 +146,7 @@ public class Context {
     public List<MetadataFormat> formatFor(ItemIdentifier item) {
         List<MetadataFormat> result = new ArrayList<>();
         for (MetadataFormat format : this.metadataFormats)
-            if (format.isItemShown(item))
-                result.add(format);
+            if (format.isItemShown(item)) result.add(format);
         return result;
     }
 }

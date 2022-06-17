@@ -9,9 +9,8 @@
 package io.gdcc.xoai.model.oaipmh.verbs;
 
 import io.gdcc.xoai.model.oaipmh.results.MetadataFormat;
-import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import io.gdcc.xoai.xml.XmlWriter;
-
+import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class ListMetadataFormats implements Verb {
         return this.metadataFormats;
     }
 
-    public ListMetadataFormats withMetadataFormat (MetadataFormat mdf) {
+    public ListMetadataFormats withMetadataFormat(MetadataFormat mdf) {
         metadataFormats.add(mdf);
         return this;
     }

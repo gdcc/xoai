@@ -8,16 +8,6 @@
 
 package io.gdcc.xoai.serviceprovider.parsers;
 
-import io.gdcc.xoai.model.oaipmh.DeletedRecord;
-import io.gdcc.xoai.model.oaipmh.results.Description;
-import io.gdcc.xoai.model.oaipmh.Granularity;
-import io.gdcc.xoai.model.oaipmh.verbs.Identify;
-import io.gdcc.xoai.serviceprovider.exceptions.InvalidOAIResponse;
-import io.gdcc.xoai.xmlio.XmlReader;
-import io.gdcc.xoai.xmlio.exceptions.XmlReaderException;
-
-import java.io.InputStream;
-
 import static io.gdcc.xoai.serviceprovider.xml.IslandParsers.dateParser;
 import static io.gdcc.xoai.xmlio.matchers.QNameMatchers.localPart;
 import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.aStartElement;
@@ -26,6 +16,15 @@ import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.text;
 import static io.gdcc.xoai.xmlio.matchers.XmlEventMatchers.theEndOfDocument;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;
+
+import io.gdcc.xoai.model.oaipmh.DeletedRecord;
+import io.gdcc.xoai.model.oaipmh.Granularity;
+import io.gdcc.xoai.model.oaipmh.results.Description;
+import io.gdcc.xoai.model.oaipmh.verbs.Identify;
+import io.gdcc.xoai.serviceprovider.exceptions.InvalidOAIResponse;
+import io.gdcc.xoai.xmlio.XmlReader;
+import io.gdcc.xoai.xmlio.exceptions.XmlReaderException;
+import java.io.InputStream;
 
 public class IdentifyParser {
     private final XmlReader reader;
@@ -39,7 +38,7 @@ public class IdentifyParser {
     }
 
     @SuppressWarnings("unchecked")
-	public Identify parse () {
+    public Identify parse() {
         try {
             Identify identify = new Identify();
             reader.next(allOf(aStartElement(), elementName(localPart(equalTo("Identify")))));
@@ -51,25 +50,28 @@ public class IdentifyParser {
             identify.withProtocolVersion(reader.next(text()).getText());
             reader.next(elementName(localPart(equalTo("adminEmail")))).next(text());
             identify.withAdminEmail(reader.getText());
-            while (reader.next(aStartElement()).current(elementName(localPart(equalTo("adminEmail")))))
+            while (reader.next(aStartElement())
+                    .current(elementName(localPart(equalTo("adminEmail")))))
                 identify.withAdminEmail(reader.next(text()).getText());
             identify.withEarliestDatestamp(reader.next(text()).get(dateParser()));
             reader.next(elementName(localPart(equalTo("deletedRecord")))).next(text());
             identify.withDeletedRecord(DeletedRecord.fromValue(reader.getText()));
             reader.next(elementName(localPart(equalTo("granularity")))).next(text());
             identify.withGranularity(Granularity.fromRepresentation(reader.getText()));
-            
-            while (reader.next(aStartElement(), theEndOfDocument()).current(elementName(localPart(equalTo("compression")))))
+
+            while (reader.next(aStartElement(), theEndOfDocument())
+                    .current(elementName(localPart(equalTo("compression")))))
                 identify.withCompression(reader.next(text()).getText());
-            if(reader.current(theEndOfDocument())) {
-            	return identify;
+            if (reader.current(theEndOfDocument())) {
+                return identify;
             } else if (reader.current(elementName(localPart(equalTo("description"))))) {
-            	identify.withDescription(reader.get(descriptionParser()));
-			}
-            
-            while (reader.next(aStartElement(), theEndOfDocument()).current(elementName(localPart(equalTo("description")))))
-            	identify.withDescription(reader.get(descriptionParser()));
-            
+                identify.withDescription(reader.get(descriptionParser()));
+            }
+
+            while (reader.next(aStartElement(), theEndOfDocument())
+                    .current(elementName(localPart(equalTo("description")))))
+                identify.withDescription(reader.get(descriptionParser()));
+
             return identify;
         } catch (XmlReaderException e) {
             throw new InvalidOAIResponse(e);

@@ -8,14 +8,13 @@
 
 package io.gdcc.xoai.model.oaipmh.results.record;
 
-import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import io.gdcc.xoai.xml.XmlWritable;
 import io.gdcc.xoai.xml.XmlWriter;
-
-import javax.xml.stream.XMLStreamException;
+import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.stream.XMLStreamException;
 
 public class Header implements XmlWritable {
     protected String identifier;
@@ -59,24 +58,21 @@ public class Header implements XmlWritable {
         return this;
     }
 
-    public boolean isDeleted () {
+    public boolean isDeleted() {
         return this.status != null;
     }
 
     @Override
     public void write(XmlWriter writer) throws XmlWriteException {
         try {
-            if (this.status != null)
-                writer.writeAttribute("status", this.status.value());
+            if (this.status != null) writer.writeAttribute("status", this.status.value());
             writer.writeElement("identifier", identifier);
             writer.writeElement("datestamp", datestamp);
-            for (String setSpec : this.getSetSpecs())
-                writer.writeElement("setSpec", setSpec);
+            for (String setSpec : this.getSetSpecs()) writer.writeElement("setSpec", setSpec);
         } catch (XMLStreamException e) {
             throw new XmlWriteException(e);
         }
     }
-
 
     public enum Status {
         DELETED("deleted");

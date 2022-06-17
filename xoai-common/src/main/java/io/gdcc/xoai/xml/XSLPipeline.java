@@ -8,16 +8,16 @@
 
 package io.gdcc.xoai.xml;
 
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 public class XSLPipeline {
     private final List<Transformer> transformers = new ArrayList<>();
@@ -41,7 +41,8 @@ public class XSLPipeline {
     public InputStream process() throws TransformerException {
         for (Transformer transformer : transformers) {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, (omitXMLDeclaration) ? "yes" : "no");
+            transformer.setOutputProperty(
+                    OutputKeys.OMIT_XML_DECLARATION, (omitXMLDeclaration) ? "yes" : "no");
             transformer.transform(new StreamSource(inputStream), new StreamResult(outputStream));
             inputStream = new ByteArrayInputStream(outputStream.toByteArray());
         }

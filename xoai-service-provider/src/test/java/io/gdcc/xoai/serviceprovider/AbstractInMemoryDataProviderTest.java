@@ -8,6 +8,8 @@
 
 package io.gdcc.xoai.serviceprovider;
 
+import static io.gdcc.xoai.dataprovider.model.MetadataFormat.identity;
+
 import io.gdcc.xoai.dataprovider.DataProvider;
 import io.gdcc.xoai.dataprovider.model.Context;
 import io.gdcc.xoai.dataprovider.repository.InMemoryItemRepository;
@@ -21,13 +23,10 @@ import io.gdcc.xoai.serviceprovider.parameters.Parameters;
 import io.gdcc.xoai.services.api.ResumptionTokenFormat;
 import io.gdcc.xoai.services.impl.SimpleResumptionTokenFormat;
 import io.gdcc.xoai.xml.XmlWriter;
-
-import javax.xml.stream.XMLStreamException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-
-import static io.gdcc.xoai.dataprovider.model.MetadataFormat.identity;
+import javax.xml.stream.XMLStreamException;
 
 public abstract class AbstractInMemoryDataProviderTest {
     protected static final String BASE_URL = "http://localhost";
@@ -36,50 +35,53 @@ public abstract class AbstractInMemoryDataProviderTest {
     private final InMemoryItemRepository itemRepository = new InMemoryItemRepository();
     private final InMemorySetRepository setRepository = new InMemorySetRepository();
     private final ResumptionTokenFormat resumptionTokenFormat = new SimpleResumptionTokenFormat();
-    private final RepositoryConfiguration repositoryConfiguration = RepositoryConfiguration
-        .defaults()
-        .withBaseUrl(BASE_URL)
-        .withResumptionTokenFormat(resumptionTokenFormat);
+    private final RepositoryConfiguration repositoryConfiguration =
+            RepositoryConfiguration.defaults()
+                    .withBaseUrl(BASE_URL)
+                    .withResumptionTokenFormat(resumptionTokenFormat);
     private final Context context = new Context().withMetadataFormat(FORMAT, identity());
-    private final Repository repository = new Repository()
-            .withConfiguration(repositoryConfiguration)
-            .withSetRepository(setRepository)
-            .withItemRepository(itemRepository);
-    private final DataProvider dataProvider = new DataProvider(theDataProviderContext(), theDataRepository());
+    private final Repository repository =
+            new Repository()
+                    .withConfiguration(repositoryConfiguration)
+                    .withSetRepository(setRepository)
+                    .withItemRepository(itemRepository);
+    private final DataProvider dataProvider =
+            new DataProvider(theDataProviderContext(), theDataRepository());
 
-    protected Context theDataProviderContext () {
+    protected Context theDataProviderContext() {
         return context;
     }
 
-    protected Repository theDataRepository () {
+    protected Repository theDataRepository() {
         return repository;
     }
 
-    protected RepositoryConfiguration theDataRepositoryConfiguration () {
+    protected RepositoryConfiguration theDataRepositoryConfiguration() {
         return repositoryConfiguration;
     }
 
-    protected InMemorySetRepository theDataSetRepository () {
+    protected InMemorySetRepository theDataSetRepository() {
         return setRepository;
     }
 
-    protected InMemoryItemRepository theDataItemRepository () {
+    protected InMemoryItemRepository theDataItemRepository() {
         return itemRepository;
     }
 
-    protected OAIClient oaiClient () {
+    protected OAIClient oaiClient() {
         return new OAIClient() {
             @Override
             public InputStream execute(Parameters parameters) throws OAIRequestException {
-                Request request = new Request(BASE_URL)
-                    .withVerb(parameters.getVerb())
-                    .withFrom(parameters.getFrom())
-                    .withUntil(parameters.getUntil())
-                    .withIdentifier(parameters.getIdentifier())
-                    .withMetadataPrefix(parameters.getMetadataPrefix())
-                    .withResumptionToken(parameters.getResumptionToken())
-                    .withSet(parameters.getSet());
-                
+                Request request =
+                        new Request(BASE_URL)
+                                .withVerb(parameters.getVerb())
+                                .withFrom(parameters.getFrom())
+                                .withUntil(parameters.getUntil())
+                                .withIdentifier(parameters.getIdentifier())
+                                .withMetadataPrefix(parameters.getMetadataPrefix())
+                                .withResumptionToken(parameters.getResumptionToken())
+                                .withSet(parameters.getSet());
+
                 try {
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     XmlWriter writer = new XmlWriter(outputStream);
