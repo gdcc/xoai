@@ -79,7 +79,7 @@
         <maven-enforcer-plugin.version>3.1.0</maven-enforcer-plugin.version>
 
         <pomchecker-maven-plugin.version>1.2.0</pomchecker-maven-plugin.version>
-        <nexus-staging-plugin.version>1.6.12</nexus-staging-plugin.version>
+        <nexus-staging-plugin.version>1.6.13</nexus-staging-plugin.version>
         <checkstyle-maven-plugin.version>3.1.2</checkstyle-maven-plugin.version>
         <checkstyle.version>9.3</checkstyle.version>
         <spotbugs-maven-plugin.version>4.7.0.0</spotbugs-maven-plugin.version>
