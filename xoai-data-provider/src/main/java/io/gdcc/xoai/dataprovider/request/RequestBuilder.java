@@ -359,31 +359,26 @@ public final class RequestBuilder {
         Objects.requireNonNull(arguments, "Arguments may not be null");
 
         List<BadArgumentException> errors = new ArrayList<>();
-        // create a copy of the arguments - set operations on the view would otherwise change the
-        // map!
+        // create a copy of the arguments - set operations on the view would change the map!
         Set<Argument> copy = new HashSet<>(arguments);
 
         // exclusive first - each argument in this set may only be present once and no other may be
-        // present!
-        // (if this verb has no exclusive args, no iteration will be done)
+        // present! (if this verb has no exclusive args, no iteration will be done)
         for (Argument argument : verb.exclArgs()) {
-            // if this exclusive argument is contained in the arguments, but there are others, too,
-            // this
-            // is a
-            // violation of the protocol.
-            // Quote: "the argument may be included with request, but must be the only argument"
-            if (copy.contains(argument) && copy.size() > 1) {
-                errors.add(
-                        new BadArgumentException(
-                                "Non-exclusive use of exclusive argument '" + argument + "'"));
+            if (copy.contains(argument)) {
+                if (copy.size() > 1) {
+                    // If this exclusive argument is contained in the arguments, but there are
+                    // others, too, this is a violation of the protocol.
+                    // Quote: "the argument may be included with request, but must be the only
+                    // argument"
+                    errors.add(
+                            new BadArgumentException(
+                                    "Non-exclusive use of exclusive argument '" + argument + "'"));
+                }
+                // We had a match - return now (arg non-exclusively used means error inside)
+                return errors;
             }
         }
-
-        // Exclusive options require that nothing else is present. If an exclusive argument is
-        // present
-        // but not alone,
-        // stop validation here and return the errors early to inform the user.
-        if (!errors.isEmpty()) return errors;
 
         // now lets look for required arguments (empty means no checks done)
         for (Argument argument : verb.reqArgs()) {

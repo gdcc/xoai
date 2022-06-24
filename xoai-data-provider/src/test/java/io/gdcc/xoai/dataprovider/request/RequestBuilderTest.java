@@ -294,6 +294,7 @@ class RequestBuilderTest {
                     Arguments.of(
                             Verb.Type.ListIdentifiers,
                             Set.of(
+                                    Verb.Argument.MetadataPrefix,
                                     Verb.Argument.Set,
                                     Verb.Argument.From,
                                     Verb.Argument.Identifier)),
@@ -314,6 +315,36 @@ class RequestBuilderTest {
                     RequestBuilder.validateArgumentPresence(verb, arguments);
             // then
             assertFalse(errors.isEmpty());
+        }
+
+        Stream<Arguments> validArguments() {
+            return Stream.of(
+                    Arguments.of(Verb.Type.Identify, Set.of()),
+                    Arguments.of(
+                            Verb.Type.GetRecord,
+                            Set.of(Verb.Argument.Identifier, Verb.Argument.MetadataPrefix)),
+                    Arguments.of(Verb.Type.ListIdentifiers, Set.of(Verb.Argument.ResumptionToken)),
+                    Arguments.of(
+                            Verb.Type.ListIdentifiers,
+                            Set.of(
+                                    Verb.Argument.MetadataPrefix,
+                                    Verb.Argument.Set,
+                                    Verb.Argument.From,
+                                    Verb.Argument.Until)),
+                    Arguments.of(
+                            Verb.Type.ListRecords,
+                            Set.of(Verb.Argument.MetadataPrefix, Verb.Argument.From)));
+        }
+
+        @ParameterizedTest
+        @MethodSource("validArguments")
+        void verifyValidTimeArguments(Verb.Type verb, Set<Verb.Argument> arguments) {
+            // when
+            List<BadArgumentException> errors =
+                    RequestBuilder.validateArgumentPresence(verb, arguments);
+
+            // then
+            assertTrue(errors.isEmpty());
         }
     }
 
