@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.gdcc</groupId>
         <artifactId>xoai</artifactId>
-        <version>${revision}</version>
+        <version>5.0.0-RC1</version>
     </parent>
 
     <artifactId>xoai-xmlio</artifactId>
