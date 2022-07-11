@@ -20,7 +20,7 @@
 
     <groupId>io.gdcc</groupId>
     <artifactId>xoai</artifactId>
-    <version>5.0.0-RC1</version>
+    <version>${revision}</version>
 
     <organization>
         <name>Global Dataverse Community Consortium</name>
@@ -32,7 +32,7 @@
     <description>An OAI-PMH data and/or service provider implementation, integration ready for your service.</description>
 
     <properties>
-        <revision>5.0.0-RC1</revision>
+        <revision>5.0.0-SNAPSHOT</revision>
         <jdk.version>11</jdk.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -109,7 +109,7 @@
         <connection>scm:git:git@github.com:gdcc/xoai.git</connection>
         <developerConnection>scm:git:git@github.com:gdcc/xoai.git</developerConnection>
         <url>git@github.com:gdcc/xoai.git</url>
-        <tag>xoai-5.0.0-RC1</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <ciManagement>
