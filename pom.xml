@@ -70,7 +70,7 @@
         <maven-failsafe-plugin.version>3.0.0-M7</maven-failsafe-plugin.version>
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
         <maven-plugin-plugin.version>3.6.4</maven-plugin-plugin.version>
-        <maven-site-plugin.version>4.0.0-M1</maven-site-plugin.version>
+        <maven-site-plugin.version>4.0.0-M2</maven-site-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-javadoc-plugin.version>3.4.0</maven-javadoc-plugin.version>
         <maven-flatten-plugin.version>1.2.7</maven-flatten-plugin.version>
