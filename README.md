@@ -17,15 +17,26 @@ updated by [DSpace](https://github.com/DSpace)). XOAI contains common Java class
 this fork by the [*Global Dataverse Community Consortium*](https://dataversecommunity.global) provides an updated
 version for the needs of and usage with the open source repository [Dataverse Software](https://dataverse.org).
 
-This library is available from Maven Central, simply rely on the main POM:
+This library is available from Maven Central, simply rely on them in your builds:
 
+When building a data provider, you'll add [xoai-data-provider](https://mvnrepository.com/artifact/io.gdcc/xoai-data-provider/latest):
 ```
 <dependency>
 	<groupId>io.gdcc</groupId>
-	<artifactId>xoai</artifactId>
-	<version>5.0.0</version>
+	<artifactId>xoai-data-provider</artifactId>
+	<version>${xoai.version}</version>
 </dependency>
 ```
+
+When building a service provider, you'll add [xoai-service-provider](https://mvnrepository.com/artifact/io.gdcc/xoai-service-provider/latest):
+```
+<dependency>
+	<groupId>io.gdcc</groupId>
+	<artifactId>xoai-service-provider</artifactId>
+	<version>${xoai.version}</version>
+</dependency>
+```
+
 
 Some minimal usage documentation has been scraped from the DSpace Wiki, mostly
 explaining the concepts of this library, and put into [docs/README.md](docs/README.md).
