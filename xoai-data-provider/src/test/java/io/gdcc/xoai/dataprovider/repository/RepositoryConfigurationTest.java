@@ -1,13 +1,16 @@
 package io.gdcc.xoai.dataprovider.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.*;
 
 import io.gdcc.xoai.model.oaipmh.Granularity;
 import io.gdcc.xoai.services.api.DateProvider;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -47,5 +50,17 @@ class RepositoryConfigurationTest {
         assertEquals(expected, DateProvider.format(skewedTime, granularity));
         assertEquals(
                 expectedAtSecondGranularity, DateProvider.format(skewedTime, Granularity.Second));
+    }
+
+    @Test
+    void setAdminEmails() {
+        List<String> mails = List.of("test", "test2", "test3");
+
+        RepositoryConfiguration subject = RepositoryConfiguration.defaults();
+        assumeTrue(subject.getAdminEmails().size() == 1);
+
+        subject.setAdminEmails(mails);
+        assertEquals(mails.size(), subject.getAdminEmails().size());
+        assertEquals(mails, subject.getAdminEmails());
     }
 }
