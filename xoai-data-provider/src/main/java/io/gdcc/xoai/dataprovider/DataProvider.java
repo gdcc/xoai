@@ -27,6 +27,10 @@ import io.gdcc.xoai.model.oaipmh.Request;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 import io.gdcc.xoai.model.oaipmh.verbs.Verb.Type;
 import io.gdcc.xoai.services.api.DateProvider;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -187,6 +191,33 @@ public class DataProvider {
         } catch (OAIException e) {
             log.debug(e.getMessage(), e);
             return this.errorsHandler.handle(oaipmh, e);
+        }
+    }
+
+    /**
+     * Let an implementing application retrieve the OAI XSLT for nicer UI of results. The app needs
+     * to create some endpoint to serve the content and reference that endpoint in {@link
+     * io.gdcc.xoai.xml.XmlWriter#writeStylesheet(String)}. The app might also choose to cache the
+     * String instead of re-reading it.
+     *
+     * @return The XSLT document as complete String
+     */
+    public static final String getOaiXSLT() {
+        // get resource from classpath
+        ClassLoader classLoader = DataProvider.class.getClassLoader();
+        URL oaiXsltResource = classLoader.getResource("oai2.xsl");
+
+        // Prevent errors if file not found or could not be loaded
+        if (oaiXsltResource == null) {
+            log.warn("Could not find or load OAI XSLT file, class loader returned null");
+            return "";
+        }
+
+        try (InputStream inStream = oaiXsltResource.openStream()) {
+            return new String(inStream.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            log.warn("Could not read OAI XSLT file", e);
+            return "";
         }
     }
 }

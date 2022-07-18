@@ -10,7 +10,9 @@ package io.gdcc.xoai.dataprovider;
 
 import static io.gdcc.xoai.model.oaipmh.verbs.Verb.Type.ListRecords;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.emptyString;
 
 import io.gdcc.xoai.dataprovider.handlers.AbstractHandlerTest;
 import io.gdcc.xoai.dataprovider.request.RequestBuilder;
@@ -150,5 +152,10 @@ public class DataProviderTest extends AbstractHandlerTest {
     @Override
     protected String write(final XmlWritable handle) throws XMLStreamException, XmlWriteException {
         return XmlWriter.toString(writer -> writer.write(handle));
+    }
+
+    @Test
+    void readOaiXslt() {
+        assertThat(DataProvider.getOaiXSLT(), not(emptyString()));
     }
 }
