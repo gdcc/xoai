@@ -46,7 +46,7 @@ public class InMemoryItemRepository implements ItemRepository {
     }
 
     @Override
-    public Item getItem(String identifier) throws IdDoesNotExistException {
+    public Item getItemIdentifier(String identifier) throws IdDoesNotExistException {
         for (InMemoryItem item : this.list) {
             if (item.getIdentifier().equals(identifier)) return item;
         }
@@ -55,7 +55,7 @@ public class InMemoryItemRepository implements ItemRepository {
 
     @Override
     public Item getItem(String identifier, MetadataFormat format) throws HandlerException {
-        return getItem(identifier);
+        return getItemIdentifier(identifier);
     }
 
     @Override

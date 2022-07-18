@@ -44,7 +44,7 @@ public class ListMetadataFormatsHandler extends VerbHandler<ListMetadataFormats>
         // particular item
         Optional<String> identifier = request.getIdentifier();
         if (identifier.isPresent()) {
-            ItemIdentifier item = itemRepository.getItem(identifier.get());
+            ItemIdentifier item = itemRepository.getItemIdentifier(identifier.get());
 
             // Lookup the formats available from the context. When the metadata formats registered
             // within
