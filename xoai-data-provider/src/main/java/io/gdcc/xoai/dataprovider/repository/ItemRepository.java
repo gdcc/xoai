@@ -38,7 +38,7 @@ public interface ItemRepository {
      *     href="client://www.openarchives.org/OAI/openarchivesprotocol.html#UniqueIdentifier">Unique
      *     identifier definition</a>
      */
-    ItemIdentifier getItem(String identifier) throws IdDoesNotExistException;
+    ItemIdentifier getItemIdentifier(String identifier) throws IdDoesNotExistException;
 
     /**
      * Gets an item from the data source, but indicate the metadata format we are seeking. This may

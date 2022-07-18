@@ -470,6 +470,9 @@
         <developer>
             <name>Oliver Bertuch</name>
             <url>https://github.com/poikilotherm</url>
+            <email>xoai-lib@gdcc.io</email>
+            <organization>Forschungszentrum Jülich GmbH</organization>
+            <organizationUrl>https://www.fz-juelich.de/en/zb</organizationUrl>
         </developer>
         <developer>
             <name>DSpace @ Lyncode</name>

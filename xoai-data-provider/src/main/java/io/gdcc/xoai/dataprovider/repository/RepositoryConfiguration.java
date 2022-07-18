@@ -160,6 +160,18 @@ public class RepositoryConfiguration implements WriterContext {
         return this;
     }
 
+    public RepositoryConfiguration setAdminEmails(List<String> emails) {
+        this.adminEmails.clear();
+        this.adminEmails.addAll(emails);
+        return this;
+    }
+
+    public RepositoryConfiguration setAdminEmails(String... emails) {
+        this.adminEmails.clear();
+        this.adminEmails.addAll(List.of(emails));
+        return this;
+    }
+
     public RepositoryConfiguration withAdminEmails(String... emails) {
         this.adminEmails.addAll(asList(emails));
         return this;
