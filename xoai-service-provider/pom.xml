@@ -11,7 +11,7 @@
     <parent>
         <groupId>io.gdcc</groupId>
         <artifactId>xoai</artifactId>
-        <version>5.0.0-RC2</version>
+        <version>5.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
