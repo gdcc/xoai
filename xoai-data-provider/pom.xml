@@ -11,7 +11,7 @@
     <parent>
         <artifactId>xoai</artifactId>
         <groupId>io.gdcc</groupId>
-        <version>${revision}</version>
+        <version>5.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -41,7 +41,7 @@
         <dependency>
             <groupId>io.gdcc</groupId>
             <artifactId>xoai-common</artifactId>
-            <version>${revision}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
