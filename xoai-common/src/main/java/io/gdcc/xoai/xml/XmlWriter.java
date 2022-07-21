@@ -160,4 +160,13 @@ public class XmlWriter extends XmlIoWriter implements AutoCloseable {
             throw new XmlWriteException(e);
         }
     }
+
+    public void writeStylesheet(String href) throws XMLStreamException {
+        if (href == null) {
+            throw new XMLStreamException(
+                    "May not pass a null hyper reference to the XSLT processing instruction");
+        }
+        super.writeProcessingInstruction(
+                "xml-stylesheet", "type=\"text/xsl\" href=\"" + href + "\"");
+    }
 }

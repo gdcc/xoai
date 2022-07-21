@@ -148,6 +148,13 @@ It happily accepts an `InputStream`, being read and written as a raw response to
 and serve from the main application (Dataverse) without jumping through the
 loops of the XML transformer for each item, which is MUCH faster.
 
+Using `DataProvider.getOaiXslt()` an implementing application can retrieve a local copy
+of https://github.com/eprints/eprints/blob/3.3/lib/static/oai2.xsl to serve it
+from a local (servlet) endpoint. It allows for a much nicer UI experience when
+accessing the OAI-PMH endpoint with a browser. Applications may provide a hyperref
+to the endpoint (or other static location) by using `xmlWriter.writeStylesheet()`
+in their OAI servlet.
+
 ## Advanced Configuration
 
 **NOTE: THE FOLLOWING HAS BEEN COPIED FROM THE DSPACE WIKI AND IS OF LIMITED USE
