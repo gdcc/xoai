@@ -47,7 +47,7 @@
 
         <!-- Dependencies -->
         <jakarta.jaxb.version>2.3.3</jakarta.jaxb.version>
-        <jakarta.jaxb-impl.version>2.3.6</jakarta.jaxb-impl.version>
+        <jakarta.jaxb-impl.version>2.3.7</jakarta.jaxb-impl.version>
         <hamcrest.version>2.2</hamcrest.version>
         <xmlunit.version>2.9.0</xmlunit.version>
         <stax2.api.version>4.2.1</stax2.api.version>
