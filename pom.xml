@@ -56,7 +56,7 @@
 
         <!-- Testing dependencies -->
         <junit.version>4.13.2</junit.version>
-        <junit.jupiter.version>5.9.1</junit.jupiter.version>
+        <junit.jupiter.version>5.9.2</junit.jupiter.version>
         <junit.vintage.version>${junit.jupiter.version}</junit.vintage.version>
 
         <!-- Official Maven Plugins -->
