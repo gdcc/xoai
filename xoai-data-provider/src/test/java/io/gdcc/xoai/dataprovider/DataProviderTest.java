@@ -55,6 +55,15 @@ public class DataProviderTest extends AbstractHandlerTest {
     }
 
     @Test
+    public void invalidVerbFromServletQueryParameters() throws Exception {
+        // when
+        String result = write(dataProvider.handle(Map.of("verb", new String[] {"hello"})));
+
+        // then
+        assertThat(result, xPath("//oai:error/@code", equalTo("badVerb")));
+    }
+
+    @Test
     public void missingMetadataFormat() throws Exception {
         // when
         String result = write(dataProvider.handle(new RequestBuilder.RawRequest(ListRecords)));
