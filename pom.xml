@@ -51,7 +51,7 @@
         <hamcrest.version>2.2</hamcrest.version>
         <xmlunit.version>2.9.1</xmlunit.version>
         <stax2.api.version>4.2.1</stax2.api.version>
-        <woodstox.version>6.4.0</woodstox.version>
+        <woodstox.version>6.5.0</woodstox.version>
         <slf4j.version>1.7.36</slf4j.version>
 
         <!-- Testing dependencies -->
