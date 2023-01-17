@@ -38,13 +38,17 @@ public final class JdkHttpOaiClient extends OAIClient {
     private final String userAgent;
     private final Duration requestTimeout;
     private final HttpClient httpClient;
+    // Custom headers are optional and thus ok to be null:
+    //private final List<Header> customHeaders;
+    private final String[] customHeaders;
 
     JdkHttpOaiClient(
-            String baseUrl, String userAgent, Duration requestTimeout, HttpClient httpClient) {
+            String baseUrl, String userAgent, Duration requestTimeout, String[] customHeaders, HttpClient httpClient) {
         this.baseUrl = baseUrl;
         this.userAgent = userAgent;
         this.requestTimeout = requestTimeout;
         this.httpClient = httpClient;
+        this.customHeaders = customHeaders;
     }
 
     @Override
@@ -52,13 +56,18 @@ public final class JdkHttpOaiClient extends OAIClient {
         try {
             URI requestURI = URI.create(parameters.toUrl(this.baseUrl));
 
-            HttpRequest request =
-                    HttpRequest.newBuilder()
-                            .uri(requestURI)
-                            .GET()
-                            .header("User-Agent", this.userAgent)
-                            .timeout(requestTimeout)
-                            .build();
+            HttpRequest.Builder httpRequestBuilder = HttpRequest.newBuilder()
+                    .uri(requestURI)
+                    .GET()
+                    .header("User-Agent", this.userAgent)
+                    .timeout(requestTimeout);
+            
+            // add custom headers, if present:
+            if (customHeaders != null) {
+                httpRequestBuilder = httpRequestBuilder.headers(customHeaders);
+            }
+            
+            HttpRequest request = httpRequestBuilder.build();
 
             HttpResponse<InputStream> response =
                     this.httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
@@ -94,6 +103,7 @@ public final class JdkHttpOaiClient extends OAIClient {
         private String baseUrl = "Must be set via Builder.withBaseUrl()";
         private String userAgent = "XOAI Service Provider v5";
         private Duration requestTimeout = Duration.ofSeconds(60);
+        private String[] customHeaders = null;
         private final HttpClient.Builder httpClientBuilder;
 
         JdkHttpBuilder() {
@@ -179,11 +189,32 @@ public final class JdkHttpOaiClient extends OAIClient {
             }
             return this;
         }
-
+        
+        @Override
+        /**
+         * Accepts the set of http headers as an array of name value *pairs*,
+         * so that it could be passed directly to HttpRequest.Builder.headers().
+         * Similarly to the above, it will throw an IllegalArgumentException 
+         * if there's an odd number of values.
+         * @param headers the list of name value *pairs*
+         * @return this builder
+         * @throws IllegalArgumentException if there are an odd number of
+         *         parameters.
+         */
+        public JdkHttpBuilder withCustomHeaders(String... headers) {
+            if (headers != null) {
+                if (headers.length % 2 == 1) {
+                    throw new IllegalArgumentException("Odd number of values in place of name-value pairs as a headers array");
+                }
+            }
+            this.customHeaders = headers; 
+            return this;
+        }
+        
         @Override
         public JdkHttpOaiClient build() {
             return new JdkHttpOaiClient(
-                    this.baseUrl, this.userAgent, this.requestTimeout, httpClientBuilder.build());
+                    this.baseUrl, this.userAgent, this.requestTimeout, this.customHeaders, httpClientBuilder.build());
         }
 
         private static SSLContext insecureContext() {
