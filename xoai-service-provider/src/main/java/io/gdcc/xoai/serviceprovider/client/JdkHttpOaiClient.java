@@ -39,11 +39,15 @@ public final class JdkHttpOaiClient extends OAIClient {
     private final Duration requestTimeout;
     private final HttpClient httpClient;
     // Custom headers are optional and thus ok to be null:
-    //private final List<Header> customHeaders;
+    // private final List<Header> customHeaders;
     private final String[] customHeaders;
 
     JdkHttpOaiClient(
-            String baseUrl, String userAgent, Duration requestTimeout, String[] customHeaders, HttpClient httpClient) {
+            String baseUrl,
+            String userAgent,
+            Duration requestTimeout,
+            String[] customHeaders,
+            HttpClient httpClient) {
         this.baseUrl = baseUrl;
         this.userAgent = userAgent;
         this.requestTimeout = requestTimeout;
@@ -56,17 +60,18 @@ public final class JdkHttpOaiClient extends OAIClient {
         try {
             URI requestURI = URI.create(parameters.toUrl(this.baseUrl));
 
-            HttpRequest.Builder httpRequestBuilder = HttpRequest.newBuilder()
-                    .uri(requestURI)
-                    .GET()
-                    .header("User-Agent", this.userAgent)
-                    .timeout(requestTimeout);
-            
+            HttpRequest.Builder httpRequestBuilder =
+                    HttpRequest.newBuilder()
+                            .uri(requestURI)
+                            .GET()
+                            .header("User-Agent", this.userAgent)
+                            .timeout(requestTimeout);
+
             // add custom headers, if present:
             if (customHeaders != null) {
                 httpRequestBuilder = httpRequestBuilder.headers(customHeaders);
             }
-            
+
             HttpRequest request = httpRequestBuilder.build();
 
             HttpResponse<InputStream> response =
@@ -183,38 +188,42 @@ public final class JdkHttpOaiClient extends OAIClient {
                 log.warn(
                         "You must disable JDK HTTP Client Host Name Verification globally via"
                             + " system property"
-                            + " -Djdk.internal.httpclient.disableHostnameVerification=true for"
-                            + " XOAI Client connections to insecure SSL servers. Don't do this in"
-                            + " a production setup!");
+                            + " -Djdk.internal.httpclient.disableHostnameVerification=true for XOAI"
+                            + " Client connections to insecure SSL servers. Don't do this in a"
+                            + " production setup!");
             }
             return this;
         }
-        
+
         @Override
         /**
-         * Accepts the set of http headers as an array of name value *pairs*,
-         * so that it could be passed directly to HttpRequest.Builder.headers().
-         * Similarly to the above, it will throw an IllegalArgumentException 
-         * if there's an odd number of values.
+         * Accepts the set of http headers as an array of name value *pairs*, so that it could be
+         * passed directly to HttpRequest.Builder.headers(). Similarly to the above, it will throw
+         * an IllegalArgumentException if there's an odd number of values.
+         *
          * @param headers the list of name value *pairs*
          * @return this builder
-         * @throws IllegalArgumentException if there are an odd number of
-         *         parameters.
+         * @throws IllegalArgumentException if there are an odd number of parameters.
          */
         public JdkHttpBuilder withCustomHeaders(String... headers) {
             if (headers != null) {
                 if (headers.length % 2 == 1) {
-                    throw new IllegalArgumentException("Odd number of values in place of name-value pairs as a headers array");
+                    throw new IllegalArgumentException(
+                            "Odd number of values in place of name-value pairs as a headers array");
                 }
             }
-            this.customHeaders = headers; 
+            this.customHeaders = headers;
             return this;
         }
-        
+
         @Override
         public JdkHttpOaiClient build() {
             return new JdkHttpOaiClient(
-                    this.baseUrl, this.userAgent, this.requestTimeout, this.customHeaders, httpClientBuilder.build());
+                    this.baseUrl,
+                    this.userAgent,
+                    this.requestTimeout,
+                    this.customHeaders,
+                    httpClientBuilder.build());
         }
 
         private static SSLContext insecureContext() {

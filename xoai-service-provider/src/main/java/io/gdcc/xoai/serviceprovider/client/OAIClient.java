@@ -96,14 +96,13 @@ public abstract class OAIClient {
          * @return A builder, ready for configuration and creating your {@link OAIClient}.
          */
         Builder withInsecureSSL();
-       
+
         /**
-         * Configure a set of optional custom http headers to add to the OAI 
-         * requests. This is an array of name value *pairs*, similarly, and ready 
-         * to pass to HttpRequest.Builder.headers().
-         * Similarly to HttpRequest.Builder.headers(), it should throw an 
-         * IllegalArgumentException if there's an odd number of values in the 
-         * array.
+         * Configure a set of optional custom http headers to add to the OAI requests. This is an
+         * array of name value *pairs*, similarly, and ready to pass to
+         * HttpRequest.Builder.headers(). Similarly to HttpRequest.Builder.headers(), it should
+         * throw an IllegalArgumentException if there's an odd number of values in the array.
+         *
          * @param headers the list of name value *pairs*
          * @return this builder, ready for configuration and creating your {@link OAIClient}.
          */
