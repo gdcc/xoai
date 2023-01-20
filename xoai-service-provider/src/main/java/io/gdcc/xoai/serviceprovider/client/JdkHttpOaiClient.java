@@ -18,6 +18,9 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -38,21 +41,19 @@ public final class JdkHttpOaiClient extends OAIClient {
     private final String userAgent;
     private final Duration requestTimeout;
     private final HttpClient httpClient;
-    // Custom headers are optional and thus ok to be null:
-    // private final List<Header> customHeaders;
-    private final String[] customHeaders;
+    private final Map<String, String> customHeaders;
 
     JdkHttpOaiClient(
             String baseUrl,
             String userAgent,
             Duration requestTimeout,
-            String[] customHeaders,
+            Map<String, String> customHeaders,
             HttpClient httpClient) {
         this.baseUrl = baseUrl;
         this.userAgent = userAgent;
         this.requestTimeout = requestTimeout;
+        this.customHeaders = Map.copyOf(customHeaders);
         this.httpClient = httpClient;
-        this.customHeaders = customHeaders;
     }
 
     @Override
@@ -60,7 +61,7 @@ public final class JdkHttpOaiClient extends OAIClient {
         try {
             URI requestURI = URI.create(parameters.toUrl(this.baseUrl));
 
-            HttpRequest.Builder httpRequestBuilder =
+            final HttpRequest.Builder httpRequestBuilder =
                     HttpRequest.newBuilder()
                             .uri(requestURI)
                             .GET()
@@ -68,13 +69,10 @@ public final class JdkHttpOaiClient extends OAIClient {
                             .timeout(requestTimeout);
 
             // add custom headers, if present:
-            if (customHeaders != null) {
-                httpRequestBuilder = httpRequestBuilder.headers(customHeaders);
-            }
+            customHeaders.forEach(httpRequestBuilder::header);
 
-            HttpRequest request = httpRequestBuilder.build();
-
-            HttpResponse<InputStream> response =
+            final HttpRequest request = httpRequestBuilder.build();
+            final HttpResponse<InputStream> response =
                     this.httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
 
             if (response.statusCode() == HTTP_OK) {
@@ -108,7 +106,7 @@ public final class JdkHttpOaiClient extends OAIClient {
         private String baseUrl = "Must be set via Builder.withBaseUrl()";
         private String userAgent = "XOAI Service Provider v5";
         private Duration requestTimeout = Duration.ofSeconds(60);
-        private String[] customHeaders = null;
+        private final Map<String, String> customHeaders = new HashMap<>();
         private final HttpClient.Builder httpClientBuilder;
 
         JdkHttpBuilder() {
@@ -195,24 +193,39 @@ public final class JdkHttpOaiClient extends OAIClient {
             return this;
         }
 
-        @Override
         /**
-         * Accepts the set of http headers as an array of name value *pairs*, so that it could be
-         * passed directly to HttpRequest.Builder.headers(). Similarly to the above, it will throw
-         * an IllegalArgumentException if there's an odd number of values.
+         * Accepts the set of http headers as a map of name value *pairs*.
          *
          * @param headers the list of name value *pairs*
          * @return this builder
-         * @throws IllegalArgumentException if there are an odd number of parameters.
+         * @throws NullPointerException if the given map is null or contains null header name or
+         *     values.
+         * @throws IllegalArgumentException if the given map contains an empty header name
          */
-        public JdkHttpBuilder withCustomHeaders(String... headers) {
-            if (headers != null) {
-                if (headers.length % 2 == 1) {
-                    throw new IllegalArgumentException(
-                            "Odd number of values in place of name-value pairs as a headers array");
-                }
+        @Override
+        public JdkHttpBuilder withCustomHeaders(final Map<String, String> headers) {
+            headers.forEach(this::withCustomHeader);
+            return this;
+        }
+
+        /**
+         * Accepts a http header as a name value pair.
+         *
+         * @param header The header name
+         * @param value The header's value
+         * @return this builder
+         * @throws NullPointerException if the given header or value is null
+         * @throws IllegalArgumentException if the given header is empty
+         */
+        @Override
+        public Builder withCustomHeader(String header, String value) {
+            Objects.requireNonNull(header, "Header name may not be null");
+            Objects.requireNonNull(
+                    value, "Header's value for name \"" + header + "\" may not be null");
+            if (header.isEmpty()) {
+                throw new IllegalArgumentException("Found empty header name");
             }
-            this.customHeaders = headers;
+            this.customHeaders.put(header, value);
             return this;
         }
 
