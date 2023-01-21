@@ -8,20 +8,30 @@
 
 package io.gdcc.xoai.dataprovider.repository;
 
+import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
+
 public final class Repository {
-    public static Repository repository() {
-        return new Repository();
+
+    /* Do not let a repository get constructed without a configuration. Remember: this is crucial! */
+    private Repository() {}
+
+    public Repository(RepositoryConfiguration configuration) {
+        this.configuration = configuration;
     }
 
-    private RepositoryConfiguration configuration = RepositoryConfiguration.defaults();
+    private RepositoryConfiguration configuration;
     private ItemRepository itemRepository = null;
     private SetRepository setRepository = null;
 
     public RepositoryConfiguration getConfiguration() {
+        if (this.configuration == null) {
+            throw new InternalOAIException(
+                    "Despite a private constructor this repository instance has no configuration");
+        }
         return configuration;
     }
 
-    public Repository withConfiguration(RepositoryConfiguration configuration) {
+    public Repository setConfiguration(RepositoryConfiguration configuration) {
         this.configuration = configuration;
         return this;
     }
