@@ -49,6 +49,7 @@ public class RepositoryConfiguration implements WriterContext {
     private final DeletedRecord deleteMethod;
 
     private final boolean enableMetadataAttributes;
+    private final boolean requireFromAfterEarliest;
 
     RepositoryConfiguration(
             List<String> adminEmails,
@@ -63,7 +64,8 @@ public class RepositoryConfiguration implements WriterContext {
             Integer maxListSets,
             Integer maxListRecords,
             DeletedRecord deleteMethod,
-            boolean enableMetadataAttributes) {
+            boolean enableMetadataAttributes,
+            boolean requireFromAfterEarliest) {
         this.adminEmails.addAll(List.copyOf(adminEmails));
         this.descriptions.addAll(List.copyOf(descriptions));
         this.compressions.addAll(List.copyOf(compressions));
@@ -77,6 +79,7 @@ public class RepositoryConfiguration implements WriterContext {
         this.maxListRecords = maxListRecords;
         this.deleteMethod = deleteMethod;
         this.enableMetadataAttributes = enableMetadataAttributes;
+        this.requireFromAfterEarliest = requireFromAfterEarliest;
     }
 
     /**
@@ -97,7 +100,8 @@ public class RepositoryConfiguration implements WriterContext {
                         .withMaxListSets(this.maxListSets)
                         .withMaxListRecords(this.maxListRecords)
                         .withDeleteMethod(this.deleteMethod)
-                        .withEnableMetadataAttributes(this.enableMetadataAttributes);
+                        .withEnableMetadataAttributes(this.enableMetadataAttributes)
+                        .withRequireFromAfterEarliest(this.requireFromAfterEarliest);
 
         // Quick and hacky addition as no methods for bulk adding available
         builder.descriptions.clear();
@@ -216,6 +220,10 @@ public class RepositoryConfiguration implements WriterContext {
         return this.enableMetadataAttributes;
     }
 
+    public boolean requiresFromAfterEarliest() {
+        return requireFromAfterEarliest;
+    }
+
     public static final class RepositoryConfigurationBuilder {
 
         /* All field below package private to access in tests */
@@ -234,6 +242,7 @@ public class RepositoryConfiguration implements WriterContext {
         Integer maxListSets = 100;
         Integer maxListRecords = 100;
         Boolean enableMetadataAttributes = false;
+        Boolean requireFromAfterEarliest = false;
 
         public RepositoryConfigurationBuilder withGranularity(Granularity granularity) {
             this.requireNotNull(granularity, "Granularity must not be null");
@@ -389,6 +398,17 @@ public class RepositoryConfiguration implements WriterContext {
             return this;
         }
 
+        /**
+         * Configure if any "from" parameter must be required to be a point in time after the
+         * earliest date of the repo (the oldest item). This is not strictly required by the OAI-PMH
+         * spec, but was the default behaviour of XOAI 3 and 4. Setting to true restores the
+         * behaviour.
+         */
+        public RepositoryConfigurationBuilder withRequireFromAfterEarliest(boolean require) {
+            this.requireFromAfterEarliest = require;
+            return this;
+        }
+
         public RepositoryConfiguration build() {
             // Basic validation of configuration that is still missing
             // 1. At least 1 admin mail present?
@@ -417,7 +437,8 @@ public class RepositoryConfiguration implements WriterContext {
                     maxListSets,
                     maxListRecords,
                     deleteMethod,
-                    enableMetadataAttributes);
+                    enableMetadataAttributes,
+                    requireFromAfterEarliest);
         }
 
         /**
