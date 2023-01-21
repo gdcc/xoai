@@ -13,7 +13,7 @@ import io.gdcc.xoai.dataprovider.model.MetadataFormat;
 import io.gdcc.xoai.dataprovider.repository.InMemoryItemRepository;
 import io.gdcc.xoai.dataprovider.repository.InMemorySetRepository;
 import io.gdcc.xoai.dataprovider.repository.Repository;
-import io.gdcc.xoai.dataprovider.repository.RepositoryConfiguration;
+import io.gdcc.xoai.dataprovider.repository.RepositoryConfigurationTest;
 import io.gdcc.xoai.model.oaipmh.Request;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 import io.gdcc.xoai.xml.XmlWritable;
@@ -32,13 +32,10 @@ public abstract class AbstractHandlerTest {
             new Context().withMetadataFormat(EXISTING_METADATA_FORMAT, MetadataFormat.identity());
     private final InMemorySetRepository setRepository = new InMemorySetRepository();
     private final InMemoryItemRepository itemRepository = new InMemoryItemRepository();
-    private final RepositoryConfiguration repositoryConfiguration =
-            RepositoryConfiguration.defaults();
     private final Repository repository =
-            new Repository()
+            new Repository(RepositoryConfigurationTest.defaults().build())
                     .withSetRepository(setRepository)
-                    .withItemRepository(itemRepository)
-                    .withConfiguration(repositoryConfiguration);
+                    .withItemRepository(itemRepository);
 
     protected static Matcher<? super String> xPath(String xpath, Matcher<String> stringMatcher) {
         return EvaluateXPathMatcher.hasXPath(xpath, stringMatcher);
@@ -59,7 +56,7 @@ public abstract class AbstractHandlerTest {
     }
 
     protected Request request() {
-        return new Request(theRepositoryConfiguration().getBaseUrl());
+        return new Request(theRepository().getConfiguration().getBaseUrl());
     }
 
     protected Context aContext() {
@@ -76,10 +73,6 @@ public abstract class AbstractHandlerTest {
 
     protected InMemoryItemRepository theItemRepository() {
         return itemRepository;
-    }
-
-    protected RepositoryConfiguration theRepositoryConfiguration() {
-        return repositoryConfiguration;
     }
 
     protected Repository theRepository() {
@@ -101,6 +94,9 @@ public abstract class AbstractHandlerTest {
     }
 
     protected String valueOf(ResumptionToken.Value resumptionToken) {
-        return theRepositoryConfiguration().getResumptionTokenFormat().format(resumptionToken);
+        return theRepository()
+                .getConfiguration()
+                .getResumptionTokenFormat()
+                .format(resumptionToken);
     }
 }

@@ -150,7 +150,12 @@ public class ListIdentifiersHandlerTest extends AbstractHandlerTest {
 
     @Test
     public void validResponseWithOnlyOnePage() throws Exception {
-        theRepositoryConfiguration().withMaxListSets(100);
+        theRepository()
+                .getConfiguration()
+                .asTemplate()
+                .withMaxListIdentifiers(100)
+                .build()
+                .inject(theRepository());
         theItemRepository().withRandomItems(10);
         ListIdentifiers handle =
                 underTest.handle(
@@ -165,7 +170,12 @@ public class ListIdentifiersHandlerTest extends AbstractHandlerTest {
 
     @Test
     public void firstPageOfValidResponseWithTwoPages() throws Exception {
-        theRepositoryConfiguration().withMaxListIdentifiers(5);
+        theRepository()
+                .getConfiguration()
+                .asTemplate()
+                .withMaxListIdentifiers(5)
+                .build()
+                .inject(theRepository());
         theItemRepository().withRandomItems(10);
         ListIdentifiers handle =
                 underTest.handle(

@@ -36,7 +36,12 @@ public class ServiceProviderTest extends AbstractServiceProviderTest {
 
     @Test
     public void validIdentifyResponse() throws Exception {
-        theDataRepositoryConfiguration().withRepositoryName("NAME").withDeleteMethod(PERSISTENT);
+        theDataRepositoryConfiguration()
+                .asTemplate()
+                .withRepositoryName("NAME")
+                .withDeleteMethod(PERSISTENT)
+                .build()
+                .inject(theDataRepository());
         Identify identify = underTest.identify();
         assertThat(identify.getRepositoryName(), equalTo("NAME"));
         assertThat(identify.getDeletedRecord(), equalTo(PERSISTENT));
@@ -103,7 +108,11 @@ public class ServiceProviderTest extends AbstractServiceProviderTest {
 
     @Test
     public void listSetsWithSetsTwoPages() throws Exception {
-        theDataRepositoryConfiguration().withMaxListSets(5);
+        theDataRepositoryConfiguration()
+                .asTemplate()
+                .withMaxListSets(5)
+                .build()
+                .inject(theDataRepository());
         theDataSetRepository().withRandomSets(10);
         assertThat(count(underTest.listSets()), equalTo(10));
     }
@@ -130,7 +139,11 @@ public class ServiceProviderTest extends AbstractServiceProviderTest {
 
     @Test
     public void listIdentifiersWithTwoPages() throws Exception {
-        theDataRepositoryConfiguration().withMaxListIdentifiers(5);
+        theDataRepositoryConfiguration()
+                .asTemplate()
+                .withMaxListIdentifiers(5)
+                .build()
+                .inject(theDataRepository());
         theDataItemRepository().withRandomItems(10);
         assertThat(
                 count(
@@ -160,7 +173,11 @@ public class ServiceProviderTest extends AbstractServiceProviderTest {
 
     @Test
     public void listRecordsWithTwoPages() throws Exception {
-        theDataRepositoryConfiguration().withMaxListRecords(5);
+        theDataRepositoryConfiguration()
+                .asTemplate()
+                .withMaxListRecords(5)
+                .build()
+                .inject(theDataRepository());
         theDataItemRepository().withRandomItems(10);
         assertThat(
                 count(

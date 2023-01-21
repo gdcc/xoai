@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
 import io.gdcc.xoai.dataprovider.repository.RepositoryConfiguration;
+import io.gdcc.xoai.dataprovider.repository.RepositoryConfigurationTest;
 import io.gdcc.xoai.exceptions.BadArgumentException;
 import io.gdcc.xoai.exceptions.BadVerbException;
 import io.gdcc.xoai.exceptions.OAIException;
@@ -374,10 +375,11 @@ class RequestBuilderTest {
     void testForTimeSkewingForDay(Instant until, Instant expectedSkew, Granularity granularity) {
         // given
         RepositoryConfiguration configuration =
-                RepositoryConfiguration.defaults()
+                RepositoryConfigurationTest.defaults()
                         .withGranularity(granularity)
                         .withEarliestDate(
-                                LocalDate.of(2022, 1, 1).atStartOfDay().toInstant(ZoneOffset.UTC));
+                                LocalDate.of(2022, 1, 1).atStartOfDay().toInstant(ZoneOffset.UTC))
+                        .build();
 
         RequestBuilder.RawRequest rawRequest =
                 new RequestBuilder.RawRequest(Verb.Type.ListRecords)

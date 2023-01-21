@@ -22,6 +22,7 @@ import io.gdcc.xoai.dataprovider.exceptions.handler.DoesNotSupportSetsException;
 import io.gdcc.xoai.dataprovider.exceptions.handler.NoMatchesException;
 import io.gdcc.xoai.dataprovider.model.MetadataFormat;
 import io.gdcc.xoai.dataprovider.repository.RepositoryConfiguration;
+import io.gdcc.xoai.dataprovider.repository.RepositoryConfigurationTest;
 import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 import io.gdcc.xoai.model.oaipmh.results.record.Metadata;
 import io.gdcc.xoai.model.oaipmh.verbs.ListRecords;
@@ -103,7 +104,12 @@ public class ListRecordsHandlerTest extends AbstractHandlerTest {
 
     @Test
     public void validResponseWithOnlyOnePage() throws Exception {
-        theRepositoryConfiguration().withMaxListSets(100);
+        theRepository()
+                .getConfiguration()
+                .asTemplate()
+                .withMaxListRecords(100)
+                .build()
+                .inject(theRepository());
         theItemRepository().withRandomItems(10);
         ListRecords handle =
                 underTest.handle(
@@ -118,7 +124,12 @@ public class ListRecordsHandlerTest extends AbstractHandlerTest {
 
     @Test
     public void firstPageOfValidResponseWithTwoPages() throws Exception {
-        theRepositoryConfiguration().withMaxListRecords(5);
+        theRepository()
+                .getConfiguration()
+                .asTemplate()
+                .withMaxListRecords(5)
+                .build()
+                .inject(theRepository());
         theItemRepository().withRandomItems(10);
         ListRecords handle =
                 underTest.handle(
@@ -178,7 +189,7 @@ public class ListRecordsHandlerTest extends AbstractHandlerTest {
                                                                 "<test>I have Attributes!</test>"))
                                                 .withAttribute("test", "foobar")));
         RepositoryConfiguration configuration =
-                RepositoryConfiguration.defaults().withEnableMetadataAttributes(true);
+                RepositoryConfigurationTest.defaults().withEnableMetadataAttributes(true).build();
         aContext().withMetadataFormat("custom", MetadataFormat.identity());
         ListRecords handle =
                 underTest.handle(

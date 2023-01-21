@@ -42,7 +42,7 @@ public class DataProviderTest extends AbstractHandlerTest {
                 result,
                 xPath(
                         "//oai:Identify/oai:baseURL/text()",
-                        equalTo(theRepositoryConfiguration().getBaseUrl())));
+                        equalTo(theRepository().getConfiguration().getBaseUrl())));
     }
 
     @Test
@@ -109,7 +109,12 @@ public class DataProviderTest extends AbstractHandlerTest {
     public void incompleteResponseFirstPage() throws Exception {
         // given
         theItemRepository().withRandomItems(10);
-        theRepositoryConfiguration().withMaxListRecords(5);
+        theRepository()
+                .getConfiguration()
+                .asTemplate()
+                .withMaxListRecords(5)
+                .build()
+                .inject(theRepository());
 
         // when
         String result =
@@ -128,7 +133,12 @@ public class DataProviderTest extends AbstractHandlerTest {
     public void incompleteResponseLastPage() throws Exception {
         // given
         theItemRepository().withRandomItems(10);
-        theRepositoryConfiguration().withMaxListRecords(5);
+        theRepository()
+                .getConfiguration()
+                .asTemplate()
+                .withMaxListRecords(5)
+                .build()
+                .inject(theRepository());
 
         // when
         String result =
