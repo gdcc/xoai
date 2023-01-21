@@ -13,6 +13,7 @@ import io.gdcc.xoai.serviceprovider.parameters.Parameters;
 import java.io.InputStream;
 import java.net.URL;
 import java.time.Duration;
+import java.util.Map;
 
 /** An OAI-PMH client to interact with a target repository. */
 public abstract class OAIClient {
@@ -96,6 +97,29 @@ public abstract class OAIClient {
          * @return A builder, ready for configuration and creating your {@link OAIClient}.
          */
         Builder withInsecureSSL();
+
+        /**
+         * Configure a set of (optional) custom HTTP headers to add to the OAI requests. This is a
+         * map of header (as key) value pairs.
+         *
+         * @implNote Implementations should ignore null or empty values for any given header key
+         * @param headers A map of header (as key) value pairs
+         * @return A builder, ready for configuration and creating your {@link OAIClient}.
+         * @throws NullPointerException When given Map is null.
+         */
+        Builder withCustomHeaders(final Map<String, String> headers);
+
+        /**
+         * Configure an optional custom HTTP header to add to the OAI requests. This is a header
+         * value pair.
+         *
+         * @implNote Implementations should ignore null or empty values for any given header
+         * @param header The header to set
+         * @param value The value of the header
+         * @return A builder, ready for configuration and creating your {@link OAIClient}.
+         * @throws NullPointerException When given header is null (but will ignore value = null)
+         */
+        Builder withCustomHeader(String header, String value);
 
         /**
          * Build the {@link OAIClient} after configuring it.
