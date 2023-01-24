@@ -132,6 +132,7 @@ public class RepositoryConfigurationTest {
                 .withDeleteMethod(DeletedRecord.NO)
                 .withResumptionTokenFormat(
                         new SimpleResumptionTokenFormat().withGranularity(Granularity.Second))
-                .withEnableMetadataAttributes(false);
+                .withEnableMetadataAttributes(false)
+                .withRequireFromAfterEarliest(false);
     }
 }
