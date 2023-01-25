@@ -13,7 +13,6 @@ import static java.util.Arrays.asList;
 import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
 import io.gdcc.xoai.model.oaipmh.DeletedRecord;
 import io.gdcc.xoai.model.oaipmh.Granularity;
-import io.gdcc.xoai.services.api.DateProvider;
 import io.gdcc.xoai.services.api.ResumptionTokenFormat;
 import io.gdcc.xoai.services.impl.SimpleResumptionTokenFormat;
 import io.gdcc.xoai.xml.WriterContext;
@@ -22,30 +21,100 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * RepositoryConfiguration is a class containing all settings relevant for OAI-PMH operation. A
+ * configuration can only be built using the {@link RepositoryConfigurationBuilder} and is
+ * non-modifiable. In case you need to change something, you need to build a new one.
+ */
 public class RepositoryConfiguration implements WriterContext {
 
     private final List<String> adminEmails = new ArrayList<>();
     private final List<String> descriptions = new ArrayList<>();
     private final List<String> compressions = new ArrayList<>();
 
-    private Granularity granularity;
-    private ResumptionTokenFormat resumptionTokenFormat;
-    private String repositoryName;
-    private String baseUrl;
-    private Instant earliestDate;
-    private Integer maxListIdentifiers;
-    private Integer maxListSets;
-    private Integer maxListRecords;
-    private DeletedRecord deleteMethod;
+    private final Granularity granularity;
+    private final ResumptionTokenFormat resumptionTokenFormat;
+    private final String repositoryName;
+    private final String baseUrl;
+    private final Instant earliestDate;
+    private final Integer maxListIdentifiers;
+    private final Integer maxListSets;
+    private final Integer maxListRecords;
+    private final DeletedRecord deleteMethod;
 
-    private boolean enableMetadataAttributes = false;
+    private final boolean enableMetadataAttributes;
+    private final boolean requireFromAfterEarliest;
 
-    private RepositoryConfiguration() {}
+    RepositoryConfiguration(
+            List<String> adminEmails,
+            List<String> descriptions,
+            List<String> compressions,
+            Granularity granularity,
+            ResumptionTokenFormat resumptionTokenFormat,
+            String repositoryName,
+            String baseUrl,
+            Instant earliestDate,
+            Integer maxListIdentifiers,
+            Integer maxListSets,
+            Integer maxListRecords,
+            DeletedRecord deleteMethod,
+            boolean enableMetadataAttributes,
+            boolean requireFromAfterEarliest) {
+        this.adminEmails.addAll(List.copyOf(adminEmails));
+        this.descriptions.addAll(List.copyOf(descriptions));
+        this.compressions.addAll(List.copyOf(compressions));
+        this.granularity = granularity;
+        this.resumptionTokenFormat = resumptionTokenFormat;
+        this.repositoryName = repositoryName;
+        this.baseUrl = baseUrl;
+        this.earliestDate = earliestDate;
+        this.maxListIdentifiers = maxListIdentifiers;
+        this.maxListSets = maxListSets;
+        this.maxListRecords = maxListRecords;
+        this.deleteMethod = deleteMethod;
+        this.enableMetadataAttributes = enableMetadataAttributes;
+        this.requireFromAfterEarliest = requireFromAfterEarliest;
+    }
+
+    /**
+     * Transform an existing configuration back to a builder as a template for reconfiguration.
+     *
+     * @return A new configuration builder
+     */
+    public RepositoryConfigurationBuilder asTemplate() {
+        var builder =
+                new RepositoryConfigurationBuilder()
+                        .setAdminEmails(this.adminEmails)
+                        .withGranularity(this.granularity)
+                        .withResumptionTokenFormat(this.resumptionTokenFormat)
+                        .withRepositoryName(this.repositoryName)
+                        .withBaseUrl(this.baseUrl)
+                        .withEarliestDate(this.earliestDate)
+                        .withMaxListIdentifiers(this.maxListIdentifiers)
+                        .withMaxListSets(this.maxListSets)
+                        .withMaxListRecords(this.maxListRecords)
+                        .withDeleteMethod(this.deleteMethod)
+                        .withEnableMetadataAttributes(this.enableMetadataAttributes)
+                        .withRequireFromAfterEarliest(this.requireFromAfterEarliest);
+
+        // Quick and hacky addition as no methods for bulk adding available
+        builder.descriptions.clear();
+        builder.descriptions.addAll(this.descriptions);
+        builder.compressions.clear();
+        builder.compressions.addAll(this.compressions);
+
+        return builder;
+    }
+
+    public void inject(Repository repository) {
+        repository.setConfiguration(this);
+    }
 
     public String getRepositoryName() {
         if (repositoryName == null)
@@ -146,119 +215,257 @@ public class RepositoryConfiguration implements WriterContext {
         return this.resumptionTokenFormat;
     }
 
-    public RepositoryConfiguration and() {
-        return this;
-    }
-
-    public RepositoryConfiguration withGranularity(Granularity granularity) {
-        this.granularity = granularity;
-        return this;
-    }
-
-    public RepositoryConfiguration withRepositoryName(String repositoryName) {
-        this.repositoryName = repositoryName;
-        return this;
-    }
-
-    public RepositoryConfiguration setAdminEmails(List<String> emails) {
-        this.adminEmails.clear();
-        this.adminEmails.addAll(emails);
-        return this;
-    }
-
-    public RepositoryConfiguration setAdminEmails(String... emails) {
-        this.adminEmails.clear();
-        this.adminEmails.addAll(List.of(emails));
-        return this;
-    }
-
-    public RepositoryConfiguration withAdminEmails(String... emails) {
-        this.adminEmails.addAll(asList(emails));
-        return this;
-    }
-
-    public RepositoryConfiguration withAdminEmail(String email) {
-        this.adminEmails.add(email);
-        return this;
-    }
-
-    public RepositoryConfiguration withDeleteMethod(DeletedRecord deleteMethod) {
-        this.deleteMethod = deleteMethod;
-        return this;
-    }
-
-    public RepositoryConfiguration withDescription(String description) {
-        descriptions.add(description);
-        return this;
-    }
-
-    public RepositoryConfiguration withBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
-        return this;
-    }
-
-    public RepositoryConfiguration withEarliestDate(Instant earliestDate) {
-        this.earliestDate = earliestDate;
-        return this;
-    }
-
-    public RepositoryConfiguration withCompression(String compression) {
-        compressions.add(compression);
-        return this;
-    }
-
-    public RepositoryConfiguration withMaxListRecords(int maxListRecords) {
-        this.maxListRecords = maxListRecords;
-        return this;
-    }
-
-    public RepositoryConfiguration withMaxListIdentifiers(int maxListIdentifiers) {
-        this.maxListIdentifiers = maxListIdentifiers;
-        return this;
-    }
-
-    public RepositoryConfiguration withMaxListSets(int maxListSets) {
-        this.maxListSets = maxListSets;
-        return this;
-    }
-
-    public RepositoryConfiguration withResumptionTokenFormat(ResumptionTokenFormat format) {
-        this.resumptionTokenFormat = format;
-        return this;
-    }
-
-    /**
-     * This is here for Dataverse 4/5 backward compatibility.
-     *
-     * <p>They added an attribute to the <code>&gt;record&lt;&lt;metadata&gt;</code> element,
-     * containing the API URL of a record in their special metadata format "dataverse_json".
-     *
-     * @deprecated Remove when Dataverse 6 is old enough that no ones uses this workaround anymore.
-     */
-    @Deprecated(since = "5.0")
-    public RepositoryConfiguration withEnableMetadataAttributes(boolean enable) {
-        this.enableMetadataAttributes = enable;
-        return this;
-    }
-
     @Override
     public boolean isMetadataAttributesEnabled() {
         return this.enableMetadataAttributes;
     }
 
-    public static RepositoryConfiguration defaults() {
-        return new RepositoryConfiguration()
-                .withGranularity(Granularity.Second)
-                .withRepositoryName("Repository")
-                .withEarliestDate(DateProvider.now())
-                .withAdminEmail("sample@test.com")
-                .withBaseUrl("http://localhost")
-                .withMaxListRecords(100)
-                .withMaxListIdentifiers(100)
-                .withMaxListSets(100)
-                .withDeleteMethod(DeletedRecord.NO)
-                .withResumptionTokenFormat(
-                        new SimpleResumptionTokenFormat().withGranularity(Granularity.Second))
-                .withEnableMetadataAttributes(false);
+    public boolean requiresFromAfterEarliest() {
+        return requireFromAfterEarliest;
+    }
+
+    public static final class RepositoryConfigurationBuilder {
+
+        /* All field below package private to access in tests */
+        final List<String> adminEmails = new ArrayList<>();
+        final List<String> descriptions = new ArrayList<>();
+        final List<String> compressions = new ArrayList<>();
+
+        Granularity granularity = Granularity.Second;
+        ResumptionTokenFormat resumptionTokenFormat =
+                new SimpleResumptionTokenFormat().withGranularity(Granularity.Second);
+        String repositoryName;
+        String baseUrl;
+        Instant earliestDate;
+        DeletedRecord deleteMethod;
+        Integer maxListIdentifiers = 100;
+        Integer maxListSets = 100;
+        Integer maxListRecords = 100;
+        Boolean enableMetadataAttributes = false;
+        Boolean requireFromAfterEarliest = false;
+
+        public RepositoryConfigurationBuilder withGranularity(Granularity granularity) {
+            this.requireNotNull(granularity, "Granularity must not be null");
+
+            this.granularity = granularity;
+            return this;
+        }
+
+        public RepositoryConfigurationBuilder withRepositoryName(String repositoryName) {
+            this.requireNotNullNotEmpty(
+                    repositoryName, "Repository name must not be null or empty");
+
+            this.repositoryName = repositoryName;
+            return this;
+        }
+
+        public RepositoryConfigurationBuilder setAdminEmails(List<String> emails) {
+            this.requireNotNull(emails, "Admin emails list must not be null");
+            if (emails.isEmpty()) {
+                throw new IllegalArgumentException("Admin emails list must not be empty");
+            }
+            return this.setAdminEmails(emails.toArray(String[]::new));
+        }
+
+        public RepositoryConfigurationBuilder setAdminEmails(String... emails) {
+            // Backup first, then clear and add. In case the verification fails, restore backup
+            var backup = List.copyOf(this.adminEmails);
+            this.adminEmails.clear();
+
+            try {
+                return this.withAdminEmails(emails);
+            } catch (IllegalArgumentException e) {
+                this.adminEmails.addAll(backup);
+                throw e;
+            }
+        }
+
+        public RepositoryConfigurationBuilder withAdminEmails(String... emails) {
+            this.requireNotNull(emails, "Admin email list must not be null");
+            if (emails.length == 0) {
+                throw new IllegalArgumentException("Admin emails list must not be empty");
+            }
+            for (String s : emails) {
+                this.requireNotNullNotEmpty(
+                        s,
+                        "Admin email must not be null or empty in list ('"
+                                + String.join("', '", emails)
+                                + "')");
+                // TODO: one might add mail verification here
+            }
+
+            this.adminEmails.addAll(asList(emails));
+            return this;
+        }
+
+        public RepositoryConfigurationBuilder withAdminEmail(String email) {
+            this.requireNotNullNotEmpty(email, "Admin email must not be null or empty");
+
+            this.adminEmails.add(email);
+            return this;
+        }
+
+        public RepositoryConfigurationBuilder withDeleteMethod(DeletedRecord deleteMethod) {
+            this.requireNotNull(deleteMethod, "Deletion Method must not be null");
+
+            this.deleteMethod = deleteMethod;
+            return this;
+        }
+
+        public RepositoryConfigurationBuilder withDescription(String description) {
+            this.requireNotNullNotEmpty(description, "Description must not be null or empty");
+
+            descriptions.add(description);
+            return this;
+        }
+
+        public RepositoryConfigurationBuilder withBaseUrl(String baseUrl) {
+            this.requireNotNullNotEmpty(baseUrl, "Base URL must not be null or empty");
+
+            this.baseUrl = baseUrl;
+            return this;
+        }
+
+        public RepositoryConfigurationBuilder withEarliestDate(Instant earliestDate) {
+            this.requireNotNull(earliestDate, "Earliest date must not be null");
+            if (earliestDate.isAfter(Instant.now())) {
+                throw new IllegalArgumentException(
+                        "Earliest date cannot lie in the future (given: "
+                                + earliestDate.truncatedTo(ChronoUnit.SECONDS).toString()
+                                + ")");
+            }
+
+            this.earliestDate = earliestDate;
+            return this;
+        }
+
+        public RepositoryConfigurationBuilder withCompression(String compression) {
+            this.requireNotNullNotEmpty(compression, "Compression must not be null or empty");
+            compressions.add(compression);
+            return this;
+        }
+
+        public RepositoryConfigurationBuilder withMaxListRecords(int maxListRecords) {
+            if (maxListRecords < 1) {
+                throw new IllegalArgumentException(
+                        "Maximum ListRecords response size must be greater 0");
+            }
+
+            this.maxListRecords = maxListRecords;
+            return this;
+        }
+
+        public RepositoryConfigurationBuilder withMaxListIdentifiers(int maxListIdentifiers) {
+            if (maxListIdentifiers < 1) {
+                throw new IllegalArgumentException(
+                        "Maximum ListIdentifiers response size must be greater 0");
+            }
+
+            this.maxListIdentifiers = maxListIdentifiers;
+            return this;
+        }
+
+        public RepositoryConfigurationBuilder withMaxListSets(int maxListSets) {
+            if (maxListSets < 1) {
+                throw new IllegalArgumentException(
+                        "Maximum ListSets response size must be greater 0");
+            }
+
+            this.maxListSets = maxListSets;
+            return this;
+        }
+
+        public RepositoryConfigurationBuilder withResumptionTokenFormat(
+                ResumptionTokenFormat format) {
+            this.requireNotNull(format, "Resumption Token Format must not be null");
+
+            this.resumptionTokenFormat = format;
+            return this;
+        }
+
+        /**
+         * This is here for Dataverse 4/5 backward compatibility.
+         *
+         * <p>They added an attribute to the <code>&gt;record&lt;&lt;metadata&gt;</code> element,
+         * containing the API URL of a record in their special metadata format "dataverse_json".
+         *
+         * @deprecated Remove when Dataverse 6 is old enough that no ones uses this workaround
+         *     anymore.
+         */
+        @Deprecated(since = "5.0")
+        public RepositoryConfigurationBuilder withEnableMetadataAttributes(boolean enable) {
+            this.enableMetadataAttributes = enable;
+            return this;
+        }
+
+        /**
+         * Configure if any "from" parameter must be required to be a point in time after the
+         * earliest date of the repo (the oldest item). This is not strictly required by the OAI-PMH
+         * spec, but was the default behaviour of XOAI 3 and 4. Setting to true restores the
+         * behaviour.
+         */
+        public RepositoryConfigurationBuilder withRequireFromAfterEarliest(boolean require) {
+            this.requireFromAfterEarliest = require;
+            return this;
+        }
+
+        public RepositoryConfiguration build() {
+            // Basic validation of configuration that is still missing
+            // 1. At least 1 admin mail present?
+            if (adminEmails.isEmpty()) {
+                throw new IllegalArgumentException("Missing admin email address/es");
+            }
+            // 2. Parameters without a default should have been set
+            this.requireNotNullNotEmpty(baseUrl, "Missing base URL");
+            this.requireNotNullNotEmpty(repositoryName, "Missing repository name");
+            this.requireNotNull(
+                    earliestDate,
+                    "Missing 'earliest date', which is the date of the first inserted item");
+
+            this.requireNotNull(deleteMethod, "Missing delete method");
+
+            return new RepositoryConfiguration(
+                    adminEmails,
+                    descriptions,
+                    compressions,
+                    granularity,
+                    resumptionTokenFormat,
+                    repositoryName,
+                    baseUrl,
+                    earliestDate,
+                    maxListIdentifiers,
+                    maxListSets,
+                    maxListRecords,
+                    deleteMethod,
+                    enableMetadataAttributes,
+                    requireFromAfterEarliest);
+        }
+
+        /**
+         * Check for null and throw an IllegalArgumentException with a message when found.
+         *
+         * @param o Subject to test
+         * @param message The message if subject is null
+         * @throws IllegalArgumentException If subject is null
+         */
+        public void requireNotNull(Object o, String message) {
+            if (o == null) {
+                throw new IllegalArgumentException(message);
+            }
+        }
+
+        /**
+         * Check for null or an empty String and throw an IllegalArgumentException with a message
+         * when found.
+         *
+         * @param s Subject to test
+         * @param message The message if subject is null
+         * @throws IllegalArgumentException If subject is null or empty String
+         */
+        public void requireNotNullNotEmpty(String s, String message) {
+            if (s == null || s.isEmpty()) {
+                throw new IllegalArgumentException(message);
+            }
+        }
     }
 }

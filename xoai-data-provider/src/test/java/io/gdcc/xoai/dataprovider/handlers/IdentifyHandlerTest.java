@@ -12,9 +12,7 @@ import static io.gdcc.xoai.model.oaipmh.verbs.Verb.Type.Identify;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import io.gdcc.xoai.dataprovider.exceptions.InternalOAIException;
 import io.gdcc.xoai.model.oaipmh.verbs.Identify;
 import org.junit.jupiter.api.Test;
 
@@ -30,13 +28,6 @@ public class IdentifyHandlerTest extends AbstractHandlerTest {
                 result,
                 xPath(
                         "//repositoryName",
-                        is(equalTo(theRepositoryConfiguration().getRepositoryName()))));
-    }
-
-    @Test
-    public void internalExceptionForInvalidConfiguration() {
-        theRepositoryConfiguration().withMaxListSets(0);
-        assertThrows(
-                InternalOAIException.class, () -> new IdentifyHandler(aContext(), theRepository()));
+                        is(equalTo(theRepository().getConfiguration().getRepositoryName()))));
     }
 }

@@ -217,7 +217,11 @@ public final class RequestBuilder {
                 .forEach(rawRequest::withError);
 
         // Verify the from/until arguments make sense
-        verifyTimeArguments(request, configuration.getEarliestDate(), granularity)
+        verifyTimeArguments(
+                        request,
+                        configuration.getEarliestDate(),
+                        granularity,
+                        configuration.requiresFromAfterEarliest())
                 .forEach(rawRequest::withError);
 
         // NOTE: Do not load the resumption token here. The spec says, when no error occurs, we MUST
@@ -298,7 +302,10 @@ public final class RequestBuilder {
     }
 
     public static List<BadArgumentException> verifyTimeArguments(
-            final Request request, final Instant earliestDate, final Granularity granularity) {
+            final Request request,
+            final Instant earliestDate,
+            final Granularity granularity,
+            final boolean requireFromAfterEarliestDate) {
         final List<BadArgumentException> errorList = new ArrayList<>();
         final Optional<Instant> from = request.getFrom();
         final Optional<Instant> until = request.getUntil();
@@ -324,8 +331,9 @@ public final class RequestBuilder {
                 untilNotAfter = Instant.now().plus(2, ChronoUnit.SECONDS);
         }
 
-        // Ensure a from argument is after the earliest date supported
-        if (from.isPresent() && from.get().isBefore(earliestDate))
+        // Ensure a from argument is after the earliest date supported (when configured in repo
+        // config)
+        if (requireFromAfterEarliestDate && from.isPresent() && from.get().isBefore(earliestDate))
             errorList.add(
                     new BadArgumentException(
                             "'from' may not be before "

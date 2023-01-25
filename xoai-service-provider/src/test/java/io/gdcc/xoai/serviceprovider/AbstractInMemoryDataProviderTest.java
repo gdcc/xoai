@@ -16,6 +16,7 @@ import io.gdcc.xoai.dataprovider.repository.InMemoryItemRepository;
 import io.gdcc.xoai.dataprovider.repository.InMemorySetRepository;
 import io.gdcc.xoai.dataprovider.repository.Repository;
 import io.gdcc.xoai.dataprovider.repository.RepositoryConfiguration;
+import io.gdcc.xoai.dataprovider.repository.RepositoryConfigurationTest;
 import io.gdcc.xoai.model.oaipmh.Request;
 import io.gdcc.xoai.serviceprovider.client.OAIClient;
 import io.gdcc.xoai.serviceprovider.exceptions.OAIRequestException;
@@ -36,13 +37,13 @@ public abstract class AbstractInMemoryDataProviderTest {
     private final InMemorySetRepository setRepository = new InMemorySetRepository();
     private final ResumptionTokenFormat resumptionTokenFormat = new SimpleResumptionTokenFormat();
     private final RepositoryConfiguration repositoryConfiguration =
-            RepositoryConfiguration.defaults()
+            RepositoryConfigurationTest.defaults()
                     .withBaseUrl(BASE_URL)
-                    .withResumptionTokenFormat(resumptionTokenFormat);
+                    .withResumptionTokenFormat(resumptionTokenFormat)
+                    .build();
     private final Context context = new Context().withMetadataFormat(FORMAT, identity());
     private final Repository repository =
-            new Repository()
-                    .withConfiguration(repositoryConfiguration)
+            new Repository(repositoryConfiguration)
                     .withSetRepository(setRepository)
                     .withItemRepository(itemRepository);
     private final DataProvider dataProvider =
@@ -57,7 +58,7 @@ public abstract class AbstractInMemoryDataProviderTest {
     }
 
     protected RepositoryConfiguration theDataRepositoryConfiguration() {
-        return repositoryConfiguration;
+        return theDataRepository().getConfiguration();
     }
 
     protected InMemorySetRepository theDataSetRepository() {

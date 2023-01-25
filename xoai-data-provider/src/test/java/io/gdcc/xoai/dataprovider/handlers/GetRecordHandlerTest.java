@@ -20,6 +20,7 @@ import io.gdcc.xoai.dataprovider.exceptions.handler.IdDoesNotExistException;
 import io.gdcc.xoai.dataprovider.model.InMemoryItem;
 import io.gdcc.xoai.dataprovider.model.MetadataFormat;
 import io.gdcc.xoai.dataprovider.repository.RepositoryConfiguration;
+import io.gdcc.xoai.dataprovider.repository.RepositoryConfigurationTest;
 import io.gdcc.xoai.model.oaipmh.results.record.Metadata;
 import io.gdcc.xoai.model.oaipmh.verbs.GetRecord;
 import io.gdcc.xoai.xml.EchoElement;
@@ -174,7 +175,7 @@ public class GetRecordHandlerTest extends AbstractHandlerTest {
                                                                 "<test>I have Attributes!</test>"))
                                                 .withAttribute("test", "foobar")));
         RepositoryConfiguration configuration =
-                RepositoryConfiguration.defaults().withEnableMetadataAttributes(true);
+                RepositoryConfigurationTest.defaults().withEnableMetadataAttributes(true).build();
         aContext().withMetadataFormat("custom", MetadataFormat.identity());
         GetRecord handle =
                 underTest.handle(

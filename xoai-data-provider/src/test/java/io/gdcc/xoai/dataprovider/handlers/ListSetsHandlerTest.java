@@ -67,7 +67,12 @@ public class ListSetsHandlerTest extends AbstractHandlerTest {
 
     @Test
     public void validResponseWithOnlyOnePage() throws Exception {
-        theRepositoryConfiguration().withMaxListSets(100);
+        theRepository()
+                .getConfiguration()
+                .asTemplate()
+                .withMaxListSets(100)
+                .build()
+                .inject(theRepository());
         setRepository.withRandomSets(10);
         ListSets handle =
                 underTest.handle(ResumptionToken.ValueBuilder.build(request().withVerb(ListSets)));
@@ -93,7 +98,12 @@ public class ListSetsHandlerTest extends AbstractHandlerTest {
 
     @Test
     public void firstPageOfValidResponseWithTwoPages() throws Exception {
-        theRepositoryConfiguration().withMaxListSets(5);
+        theRepository()
+                .getConfiguration()
+                .asTemplate()
+                .withMaxListSets(5)
+                .build()
+                .inject(theRepository());
         setRepository.withRandomSets(10);
         ListSets handle =
                 underTest.handle(ResumptionToken.ValueBuilder.build(request().withVerb(ListSets)));
@@ -105,7 +115,12 @@ public class ListSetsHandlerTest extends AbstractHandlerTest {
 
     @Test
     public void lastPageOfVResponseWithTwoPages() throws Exception {
-        theRepositoryConfiguration().withMaxListSets(5);
+        theRepository()
+                .getConfiguration()
+                .asTemplate()
+                .withMaxListSets(5)
+                .build()
+                .inject(theRepository());
         setRepository.withRandomSets(10);
         ListSets handle =
                 underTest.handle(new ResumptionToken.ValueBuilder().withOffset(5).build());
