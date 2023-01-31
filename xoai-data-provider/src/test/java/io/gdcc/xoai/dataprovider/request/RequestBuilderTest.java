@@ -190,160 +190,270 @@ class RequestBuilderTest {
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class VerifyTimeArgumentsTests {
 
+        Granularity sec = Granularity.Second;
+        Granularity day = Granularity.Day;
+        Granularity len = Granularity.Lenient;
+
+        String earliest_raw = "2022-05-01";
+        Instant earliest = LocalDate.of(2022, 5, 1).atStartOfDay().toInstant(ZoneOffset.UTC);
+
+        Instant sec_after_now = Instant.now().plus(1, ChronoUnit.SECONDS);
+        String sec_after_now_raw = DateProvider.format(sec_after_now, sec);
+
+        Instant after_now = Instant.now().plus(5, ChronoUnit.SECONDS);
+        String after_now_raw = DateProvider.format(after_now, sec);
+
+        Instant after_day = Instant.now().plus(1, ChronoUnit.DAYS);
+        String after_day_raw = DateProvider.format(after_day, day);
+
+        Boolean requireFAE = true;
+
+        class Wrapper {
+            Instant from;
+            String rawFrom;
+            Instant until;
+            String rawUntil;
+            Instant earliestDate;
+            Granularity granularity;
+            Boolean requireFromAfterEarliest;
+
+            Wrapper(
+                    Instant from,
+                    String rawFrom,
+                    Instant until,
+                    String rawUntil,
+                    Instant earliestDate,
+                    Granularity granularity,
+                    Boolean requireFromAfterEarliest) {
+                this.from = from;
+                this.rawFrom = rawFrom;
+                this.until = until;
+                this.rawUntil = rawUntil;
+                this.earliestDate = earliestDate;
+                this.granularity = granularity;
+                this.requireFromAfterEarliest = requireFromAfterEarliest;
+            }
+
+            Arguments asArg() {
+                return Arguments.of(this);
+            }
+
+            @Override
+            public String toString() {
+                return "Wrapper{"
+                        + "from="
+                        + from
+                        + ", rawFrom='"
+                        + rawFrom
+                        + '\''
+                        + ", until="
+                        + until
+                        + ", rawUntil='"
+                        + rawUntil
+                        + '\''
+                        + ", earliestDate="
+                        + earliestDate
+                        + ", granularity="
+                        + granularity
+                        + ", requireFromAfterEarliest="
+                        + requireFromAfterEarliest
+                        + '}';
+            }
+        }
+
         Stream<Arguments> errorFreeArguments() {
-            Granularity sec = Granularity.Second;
-            Granularity day = Granularity.Day;
-            Granularity len = Granularity.Lenient;
-            Instant earliest = LocalDate.of(2022, 5, 1).atStartOfDay().toInstant(ZoneOffset.UTC);
+            String may_second_raw = "2022-05-02";
+            Instant may_second = DateProvider.parse(may_second_raw, day);
+            String april_thirty_raw = "2022-04-30";
+            Instant april_thirty = DateProvider.parse(april_thirty_raw, day);
+
             Boolean requireFAE = true;
 
             return Stream.of(
-                    Arguments.of(null, null, earliest, sec, requireFAE),
-                    Arguments.of(null, null, earliest, day, requireFAE),
-                    Arguments.of(null, null, earliest, len, requireFAE),
-                    Arguments.of(
-                            DateProvider.parse("2022-05-02", day), null, earliest, day, requireFAE),
-                    Arguments.of(
-                            null, DateProvider.parse("2022-05-02", day), earliest, day, requireFAE),
-                    Arguments.of(
-                            earliest,
-                            DateProvider.parse("2022-05-02", day),
-                            earliest,
-                            day,
-                            requireFAE),
-                    Arguments.of(
-                            DateProvider.parse("2022-04-30", day),
-                            DateProvider.parse("2022-05-02", day),
-                            earliest,
-                            day,
-                            !requireFAE),
-                    Arguments.of(earliest, earliest, earliest, day, requireFAE),
-                    Arguments.of(
-                            Instant.now().plus(2, ChronoUnit.SECONDS),
-                            null,
-                            earliest,
-                            day,
-                            requireFAE),
-                    Arguments.of(
-                            null,
-                            Instant.now().plus(1, ChronoUnit.SECONDS),
-                            earliest,
-                            sec,
-                            requireFAE));
+                    new Wrapper(null, null, null, null, earliest, sec, requireFAE).asArg(),
+                    new Wrapper(null, null, null, null, earliest, day, requireFAE).asArg(),
+                    new Wrapper(null, null, null, null, earliest, len, requireFAE).asArg(),
+                    new Wrapper(null, null, null, null, earliest, sec, requireFAE).asArg(),
+                    new Wrapper(may_second, may_second_raw, null, null, earliest, day, requireFAE)
+                            .asArg(),
+                    new Wrapper(null, null, may_second, may_second_raw, earliest, day, requireFAE)
+                            .asArg(),
+                    new Wrapper(
+                                    earliest,
+                                    earliest_raw,
+                                    may_second,
+                                    may_second_raw,
+                                    earliest,
+                                    day,
+                                    requireFAE)
+                            .asArg(),
+                    new Wrapper(
+                                    april_thirty,
+                                    april_thirty_raw,
+                                    may_second,
+                                    may_second_raw,
+                                    earliest,
+                                    day,
+                                    !requireFAE)
+                            .asArg(),
+                    new Wrapper(
+                                    earliest,
+                                    earliest_raw,
+                                    earliest,
+                                    earliest_raw,
+                                    earliest,
+                                    day,
+                                    requireFAE)
+                            .asArg(),
+                    new Wrapper(after_now, after_now_raw, null, null, earliest, day, requireFAE)
+                            .asArg(),
+                    new Wrapper(
+                                    null,
+                                    null,
+                                    sec_after_now,
+                                    sec_after_now_raw,
+                                    earliest,
+                                    sec,
+                                    requireFAE)
+                            .asArg());
         }
 
         @ParameterizedTest
         @MethodSource("errorFreeArguments")
-        void verifyTimeArguments(
-                Instant from,
-                Instant until,
-                Instant earliestDate,
-                Granularity granularity,
-                Boolean requireFromAfterEarliest) {
+        void verifyTimeArguments(Wrapper w) {
             // given
-            Request request = new Request("https://localhost").withFrom(from).withUntil(until);
+            Request request = new Request("https://localhost").withFrom(w.from).withUntil(w.until);
+            request.saveRawFrom(w.rawFrom);
+            request.saveRawUntil(w.rawUntil);
 
             // when
             List<BadArgumentException> errors =
                     RequestBuilder.verifyTimeArguments(
-                            request, earliestDate, granularity, requireFromAfterEarliest);
+                            request, w.earliestDate, w.granularity, w.requireFromAfterEarliest);
 
             // then
+            if (!errors.isEmpty()) {
+                errors.forEach(e -> System.out.println(e.getMessage()));
+            }
             assertTrue(errors.isEmpty());
         }
 
         Stream<Arguments> wrongTimes() {
-            Granularity sec = Granularity.Second;
-            Granularity day = Granularity.Day;
-            Granularity len = Granularity.Lenient;
-            Instant earliest = LocalDate.of(2022, 5, 1).atStartOfDay().toInstant(ZoneOffset.UTC);
-            Boolean requireFAE = true;
-
             return Stream.of(
+                    // from and until have different granularity
+                    new Wrapper(
+                                    DateProvider.parse("2022-01-01", day),
+                                    "2022-01-01",
+                                    DateProvider.parse("2022-04-30T10:00:00Z", sec),
+                                    "2022-04-30T10:00:00Z",
+                                    earliest,
+                                    day,
+                                    requireFAE)
+                            .asArg(),
+                    new Wrapper(
+                                    DateProvider.parse("2022-01-01", day),
+                                    "2022-01-01",
+                                    DateProvider.parse("2022-04-30T10:00:00Z", sec),
+                                    "2022-04-30T10:00:00Z",
+                                    earliest,
+                                    sec,
+                                    requireFAE)
+                            .asArg(),
+                    new Wrapper(
+                                    DateProvider.parse("2022-01-01", day),
+                                    "2022-01-01",
+                                    DateProvider.parse("2022-04-30T10:00:00Z", sec),
+                                    "2022-04-30T10:00:00Z",
+                                    earliest,
+                                    len,
+                                    requireFAE)
+                            .asArg(),
+
                     // from before earliest
-                    Arguments.of(
-                            DateProvider.parse("2022-01-01", day), null, earliest, day, requireFAE),
-                    Arguments.of(
-                            DateProvider.parse("2022-05-22T10:00:00Z", sec),
-                            null,
-                            DateProvider.parse("2022-05-22T11:00:00Z", sec),
-                            sec,
-                            requireFAE),
-                    Arguments.of(
-                            DateProvider.parse("2022-01-01", day), null, earliest, len, requireFAE),
+                    new Wrapper(
+                                    DateProvider.parse("2022-01-01", day),
+                                    "2022-01-01",
+                                    null,
+                                    null,
+                                    earliest,
+                                    day,
+                                    requireFAE)
+                            .asArg(),
+                    new Wrapper(
+                                    DateProvider.parse("2022-04-30T10:00:00Z", sec),
+                                    "2022-04-30T10:00:00Z",
+                                    null,
+                                    null,
+                                    earliest,
+                                    sec,
+                                    requireFAE)
+                            .asArg(),
+                    new Wrapper(
+                                    DateProvider.parse("2022-01-01", day),
+                                    "2022-01-01",
+                                    null,
+                                    null,
+                                    earliest,
+                                    len,
+                                    requireFAE)
+                            .asArg(),
 
                     // from after now
-                    Arguments.of(
-                            Instant.now().plus(2, ChronoUnit.SECONDS),
-                            null,
-                            earliest,
-                            sec,
-                            requireFAE),
-                    Arguments.of(
-                            Instant.now().plus(1, ChronoUnit.DAYS),
-                            null,
-                            earliest,
-                            day,
-                            requireFAE),
-                    Arguments.of(
-                            Instant.now().plus(1, ChronoUnit.DAYS),
-                            null,
-                            earliest,
-                            len,
-                            requireFAE),
+                    new Wrapper(after_now, after_now_raw, null, null, earliest, sec, requireFAE)
+                            .asArg(),
+                    new Wrapper(after_day, after_day_raw, null, null, earliest, day, requireFAE)
+                            .asArg(),
+                    new Wrapper(after_day, after_day_raw, null, null, earliest, len, requireFAE)
+                            .asArg(),
 
                     // until after now
-                    Arguments.of(
-                            null,
-                            Instant.now().plus(5, ChronoUnit.SECONDS),
-                            earliest,
-                            sec,
-                            requireFAE),
-                    Arguments.of(
-                            null,
-                            Instant.now().plus(1, ChronoUnit.DAYS),
-                            earliest,
-                            day,
-                            requireFAE),
-                    Arguments.of(
-                            null,
-                            Instant.now().plus(1, ChronoUnit.DAYS),
-                            earliest,
-                            len,
-                            requireFAE),
+                    new Wrapper(null, null, after_now, after_now_raw, earliest, sec, requireFAE)
+                            .asArg(),
+                    new Wrapper(null, null, after_day, after_day_raw, earliest, day, requireFAE)
+                            .asArg(),
+                    new Wrapper(null, null, after_day, after_day_raw, earliest, len, requireFAE)
+                            .asArg(),
 
                     // from after until
-                    Arguments.of(
-                            DateProvider.parse("2022-05-20", day),
-                            DateProvider.parse("2022-05-10", day),
-                            earliest,
-                            day,
-                            requireFAE),
-                    Arguments.of(
-                            DateProvider.parse("2022-05-10T10:00:00Z", sec),
-                            DateProvider.parse("2022-05-10T09:00:00Z", sec),
-                            earliest,
-                            sec,
-                            requireFAE));
+                    new Wrapper(
+                                    DateProvider.parse("2022-05-20", day),
+                                    "2022-05-20",
+                                    DateProvider.parse("2022-05-10", day),
+                                    "2022-05-10",
+                                    earliest,
+                                    day,
+                                    requireFAE)
+                            .asArg(),
+                    new Wrapper(
+                                    DateProvider.parse("2022-05-10T10:00:00Z", sec),
+                                    "2022-05-10T10:00:00Z",
+                                    DateProvider.parse("2022-05-10T09:00:00Z", sec),
+                                    "2022-05-10T09:00:00Z",
+                                    earliest,
+                                    sec,
+                                    requireFAE)
+                            .asArg());
         }
 
         @ParameterizedTest
         @MethodSource("wrongTimes")
-        void verifyTimeArgumentsFailing(
-                Instant from,
-                Instant until,
-                Instant earliestDate,
-                Granularity granularity,
-                Boolean requireFromAfterEarliest) {
+        void verifyTimeArgumentsFailing(Wrapper w) {
             // given
-            Request request = new Request("https://localhost").withFrom(from).withUntil(until);
+            Request request = new Request("https://localhost").withFrom(w.from).withUntil(w.until);
+            request.saveRawFrom(w.rawFrom);
+            request.saveRawUntil(w.rawUntil);
 
             // when
             List<BadArgumentException> errors =
                     RequestBuilder.verifyTimeArguments(
-                            request, earliestDate, granularity, requireFromAfterEarliest);
+                            request, w.earliestDate, w.granularity, w.requireFromAfterEarliest);
 
             // then
+
+            if (!errors.isEmpty()) {
+                errors.forEach(e -> System.out.println(e.getMessage()));
+            }
+
             assertFalse(errors.isEmpty());
         }
     }
