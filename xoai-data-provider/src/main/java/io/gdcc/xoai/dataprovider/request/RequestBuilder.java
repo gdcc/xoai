@@ -267,9 +267,11 @@ public final class RequestBuilder {
                         break;
                     case From:
                         request.withFrom(DateProvider.parse(value, granularity));
+                        request.saveRawFrom(value);
                         break;
                     case Until:
                         request.withUntil(DateProvider.parse(value, granularity));
+                        request.saveRawUntil(value);
                         break;
                     case Identifier:
                         request.withIdentifier(value);
@@ -312,6 +314,20 @@ public final class RequestBuilder {
 
         Instant fromNotAfter;
         Instant untilNotAfter;
+
+        // Independent of granularity (which might be lenient), OAI-PMH spec says both arguments
+        // must be of *same* granularity. Fail early if not.
+        if (from.isPresent() && until.isPresent()) {
+            String rawFrom = request.getRawFrom();
+            String rawUntil = request.getRawUntil();
+            // The first null checks shall never become true. Might happen if code is accidentally
+            // changed
+            if (rawFrom == null || rawUntil == null || rawUntil.length() != rawFrom.length()) {
+                errorList.add(
+                        new BadArgumentException("'from' and 'until' must be of same granularity"));
+                return errorList;
+            }
+        }
 
         switch (granularity) {
             case Day:

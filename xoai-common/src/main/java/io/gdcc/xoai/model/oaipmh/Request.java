@@ -32,6 +32,7 @@ import javax.xml.stream.XMLStreamException;
 public class Request implements XmlWritable {
 
     private final String baseUrl;
+    // From + Until get saved here as raw values, too, aiding in request validation
     private final Map<Argument, String> arguments = new EnumMap<>(Argument.class);
     private Type type;
     private Instant from;
@@ -94,6 +95,16 @@ public class Request implements XmlWritable {
         return this;
     }
 
+    /** Only used for validation during request building */
+    public void saveRawFrom(String value) {
+        this.arguments.put(Argument.From, value);
+    }
+
+    /** Only used for validation during request building */
+    public String getRawFrom() {
+        return this.arguments.get(Argument.From);
+    }
+
     public Optional<Instant> getUntil() {
         return Optional.ofNullable(until);
     }
@@ -101,6 +112,16 @@ public class Request implements XmlWritable {
     public Request withUntil(Instant value) {
         this.until = value;
         return this;
+    }
+
+    /** Only used for validation during request building */
+    public void saveRawUntil(String value) {
+        this.arguments.put(Argument.Until, value);
+    }
+
+    /** Only used for validation during request building */
+    public String getRawUntil() {
+        return this.arguments.get(Argument.Until);
     }
 
     public Optional<String> getSet() {
