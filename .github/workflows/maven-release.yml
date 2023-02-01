@@ -37,7 +37,7 @@ jobs:
                   gpg-private-key: ${{ secrets.DATAVERSEBOT_GPG_KEY }}
                   gpg-passphrase: MAVEN_GPG_PASSPHRASE
             - name: Sign + Publish release
-              run: mvn -Prelease deploy -DskipAnalysis -DskipUT -DskipIT
+              run: mvn -Prelease deploy -pl '!report' -DskipAnalysis -DskipUT -DskipIT
               env:
                   MAVEN_USERNAME: ${{ secrets.DATAVERSEBOT_SONATYPE_USERNAME }}
                   MAVEN_PASSWORD: ${{ secrets.DATAVERSEBOT_SONATYPE_TOKEN }}
