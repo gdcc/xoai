@@ -30,7 +30,7 @@ jobs:
               run: mvn -B verify -Djdk.version=${{ matrix.java }}
             - name: Publish snapshot
               if: ${{ matrix.java == '11' }}
-              run: mvn deploy -pl '!report' -DskipUT -DskipIT -Djdk.version=${{ matrix.java }}
+              run: mvn deploy -pl '!report,!xoai-data-provider-tck' -DskipUT -DskipIT -Djdk.version=${{ matrix.java }}
               env:
                   MAVEN_USERNAME: ${{ secrets.DATAVERSEBOT_SONATYPE_USERNAME }}
                   MAVEN_PASSWORD: ${{ secrets.DATAVERSEBOT_SONATYPE_TOKEN }}
