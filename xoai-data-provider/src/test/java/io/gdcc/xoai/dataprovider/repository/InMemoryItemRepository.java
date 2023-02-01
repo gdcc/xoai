@@ -22,6 +22,7 @@ import io.gdcc.xoai.model.oaipmh.ResumptionToken;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class InMemoryItemRepository implements ItemRepository {
     private final List<InMemoryItem> list = new ArrayList<>();
@@ -89,8 +90,26 @@ public class InMemoryItemRepository implements ItemRepository {
             int maxResponseLength,
             ResumptionToken.Value resumptionToken)
             throws HandlerException {
+
+        Stream<InMemoryItem> itemStream = this.list.stream();
+
+        // Pass on items with a date before until
+        if (resumptionToken.hasUntil()) {
+            itemStream =
+                    itemStream.filter(
+                            item -> !item.getDatestamp().isAfter(resumptionToken.getUntil()));
+        }
+        // Pass on items with a data after from
+        if (resumptionToken.hasFrom()) {
+            itemStream =
+                    itemStream.filter(
+                            item -> !item.getDatestamp().isBefore(resumptionToken.getFrom()));
+        }
+
+        List<Item> timeFilteredList = itemStream.collect(Collectors.toUnmodifiableList());
+
         List<Item> pagedResults =
-                this.list.stream()
+                timeFilteredList.stream()
                         .skip(resumptionToken.getOffset())
                         .limit(maxResponseLength)
                         .collect(Collectors.toUnmodifiableList());
@@ -103,6 +122,6 @@ public class InMemoryItemRepository implements ItemRepository {
                 pagedResults.size() == maxResponseLength
                         && this.list.size() != resumptionToken.getOffset() + maxResponseLength,
                 pagedResults,
-                list.size());
+                timeFilteredList.size());
     }
 }
