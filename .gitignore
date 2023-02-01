@@ -6,6 +6,7 @@
 
 # Package Files #
 .flattened-pom.xml
+*.releaseBackup
 *.jar
 *.war
 *.ear
