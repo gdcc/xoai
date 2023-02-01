@@ -4,12 +4,16 @@
 [![SonarCloud Coverage](https://sonarcloud.io/api/project_badges/measure?project=gdcc_xoai&metric=coverage)](https://sonarcloud.io/component_measures/metric/coverage/list?id=gdcc_xoai)
 [![SonarCloud Bugs](https://sonarcloud.io/api/project_badges/measure?project=gdcc_xoai&metric=bugs)](https://sonarcloud.io/component_measures/metric/reliability_rating/list?id=gdcc_xoai)
 [![SonarCloud Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=gdcc_xoai&metric=vulnerabilities)](https://sonarcloud.io/component_measures/metric/security_rating/list?id=gdcc_xoai)
+[![TCK](https://github.com/gdcc/xoai/actions/workflows/tck.yml/badge.svg?branch=branch-5.0)](https://github.com/gdcc/xoai/actions/workflows/tck.yml)
 
 What is XOAI?
 
 XOAI is the most powerful and flexible OAI-PMH Java Toolkit (initially developed by [Lyncode](https://github.com/lyncode),
 updated by [DSpace](https://github.com/DSpace)). XOAI contains common Java classes allowing to easily implement
 [OAI-PMH](https://en.wikipedia.org/wiki/Open_Archives_Initiative_Protocol_for_Metadata_Harvesting) data and service providers.
+
+Compliance with the OAI-PMH standard is checked using an included Technology Compatibility Kit, relying on
+https://github.com/zimeon/oaipmh-validator. Compliance checks are operated on every pull request and push to main branch.
 
 ## Usage
 
@@ -74,6 +78,7 @@ This is a breaking changes release with a lot of new features, influenced by the
 	- Changes required to your `ItemRepository`, `Item` and `ItemIdentifier` implementations
 	- Changes required to your `SetRepository` implementation
 	- Changes required to your usage of `DataProvider` (much simplified!)
+	- Renewed configuration mechanism for data provider requires adaption
 - Service Provider: Changes required to your code using an `OAIClient`, as default implementation changed
 
 #### 🌟 FEATURES
@@ -81,6 +86,7 @@ This is a breaking changes release with a lot of new features, influenced by the
 data can be served from your `ItemRepository` implementation
 - Use native JDK HTTP client for OAI requests in service provider,
 extended with client builder and option to create unsafe SSL connections for testing
+- New JDK HTTP client allows to send custom headers, useful for authentication etc
 - Add total number of results (inspired by GBIF #8)
 - Larger rewrite of how data provider works:
 	- Enable caching requests by exposing the resumption token to the application and making the pagination of
@@ -90,12 +96,18 @@ extended with client builder and option to create unsafe SSL connections for tes
 	- Extensible reuse of `RawRequest` and `Request` classes to create non-servlet based endpoints with in-tree
 	verification methods now possible via `RequestBuilder`!
 	- Simplified filtering model for XOAI: easier to setup, default conditions provided
+- Special XML handling for Dataverse JSON metadata to provide backward compatibility
 
 #### 🏹 BUG FIXES
 - Sets now are properly compared, re-enabling `SetRepositoryHelper` to identify available sets
 - Many new try-with-resources to mitigate memory leak risks
 - The StAX XML components have been configured to avoid loading external entities, mitigating potential security risks
-- `from` and `until` timestamps are now correctly verified in data provider #25
+- `from` and `until` timestamps are now correctly verified in data provider, see [#25](https://github.com/gdcc/xoai/issues/25)
+	- Granularity "Lenient" introduced, as the OAI-PMH 2.0 spec allows request with both precisions when "Second"
+	granularity is supported. Former implementation did not allow this - remember to configure this, default is stick
+	with old behaviour!
+	- Configurable behaviour how to deal with requests where `from` is not after `earliestDate`. Default is to allow
+	such requests, as spec is non-prohibitive. Former implementation behaviour was to deny such requests!
 - And more...
 
 ## License
