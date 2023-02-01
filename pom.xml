@@ -16,6 +16,7 @@
         <module>xoai-service-provider</module>
         <module>xoai-xmlio</module>
         <module>report</module>
+        <module>xoai-data-provider-tck</module>
     </modules>
 
     <groupId>io.gdcc</groupId>
