@@ -23,8 +23,5 @@ jobs:
                     path: ~/.m2
                     key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
                     restore-keys: ${{ runner.os }}-m2
-            -   name: Cache Docker images
-                uses: satackey/action-docker-layer-caching@v0.0.11
-                continue-on-error: true
             -   name: Run TCK for OAI-PMH 2.0 compliance
                 run: mvn -B -pl 'xoai-data-provider-tck' -am verify
