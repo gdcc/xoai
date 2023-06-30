@@ -11,8 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.startupcheck.OneShotStartupCheckStrategy;
-import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 @SpringBootTest(
         classes = TestApp.class,
@@ -22,20 +22,7 @@ class DataProviderTCK {
 
     GenericContainer<?> validator =
             new GenericContainer<>(
-                            new ImageFromDockerfile("gdcc/oaipmh-validator", false)
-                                    .withDockerfileFromBuilder(
-                                            builder ->
-                                                    builder.from("perl:5")
-                                                            // 1) required force install because of
-                                                            // some missing ssl whatever, ignore for
-                                                            // http-only testing
-                                                            // 2) also adding missing testing
-                                                            // dependency or install fails
-                                                            .run(
-                                                                    "cpanm -f Crypt::SSLeay"
-                                                                            + " Test::Exception")
-                                                            .run("cpanm HTTP::OAIPMH::Validator")
-                                                            .build()))
+                            DockerImageName.parse("ghcr.io/gdcc/xoai-tck-oaipmh-validator:latest"))
                     .withStartupCheckStrategy(
                             new OneShotStartupCheckStrategy().withTimeout(Duration.ofSeconds(3)))
                     .withClasspathResourceMapping(
