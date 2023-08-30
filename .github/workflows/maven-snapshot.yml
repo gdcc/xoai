@@ -9,7 +9,7 @@ jobs:
         if: ${{ !contains(github.event.head_commit.message, '[maven-release-plugin]') }}
         strategy:
             matrix:
-                java: [11,17]
+                java: [17]
         steps:
             - uses: actions/checkout@v3
             - name: Set up Maven Central Repository
@@ -29,7 +29,7 @@ jobs:
             - name: Build, test, verify and publish snapshot
               run: mvn -B verify -Djdk.version=${{ matrix.java }}
             - name: Publish snapshot
-              if: ${{ matrix.java == '11' }}
+              if: ${{ matrix.java == '17' }}
               run: mvn deploy -pl '!report,!xoai-data-provider-tck' -DskipUT -DskipIT -Djdk.version=${{ matrix.java }}
               env:
                   MAVEN_USERNAME: ${{ secrets.DATAVERSEBOT_SONATYPE_USERNAME }}

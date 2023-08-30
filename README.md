@@ -68,6 +68,17 @@ mvn spotless:check
 
 ## Release notes
 
+### v5.1.0
+
+#### 🌟 FEATURES
+- Switching to Java 17 for compilation and testing, but keeping compatibility with Java 11 for JARs
+
+#### 💔 BREAKING CHANGES
+- (none)
+
+#### 🏹 BUG FIXES
+- (none)
+
 ### v5.0.0
 This is a breaking changes release with a lot of new features, influenced by the usage of XOAI within Dataverse and other places.
 
