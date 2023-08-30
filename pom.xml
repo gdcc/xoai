@@ -56,9 +56,7 @@
         <slf4j.version>2.0.7</slf4j.version>
 
         <!-- Testing dependencies -->
-        <junit.version>4.13.2</junit.version>
         <junit.jupiter.version>5.10.0</junit.jupiter.version>
-        <junit.vintage.version>${junit.jupiter.version}</junit.vintage.version>
 
         <!-- Official Maven Plugins -->
         <maven-plugin-api.version>3.8.2</maven-plugin-api.version>
@@ -435,11 +433,6 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
-                <version>${junit.jupiter.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-vintage-engine</artifactId>
                 <version>${junit.jupiter.version}</version>
             </dependency>
             <dependency>
