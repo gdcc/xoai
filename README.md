@@ -73,6 +73,7 @@ mvn spotless:check
 #### 🌟 FEATURES
 - Switching to Java 17 for compilation and testing, but keeping compatibility with Java 11 for JARs
 - Switching to Jakarta EE 10 dependencies (For most scenarios, this is not a breaking change.)
+- More updated dependencies, Maven plugins, etc
 
 #### 💔 BREAKING CHANGES
 - (none)

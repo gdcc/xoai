@@ -12,9 +12,9 @@ import io.gdcc.xoai.dataprovider.repository.RepositoryConfiguration.RepositoryCo
 import io.gdcc.xoai.model.oaipmh.DeletedRecord;
 import io.gdcc.xoai.model.oaipmh.OAIPMH;
 import io.gdcc.xoai.xml.XmlWriter;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.OutputStream;
 import java.time.Instant;
-import javax.servlet.http.HttpServletRequest;
 import javax.xml.stream.XMLStreamException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
