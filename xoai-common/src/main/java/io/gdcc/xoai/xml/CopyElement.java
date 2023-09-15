@@ -85,7 +85,29 @@ public class CopyElement implements XmlWritable {
         try (xmlInputStream; ) {
             // fill the buffer once with the first 1024 chars and read as string
             byte[] buffer = xmlInputStream.readNBytes(1024);
-            String firstChars = new String(buffer, StandardCharsets.UTF_8);
+            
+            // We will take some extra precautions to make sure we are not
+            // splitting any multi-byte UTF-8 characters in the process!
+            String firstChars; 
+            int length = -1; 
+            
+            if (buffer.length < 1024) {
+                // the entire metadata fragment is shorter than 1024 bytes; 
+                // should be safe to just convert to String: 
+                firstChars = new String(buffer, StandardCharsets.UTF_8);
+            } else {
+                length = 1021; 
+                // try converting the entire buffer into a String, *except* for 
+                // the last 3 bytes:
+                firstChars = new String(buffer, 0, length, StandardCharsets.UTF_8);
+                while (firstChars.charAt(firstChars.length()-1) == '\uFFFD' && length <= 1024 ) {
+                    // keep reading additional bytes, one at a time, for as long as 
+                    // the last character in the resulting String is a '�', aka 
+                    // Unicode "no such character" character, '\uFFFD', or <EF><BF><BD> in UTF-8
+                    length++;
+                    firstChars = new String(buffer, 0, length, StandardCharsets.UTF_8);
+                }
+            }
 
             // match the start with the compiled regex and replace with nothing when matching.
             firstChars = xmlDeclaration.reset(firstChars).replaceFirst("");
@@ -93,6 +115,11 @@ public class CopyElement implements XmlWritable {
             // write the chars to the output stream
             writer.getOutputStream().write(firstChars.getBytes(StandardCharsets.UTF_8));
 
+            // if we have any leftover unused bytes in the buffer, write those too: 
+            if (length > -1 && length < 1024) {
+                writer.getOutputStream().write(buffer, length, 1024 - length);
+            }
+            
             // now send the rest of the stream
             xmlInputStream.transferTo(writer.getOutputStream());
         }
