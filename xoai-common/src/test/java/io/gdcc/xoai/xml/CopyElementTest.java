@@ -1,5 +1,6 @@
 package io.gdcc.xoai.xml;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
@@ -18,8 +19,10 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 import org.junit.jupiter.api.Test;
+import org.xmlunit.matchers.EvaluateXPathMatcher;
 
 public class CopyElementTest {
 
@@ -198,5 +201,59 @@ public class CopyElementTest {
 
         // then
         assertThat("Large stream XML wrapped in <metadata>", result, hasXPath("//metadata"));
+    }
+
+    /**
+     * This test checks that we do not bodge multibyte UTF-8 chars from the input stream. See <a
+     * href="https://github.com/gdcc/xoai/issues/188">issue 188 at gdcc/xoai</a>.
+     */
+    @Test
+    void ensureIssue188Fixed() throws IOException, XMLStreamException {
+        // given
+        final Path sourceFile =
+                Path.of("src", "test", "resources", "188-copy-element-multibyte.xml");
+        final String sourceXml = Files.readString(sourceFile, StandardCharsets.UTF_8);
+        final ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
+
+        final String description =
+                "This dataset contains information of experiments carried out upland rice in two"
+                    + " regions of Nicaragua (Caribbean and Pacific Region), as well as a"
+                    + " compilation of soils data from different regions in Nicaragua collected"
+                    + " from 2015 to 2019. The experiments were designed to explore the effects of"
+                    + " micronutrients in the yield of upland rice. The experiments were carried"
+                    + " out on farmer’s field during the 2018 production cycle, the dataset"
+                    + " contains yield and aerial biomass of the experiments.";
+
+        assertThat(
+                "Description is intact in source",
+                sourceXml,
+                EvaluateXPathMatcher.hasXPath("//dc:description/text()", equalTo(description))
+                        .withNamespaceContext(Map.of("dc", "http://purl.org/dc/elements/1.1/")));
+
+        // when
+        try (resultStream;
+                InputStream stream =
+                        new ByteArrayInputStream(sourceXml.getBytes(StandardCharsets.UTF_8));
+                XmlWriter writer = new XmlWriter(resultStream)) {
+            writer.writeStartDocument();
+            writer.writeStartElement("metadata");
+            writer.write(new CopyElement(stream));
+            writer.writeEndElement();
+            writer.writeEndDocument();
+        }
+        String result = resultStream.toString();
+
+        // then
+        assertThat("Large stream XML wrapped in <metadata>", result, hasXPath("//metadata"));
+        assertThat(
+                "Has a <dc:description> element",
+                result,
+                hasXPath("//dc:description")
+                        .withNamespaceContext(Map.of("dc", "http://purl.org/dc/elements/1.1/")));
+        assertThat(
+                "Description is still intact",
+                result,
+                EvaluateXPathMatcher.hasXPath("//dc:description/text()", equalTo(description))
+                        .withNamespaceContext(Map.of("dc", "http://purl.org/dc/elements/1.1/")));
     }
 }
