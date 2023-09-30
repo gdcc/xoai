@@ -9,6 +9,7 @@
 package io.gdcc.xoai.xml;
 
 import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -82,46 +83,61 @@ public class CopyElement implements XmlWritable {
          * and the application must take care of it.
          */
 
-        try (xmlInputStream; ) {
-            // fill the buffer once with the first 1024 chars and read as string
-            byte[] buffer = xmlInputStream.readNBytes(1024);
+        try (xmlInputStream;
+                // create a buffered stream to allow for rewind
+                BufferedInputStream bufferedXmlInputStream =
+                        new BufferedInputStream(xmlInputStream)) {
 
-            // We will take some extra precautions to make sure we are not
-            // splitting any multi-byte UTF-8 characters in the process!
-            String firstChars;
-            int length = -1;
+            final int n = 1024;
+            // mark the start of the stream, leave 1 byte headroom for reading ahead
+            bufferedXmlInputStream.mark(n + 1);
+            // read the first bytes
+            byte[] bytes = bufferedXmlInputStream.readNBytes(n);
 
-            if (buffer.length < 1024) {
-                // the entire metadata fragment is shorter than 1024 bytes;
-                // should be safe to just convert to String:
-                firstChars = new String(buffer, StandardCharsets.UTF_8);
-            } else {
-                length = 1021;
-                // try converting the entire buffer into a String, *except* for
-                // the last 3 bytes:
-                firstChars = new String(buffer, 0, length, StandardCharsets.UTF_8);
-                while (firstChars.charAt(firstChars.length() - 1) == '\uFFFD' && length <= 1024) {
-                    // keep reading additional bytes, one at a time, for as long as
-                    // the last character in the resulting String is a '�', aka
-                    // Unicode "no such character" character, '\uFFFD', or <EF><BF><BD> in UTF-8
-                    length++;
-                    firstChars = new String(buffer, 0, length, StandardCharsets.UTF_8);
+            // broken UTF-8 multibyte char only possible when >= 1024 chars available
+            if (bytes.length == n) {
+                // analyze how far we can read without risk of broken char
+                final int maxN = maxBytesWithCompleteUTF8Chars(bytes);
+                // if we detected a (potentially broken) mbchar at the end, re-read.
+                if (maxN < n) {
+                    // reset the stream to begin
+                    bufferedXmlInputStream.reset();
+                    // replace bytes by reading again, but only so far as maxN
+                    bytes = bufferedXmlInputStream.readNBytes(maxN);
                 }
             }
 
+            String firstChars = new String(bytes, StandardCharsets.UTF_8);
             // match the start with the compiled regex and replace with nothing when matching.
             firstChars = xmlDeclaration.reset(firstChars).replaceFirst("");
 
             // write the chars to the output stream
             writer.getOutputStream().write(firstChars.getBytes(StandardCharsets.UTF_8));
 
-            // if we have any leftover unused bytes in the buffer, write those too:
-            if (length > -1 && length < 1024) {
-                writer.getOutputStream().write(buffer, length, 1024 - length);
-            }
-
             // now send the rest of the stream
-            xmlInputStream.transferTo(writer.getOutputStream());
+            bufferedXmlInputStream.transferTo(writer.getOutputStream());
         }
+    }
+
+    public static int maxBytesWithCompleteUTF8Chars(final byte[] buffer) {
+        final int n = buffer.length;
+
+        if (Byte.toUnsignedInt(buffer[n - 1])
+                > 127) { // 0b0xxxxxxx are all 1-byte chars, so only seek for 0b1xxxxxxx
+            for (int i = n - 1;
+                    i > n - 5;
+                    i--) { // go max four bytes back (max UTF-8 mbchar length)
+                if (Byte.toUnsignedInt(buffer[i])
+                        > 191) { // 0b110xxxxx / 0b1110xxxx / 0b11110xxx are the UTF-8 multibyte
+                    // char start bytes
+                    // -> this is a multibyte start char => use "i" as perfect new length
+                    //    (array index starts at 0, so is already -1 for read length)
+                    return i;
+                }
+                // -> this is a byte somewhere inside the mbchar, go -1 byte and try again
+            }
+        }
+
+        return n;
     }
 }

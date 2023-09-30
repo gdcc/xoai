@@ -16,12 +16,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Stream;
 import javax.xml.stream.XMLStreamException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.xmlunit.matchers.EvaluateXPathMatcher;
 
 public class CopyElementTest {
@@ -255,5 +261,51 @@ public class CopyElementTest {
                 result,
                 EvaluateXPathMatcher.hasXPath("//dc:description/text()", equalTo(description))
                         .withNamespaceContext(Map.of("dc", "http://purl.org/dc/elements/1.1/")));
+    }
+
+    static Stream<Arguments> multicharString() {
+        return Stream.of(
+                Arguments.of(4, "test", 0), // 1-byte ending
+                // 2-byte ending (complete, but we can't know that!)
+                Arguments.of(4, "testß", 0),
+                // 2-byte ending on 1st byte
+                Arguments.of(4, "testß", 1),
+                // 3-byte ending on 2nd byte
+                Arguments.of(4, "test’", 1),
+                // 3-byte ending on 3rd byte (complete, but we can't know that!)
+                Arguments.of(4, "test♥", 0),
+                // 3-byte ending on 2nd byte
+                Arguments.of(4, "test♥", 1),
+                // 3-byte ending on 1st byte
+                Arguments.of(4, "test♥", 2),
+                // 4-byte ending on 3rd byte
+                Arguments.of(4, "test\uD83D\uDD2B", 1));
+    }
+
+    @MethodSource("multicharString")
+    @ParameterizedTest
+    void ensureBufferAnalysisCorrectness(int expectedLength, String text, int bytesToCutOf)
+            throws UnsupportedEncodingException {
+        // given
+        // System.out.println(convertToBinary(text));
+        byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
+        // System.out.println(Arrays.toString(bytes));
+
+        // when
+        byte[] sut = Arrays.copyOf(bytes, bytes.length - bytesToCutOf);
+        int length = CopyElement.maxBytesWithCompleteUTF8Chars(sut);
+
+        // then
+        assertEquals(expectedLength, length);
+    }
+
+    static String convertToBinary(String input) {
+        byte[] bytes = input.getBytes(StandardCharsets.UTF_8);
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(" ", "0"));
+            sb.append(" ");
+        }
+        return sb.toString();
     }
 }
