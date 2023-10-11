@@ -1,5 +1,6 @@
 package io.gdcc.xoai.xml;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
@@ -15,11 +16,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Stream;
 import javax.xml.stream.XMLStreamException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.xmlunit.matchers.EvaluateXPathMatcher;
 
 public class CopyElementTest {
 
@@ -198,5 +207,105 @@ public class CopyElementTest {
 
         // then
         assertThat("Large stream XML wrapped in <metadata>", result, hasXPath("//metadata"));
+    }
+
+    /**
+     * This test checks that we do not bodge multibyte UTF-8 chars from the input stream. See <a
+     * href="https://github.com/gdcc/xoai/issues/188">issue 188 at gdcc/xoai</a>.
+     */
+    @Test
+    void ensureIssue188Fixed() throws IOException, XMLStreamException {
+        // given
+        final Path sourceFile =
+                Path.of("src", "test", "resources", "188-copy-element-multibyte.xml");
+        final String sourceXml = Files.readString(sourceFile, StandardCharsets.UTF_8);
+        final ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
+
+        final String description =
+                "This dataset contains information of experiments carried out upland rice in two"
+                    + " regions of Nicaragua (Caribbean and Pacific Region), as well as a"
+                    + " compilation of soils data from different regions in Nicaragua collected"
+                    + " from 2015 to 2019. The experiments were designed to explore the effects of"
+                    + " micronutrients in the yield of upland rice. The experiments were carried"
+                    + " out on farmer’s field during the 2018 production cycle, the dataset"
+                    + " contains yield and aerial biomass of the experiments.";
+
+        assertThat(
+                "Description is intact in source",
+                sourceXml,
+                EvaluateXPathMatcher.hasXPath("//dc:description/text()", equalTo(description))
+                        .withNamespaceContext(Map.of("dc", "http://purl.org/dc/elements/1.1/")));
+
+        // when
+        try (resultStream;
+                InputStream stream =
+                        new ByteArrayInputStream(sourceXml.getBytes(StandardCharsets.UTF_8));
+                XmlWriter writer = new XmlWriter(resultStream)) {
+            writer.writeStartDocument();
+            writer.writeStartElement("metadata");
+            writer.write(new CopyElement(stream));
+            writer.writeEndElement();
+            writer.writeEndDocument();
+        }
+        String result = resultStream.toString();
+
+        // then
+        assertThat("Large stream XML wrapped in <metadata>", result, hasXPath("//metadata"));
+        assertThat(
+                "Has a <dc:description> element",
+                result,
+                hasXPath("//dc:description")
+                        .withNamespaceContext(Map.of("dc", "http://purl.org/dc/elements/1.1/")));
+        assertThat(
+                "Description is still intact",
+                result,
+                EvaluateXPathMatcher.hasXPath("//dc:description/text()", equalTo(description))
+                        .withNamespaceContext(Map.of("dc", "http://purl.org/dc/elements/1.1/")));
+    }
+
+    static Stream<Arguments> multicharString() {
+        return Stream.of(
+                Arguments.of(4, "test", 0), // 1-byte ending
+                // 2-byte ending (complete, but we can't know that!)
+                Arguments.of(4, "testß", 0),
+                // 2-byte ending on 1st byte
+                Arguments.of(4, "testß", 1),
+                // 3-byte ending on 2nd byte
+                Arguments.of(4, "test’", 1),
+                // 3-byte ending on 3rd byte (complete, but we can't know that!)
+                Arguments.of(4, "test♥", 0),
+                // 3-byte ending on 2nd byte
+                Arguments.of(4, "test♥", 1),
+                // 3-byte ending on 1st byte
+                Arguments.of(4, "test♥", 2),
+                // 4-byte ending on 3rd byte
+                Arguments.of(4, "test\uD83D\uDD2B", 1));
+    }
+
+    @MethodSource("multicharString")
+    @ParameterizedTest
+    void ensureBufferAnalysisCorrectness(int expectedLength, String text, int bytesToCutOf)
+            throws UnsupportedEncodingException {
+        // given
+        // System.out.println(convertToBinary(text));
+        byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
+        // System.out.println(Arrays.toString(bytes));
+
+        // when
+        byte[] sut = Arrays.copyOf(bytes, bytes.length - bytesToCutOf);
+        int length = CopyElement.maxBytesWithCompleteUTF8Chars(sut);
+
+        // then
+        assertEquals(expectedLength, length);
+    }
+
+    static String convertToBinary(String input) {
+        byte[] bytes = input.getBytes(StandardCharsets.UTF_8);
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(" ", "0"));
+            sb.append(" ");
+        }
+        return sb.toString();
     }
 }
