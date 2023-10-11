@@ -68,6 +68,17 @@ mvn spotless:check
 
 ## Release notes
 
+### v5.2.0
+
+#### 🌟 FEATURES
+- (none)
+
+#### 💔 BREAKING CHANGES
+- TCK now uses Spring 6 and Spring Boot 3
+
+#### 🏹 BUG FIXES
+- Do not break UTF-8 multibyte characters in data provider when using `CopyElement` to copy and paste metadata (#188)
+
 ### v5.1.0
 
 #### 🌟 FEATURES
