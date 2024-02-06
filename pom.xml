@@ -84,7 +84,7 @@
         <dependency-check-maven.version>8.4.3</dependency-check-maven.version>
         <jacoco.version>0.8.11</jacoco.version>
         <sonar.version>3.10.0.2594</sonar.version>
-        <spotless.version>2.40.0</spotless.version>
+        <spotless.version>2.43.0</spotless.version>
     </properties>
 
     <licenses>
