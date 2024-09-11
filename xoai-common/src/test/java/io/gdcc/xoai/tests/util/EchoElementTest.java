@@ -20,8 +20,7 @@ public class EchoElementTest {
      * are likely to be used later.
      */
     @Test
-    public void handleEarlyNamespaceDeclarations()
-            throws XMLStreamException {
+    public void handleEarlyNamespaceDeclarations() throws XMLStreamException {
         String xml =
                 "<?xml version='1.0' encoding='UTF-8'?><oai_dc:dc"
                         + " xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\""
@@ -45,8 +44,7 @@ public class EchoElementTest {
      * a namespace declaration.
      */
     @Test
-    public void repeatingNamespaceDeclarations()
-            throws XMLStreamException {
+    public void repeatingNamespaceDeclarations() throws XMLStreamException {
         String xml =
                 "<?xml version='1.0' encoding='UTF-8'?><oai_dc:dc"
                     + " xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\""
@@ -103,37 +101,39 @@ public class EchoElementTest {
 
     @Test
     public void defaultNamespaceDeclaration() throws XMLStreamException {
-    // given
-    String xml =
-        "<?xml version='1.0' encoding='UTF-8'?>"
-            + "<TEI xmlns=\"http://www.tei-c.org/ns/1.0\">\n"
-            + "  <teiHeader xmlns:xml=\"http://www.w3.org/XML/1998/namespace\" xml:lang=\"de\">\n"
-            + "    <fileDesc>\n"
-            + "      <titleStmt>\n"
-            + "        <title>Titel\n"
-            + "        </title>\n"
-            + "        <respStmt>\n"
-            + "          <resp>Published by</resp>\n"
-            + "          <name type=\"org\">Organisation</name>\n"
-            + "        </respStmt>\n"
-            + "      </titleStmt>\n"
-            + "      <publicationStmt>\n"
-            + "        <publisher>\n"
-            + "          <name type=\"org\">Organisation</name>\n"
-            + "          <ptr target=\"http://www.organisation.org\"/>\n"
-            + "        </publisher>\n"
-            + "        <date when=\"2022-11-30\" type=\"issued\">2022-11-30</date>\n"
-            + "        <distributor>Handschriftenportal</distributor>\n"
-            + "        <availability status=\"free\">\n"
-            + "          <licence target=\"https://creativecommons.org/publicdomain/zero/1.0/deed.de\">\n"
-            + "          </licence>\n"
-            + "        </availability>\n"
-            + "        <pubPlace>\n"
-            + "        </pubPlace>\n"
-            + "      </publicationStmt>\n"
-            + "    </fileDesc>\n"
-            + "  </teiHeader>\n"
-            + "</TEI>";
+        // given
+        String xml =
+                "<?xml version='1.0' encoding='UTF-8'?><TEI"
+                        + " xmlns=\"http://www.tei-c.org/ns/1.0\">\n"
+                        + "  <teiHeader xmlns:xml=\"http://www.w3.org/XML/1998/namespace\""
+                        + " xml:lang=\"de\">\n"
+                        + "    <fileDesc>\n"
+                        + "      <titleStmt>\n"
+                        + "        <title>Titel\n"
+                        + "        </title>\n"
+                        + "        <respStmt>\n"
+                        + "          <resp>Published by</resp>\n"
+                        + "          <name type=\"org\">Organisation</name>\n"
+                        + "        </respStmt>\n"
+                        + "      </titleStmt>\n"
+                        + "      <publicationStmt>\n"
+                        + "        <publisher>\n"
+                        + "          <name type=\"org\">Organisation</name>\n"
+                        + "          <ptr target=\"http://www.organisation.org\"/>\n"
+                        + "        </publisher>\n"
+                        + "        <date when=\"2022-11-30\" type=\"issued\">2022-11-30</date>\n"
+                        + "        <distributor>Handschriftenportal</distributor>\n"
+                        + "        <availability status=\"free\">\n"
+                        + "          <licence"
+                        + " target=\"https://creativecommons.org/publicdomain/zero/1.0/deed.de\">\n"
+                        + "          </licence>\n"
+                        + "        </availability>\n"
+                        + "        <pubPlace>\n"
+                        + "        </pubPlace>\n"
+                        + "      </publicationStmt>\n"
+                        + "    </fileDesc>\n"
+                        + "  </teiHeader>\n"
+                        + "</TEI>";
 
         String result = echoXml(xml);
 
