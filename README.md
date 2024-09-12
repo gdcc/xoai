@@ -1,9 +1,9 @@
 # XOAI
 
-[![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=gdcc_xoai&metric=alert_status)](https://sonarcloud.io/dashboard?id=gdcc_xoai)
-[![SonarCloud Coverage](https://sonarcloud.io/api/project_badges/measure?project=gdcc_xoai&metric=coverage)](https://sonarcloud.io/component_measures/metric/coverage/list?id=gdcc_xoai)
-[![SonarCloud Bugs](https://sonarcloud.io/api/project_badges/measure?project=gdcc_xoai&metric=bugs)](https://sonarcloud.io/component_measures/metric/reliability_rating/list?id=gdcc_xoai)
-[![SonarCloud Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=gdcc_xoai&metric=vulnerabilities)](https://sonarcloud.io/component_measures/metric/security_rating/list?id=gdcc_xoai)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=gdcc_xoai&metric=alert_status)](https://sonarcloud.io/summary/overall?id=gdcc_xoai)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=gdcc_xoai&metric=coverage)](https://sonarcloud.io/summary/overall?id=gdcc_xoai)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=gdcc_xoai&metric=bugs)](https://sonarcloud.io/summary/overall?id=gdcc_xoai)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=gdcc_xoai&metric=vulnerabilities)](https://sonarcloud.io/summary/overall?id=gdcc_xoai)
 [![TCK](https://github.com/gdcc/xoai/actions/workflows/tck.yml/badge.svg?branch=branch-5.0)](https://github.com/gdcc/xoai/actions/workflows/tck.yml)
 
 What is XOAI?
@@ -67,6 +67,18 @@ mvn spotless:check
 ```
 
 ## Release notes
+
+### v5.3.0
+
+#### 🌟 FEATURES
+- (none)
+
+#### 💔 BREAKING CHANGES
+- (none)
+
+#### 🏹 BUG FIXES
+- Do not add empty namespace to XML elements (#240) - a community contribution by @bumann-sbb 💫
+- Code coverage button links to a 404 (#214)
 
 ### v5.2.0
 
