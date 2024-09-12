@@ -104,8 +104,8 @@ public class EchoElement implements XmlWritable {
     private void addNamespaceIfRequired(XmlWriter writer, QName name) throws XMLStreamException {
         // Search for namespace in scope, starting from the root.
         for (Set<String> ancestorNamespaces : declaredPrefixes) {
-            if (ancestorNamespaces.contains(
-                    name.getPrefix() + name.getNamespaceURI())) { // Prefixes might be reused.
+            if (ancestorNamespaces.contains(name.getPrefix() + name.getNamespaceURI())
+                    || name.getNamespaceURI().isBlank()) { // Prefixes might be reused.
                 return;
             }
         }

@@ -13,6 +13,6 @@ repos:
             - id: check-json
             - id: check-added-large-files
     -   repo: https://github.com/ejba/pre-commit-maven
-        rev: v0.3.3
+        rev: v0.3.4
         hooks:
             - id: maven-spotless-apply
