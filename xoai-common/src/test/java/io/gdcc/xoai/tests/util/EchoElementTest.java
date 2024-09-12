@@ -103,8 +103,8 @@ public class EchoElementTest {
     public void defaultNamespaceDeclaration() throws XMLStreamException {
         // given
         String xml =
-                "<?xml version='1.0' encoding='UTF-8'?><TEI"
-                        + " xmlns=\"http://www.tei-c.org/ns/1.0\">\n"
+                "<?xml version='1.0' encoding='UTF-8'?>"
+                        + "<TEI xmlns=\"http://www.tei-c.org/ns/1.0\">\n"
                         + "  <teiHeader xmlns:xml=\"http://www.w3.org/XML/1998/namespace\""
                         + " xml:lang=\"de\">\n"
                         + "    <fileDesc>\n"
