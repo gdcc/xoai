@@ -82,7 +82,7 @@
         <checkstyle.version>10.14.0</checkstyle.version>
         <spotbugs-maven-plugin.version>4.8.5.0</spotbugs-maven-plugin.version>
         <dependency-check-maven.version>8.4.3</dependency-check-maven.version>
-        <jacoco.version>0.8.11</jacoco.version>
+        <jacoco.version>0.8.12</jacoco.version>
         <sonar.version>3.11.0.3922</sonar.version>
         <spotless.version>2.43.0</spotless.version>
     </properties>
