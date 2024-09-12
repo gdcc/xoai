@@ -68,7 +68,7 @@ mvn spotless:check
 
 ## Release notes
 
-### v5.3.0
+### v5.2.1
 
 #### 🌟 FEATURES
 - (none)
