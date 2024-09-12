@@ -47,7 +47,7 @@
         <skipIT>false</skipIT>
 
         <!-- Dependencies -->
-        <jakarta.jaxb.version>4.0.1</jakarta.jaxb.version>
+        <jakarta.jaxb.version>4.0.2</jakarta.jaxb.version>
         <jakarta.jaxb-impl.version>4.0.4</jakarta.jaxb-impl.version>
         <hamcrest.version>2.2</hamcrest.version>
         <xmlunit.version>2.9.1</xmlunit.version>
