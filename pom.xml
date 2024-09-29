@@ -79,7 +79,7 @@
         <pomchecker-maven-plugin.version>1.7.0</pomchecker-maven-plugin.version>
         <nexus-staging-plugin.version>1.7.0</nexus-staging-plugin.version>
         <checkstyle-maven-plugin.version>3.5.0</checkstyle-maven-plugin.version>
-        <checkstyle.version>10.18.1</checkstyle.version>
+        <checkstyle.version>10.18.2</checkstyle.version>
         <spotbugs-maven-plugin.version>4.8.6.3</spotbugs-maven-plugin.version>
         <dependency-check-maven.version>10.0.4</dependency-check-maven.version>
         <jacoco.version>0.8.12</jacoco.version>
