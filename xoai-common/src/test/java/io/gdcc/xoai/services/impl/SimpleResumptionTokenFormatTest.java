@@ -9,6 +9,7 @@ import io.gdcc.xoai.services.api.ResumptionTokenFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -72,5 +73,17 @@ class SimpleResumptionTokenFormatTest {
     void validParse(String token) {
         String encoded = SimpleResumptionTokenFormat.base64Encode(token);
         assertDoesNotThrow(() -> format.parse(encoded));
+    }
+
+    @Test
+    void validBase64Decoding() {
+        assertDoesNotThrow(() -> SimpleResumptionTokenFormat.base64Decode("b2Zmc2V0OjoxMDA="));
+    }
+
+    @Test
+    void invalidBase64Decoding() {
+        assertThrows(
+                BadResumptionTokenException.class,
+                () -> SimpleResumptionTokenFormat.base64Decode("b2Zmc2V0OjoMDA="));
     }
 }
