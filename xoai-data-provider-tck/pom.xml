@@ -20,6 +20,16 @@
     <artifactId>xoai-data-provider-tck</artifactId>
     <description>Technology Compatibility Kit for Spec Conformance of Data Provider</description>
 
+    <properties>
+        <!--
+            This is necessary to allow Testcontainers to use JUnit4 TestRule.
+            We cannot exclude the dependency, as it is hardcoded.
+            See also https://github.com/testcontainers/testcontainers-java/issues/970
+            At least we enforce it for the other modules - it's probably alright for this TCK.
+        -->
+        <skipEnforce.junit5>true</skipEnforce.junit5>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
