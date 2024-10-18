@@ -10,6 +10,12 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
 
+    <parent>
+        <groupId>io.gdcc</groupId>
+        <artifactId>parent</artifactId>
+        <version>0.10.0</version>
+    </parent>
+
     <modules>
         <module>xoai-common</module>
         <module>xoai-data-provider</module>
@@ -19,7 +25,6 @@
         <module>xoai-data-provider-tck</module>
     </modules>
 
-    <groupId>io.gdcc</groupId>
     <artifactId>xoai</artifactId>
     <version>5.2.2-SNAPSHOT</version>
 
@@ -29,7 +34,7 @@
     </organization>
 
     <name>XOAI : OAI-PMH Java Toolkit</name>
-    <url>https://github.com/gdcc/xoai</url>
+    <!--<url>https://github.com/gdcc/xoai</url>-->
     <description>An OAI-PMH data and/or service provider implementation, integration ready for your service.</description>
 
     <properties>
