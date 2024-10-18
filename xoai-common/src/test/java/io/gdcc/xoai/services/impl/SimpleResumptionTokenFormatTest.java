@@ -1,6 +1,8 @@
 package io.gdcc.xoai.services.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.gdcc.xoai.exceptions.BadResumptionTokenException;
 import io.gdcc.xoai.model.oaipmh.Granularity;
@@ -68,9 +70,22 @@ class SimpleResumptionTokenFormatTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = {"    ", "\t\t\t", "offset::1|", "until::2022-05-13T10:00:00Z"})
+    @ValueSource(
+            strings = {
+                "    ",
+                "\t\t\t",
+                "offset::1|",
+                "until::2022-05-13T10:00:00Z",
+                "offset::1|set::Ätherische Öle"
+            })
     void validParse(String token) {
         String encoded = SimpleResumptionTokenFormat.base64Encode(token);
         assertDoesNotThrow(() -> format.parse(encoded));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"b2Zmc2V0OjoMDA=", "VG========"})
+    void invalidBase64Parse(String sut) {
+        assertThrows(BadResumptionTokenException.class, () -> format.parse(sut));
     }
 }

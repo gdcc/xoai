@@ -124,12 +124,16 @@ public class SimpleResumptionTokenFormat implements ResumptionTokenFormat {
      * @param value The Base64 encoded string
      * @return A decoded String (may be empty)
      */
-    static String base64Decode(String value) {
+    static String base64Decode(String value) throws BadResumptionTokenException {
         if (value == null) {
             return null;
         }
-        byte[] decodedValue = Base64.getDecoder().decode(value);
-        return new String(decodedValue, StandardCharsets.UTF_8);
+        try {
+            byte[] decodedValue = Base64.getDecoder().decode(value);
+            return new String(decodedValue, StandardCharsets.UTF_8);
+        } catch (IllegalArgumentException e) {
+            throw new BadResumptionTokenException("Token has no valid base64 encoding", e);
+        }
     }
 
     static String base64Encode(String value) {

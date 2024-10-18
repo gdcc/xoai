@@ -68,6 +68,17 @@ mvn spotless:check
 
 ## Release notes
 
+### v5.2.2
+
+#### 🌟 FEATURES
+- (none)
+
+#### 💔 BREAKING CHANGES
+- (none)
+
+#### 🏹 BUG FIXES
+- Catch invalid Base64 encodings for resumption tokens (#272) - a community contribution by @bumann-sbb 💫
+
 ### v5.2.1
 
 #### 🌟 FEATURES
