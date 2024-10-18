@@ -1,0 +1,53 @@
+name: Trigger release to Maven Central Repository
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "The version to set for this release"
+        required: true
+        type: string
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    permissions:
+      # We need write permission so we can push the next snapshot version
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      # Alternative command if we just inherit the jdk.version from the parent (grep is faster):
+      # $(mvn help:evaluate -Dexpression=jdk.version -q -DforceStdout)
+      - name: Determine Java version from POM
+        run: |
+          echo "JAVA_VERSION=$(grep '<jdk.version>' pom.xml | cut -f2 -d'>' | cut -f1 -d'<')" >> ${GITHUB_ENV}
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Update version in pom.xml and tag
+        run: |
+          mvn -B versions:set -DnewVersion="${{ inputs.version }}" -DgenerateBackupPoms=false
+          git add pom.xml **/pom.xml
+          git commit -m "[github-action] Release version ${{ inputs.version }}"
+          git tag "xoai-${{ inputs.version }}"
+      - name: Increment to next version, commit and push
+        run: |
+          mvn -B versions:set -DnextSnapshot -DnextSnapshotIndexToIncrement=2 -DgenerateBackupPoms=false
+          git add pom.xml **/pom.xml
+          git commit -m "[github-action] Increment version after release of ${{ inputs.version }}"
+          git push --tags origin branch-5.0
+
+  release:
+    name: Run release workflow
+    uses: ./.github/workflows/maven-release.yml
+    needs: [trigger]
+    secrets: inherit
+    with:
+      version: "xoai-${{ inputs.version }}"
