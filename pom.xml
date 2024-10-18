@@ -28,11 +28,6 @@
     <artifactId>xoai</artifactId>
     <version>5.2.2-SNAPSHOT</version>
 
-    <organization>
-        <name>Global Dataverse Community Consortium</name>
-        <url>https://dataversecommunity.global</url>
-    </organization>
-
     <name>XOAI : OAI-PMH Java Toolkit</name>
     <!--<url>https://github.com/gdcc/xoai</url>-->
     <description>An OAI-PMH data and/or service provider implementation, integration ready for your service.</description>
@@ -103,38 +98,9 @@
         </license>
     </licenses>
 
-    <issueManagement>
-        <url>https://github.com/gdcc/xoai/issues</url>
-        <system>GitHub Issues</system>
-    </issueManagement>
-
     <scm>
-        <connection>scm:git:git@github.com:gdcc/xoai.git</connection>
-        <developerConnection>scm:git:git@github.com:gdcc/xoai.git</developerConnection>
-        <url>git@github.com:gdcc/xoai.git</url>
         <tag>xoai-5.2.1</tag>
     </scm>
-
-    <ciManagement>
-        <url>https://github.com/gdcc/xoai/actions</url>
-        <system>github</system>
-        <notifiers>
-            <notifier>
-                <address>dataversebot@gdcc.io</address>
-            </notifier>
-        </notifiers>
-    </ciManagement>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
 
     <build>
         <pluginManagement>
