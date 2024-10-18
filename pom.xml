@@ -26,7 +26,7 @@
     </modules>
 
     <artifactId>xoai</artifactId>
-    <version>5.2.2-SNAPSHOT</version>
+    <version>5.2.2</version>
 
     <name>XOAI : OAI-PMH Java Toolkit</name>
     <!--<url>https://github.com/gdcc/xoai</url>-->
