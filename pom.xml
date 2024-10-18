@@ -13,7 +13,7 @@
     <parent>
         <groupId>io.gdcc</groupId>
         <artifactId>parent</artifactId>
-        <version>0.10.1</version>
+        <version>0.10.2</version>
     </parent>
 
     <modules>
@@ -31,10 +31,12 @@
     <name>XOAI : OAI-PMH Java Toolkit</name>
     <!--<url>https://github.com/gdcc/xoai</url>-->
     <description>An OAI-PMH data and/or service provider implementation, integration ready for your service.</description>
+    <url>https://github.com/${project.github.org}/${project.github.repo}</url>
 
     <properties>
         <jdk.version>11</jdk.version>
         <project.github.repo>xoai</project.github.repo>
+        <skipEnforce.pomcheck-warn-is-no-error>true</skipEnforce.pomcheck-warn-is-no-error>
 
         <!-- Dependencies -->
         <jakarta.jaxb.version>4.0.1</jakarta.jaxb.version>
@@ -56,10 +58,6 @@
             </comments>
         </license>
     </licenses>
-
-    <scm>
-        <tag>xoai-5.2.1</tag>
-    </scm>
 
     <build>
         <plugins>
