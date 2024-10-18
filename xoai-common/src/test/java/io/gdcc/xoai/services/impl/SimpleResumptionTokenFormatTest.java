@@ -1,6 +1,8 @@
 package io.gdcc.xoai.services.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.gdcc.xoai.exceptions.BadResumptionTokenException;
 import io.gdcc.xoai.model.oaipmh.Granularity;
@@ -9,7 +11,6 @@ import io.gdcc.xoai.services.api.ResumptionTokenFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -69,21 +70,22 @@ class SimpleResumptionTokenFormatTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = {"    ", "\t\t\t", "offset::1|", "until::2022-05-13T10:00:00Z"})
+    @ValueSource(
+            strings = {
+                "    ",
+                "\t\t\t",
+                "offset::1|",
+                "until::2022-05-13T10:00:00Z",
+                "offset::1|set::Ätherische Öle"
+            })
     void validParse(String token) {
         String encoded = SimpleResumptionTokenFormat.base64Encode(token);
         assertDoesNotThrow(() -> format.parse(encoded));
     }
 
-    @Test
-    void validBase64Decoding() {
-        assertDoesNotThrow(() -> SimpleResumptionTokenFormat.base64Decode("b2Zmc2V0OjoxMDA="));
-    }
-
-    @Test
-    void invalidBase64Decoding() {
-        assertThrows(
-                BadResumptionTokenException.class,
-                () -> SimpleResumptionTokenFormat.base64Decode("b2Zmc2V0OjoMDA="));
+    @ParameterizedTest
+    @ValueSource(strings = {"b2Zmc2V0OjoMDA=", "VG========"})
+    void invalidBase64Parse(String sut) {
+        assertThrows(BadResumptionTokenException.class, () -> format.parse(sut));
     }
 }
