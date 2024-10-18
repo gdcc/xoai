@@ -78,6 +78,7 @@ mvn spotless:check
 
 #### 🏹 BUG FIXES
 - Catch invalid Base64 encodings for resumption tokens (#272) - a community contribution by @bumann-sbb 💫
+- Switch to [GDCC Maven Parent POM](https://github.com/gdcc/maven-parent)
 
 ### v5.2.1
 
