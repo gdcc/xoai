@@ -52,12 +52,12 @@ public class EchoElement implements XmlWritable {
                     "Cannot write XML when none given (both stream and string null)");
         }
     }
-    
+
     public String asUnparsedString() {
         if (xmlString != null) {
             return xmlString;
         }
-        return null; 
+        return null;
     }
 
     private void write(final XmlWriter writer, final InputStream inStream)

@@ -77,10 +77,10 @@ public class Metadata implements XmlWritable {
         if (element instanceof XOAIMetadata) return (XOAIMetadata) element;
         else return null;
     }
-    
+
     public String getMetadataAsString() {
-        if (element instanceof EchoElement) return ((EchoElement)element).asUnparsedString();
-        return null;
+        if (element instanceof EchoElement) return ((EchoElement) element).asUnparsedString();
+        else return null;
     }
 
     /**
