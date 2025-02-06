@@ -24,6 +24,7 @@ public class Context {
     private final Map<String, Transformer> metadataTransformers = new HashMap<>();
     private String baseUrl;
     private Granularity granularity;
+    private boolean saveUnparsedMetadata = false;
     private OAIClient client;
 
     public Context() {
@@ -89,6 +90,29 @@ public class Context {
 
     public OAIClient getClient() {
         return client;
+    }
+    
+    /**
+     * Should this harvester skip parsing the "metadata" sections of oai records 
+     * in the bodies of GetRecord and ListRecords responses, and cache and make 
+     * them available as unparsed Strings instead.
+     *
+     * @return boolean
+     */
+    public boolean isSaveUnparsedMetadata() {
+        return this.saveUnparsedMetadata;
+    }
+    
+    /**
+     * Instruct this harvester not to attempt to parse the "metadata" sections of
+     * oai records in the bodies of GetRecord and ListRecords responses, but
+     * cache and make them available as Strings instead.
+     *
+     * @return A Context
+     */
+    public Context withSaveUnparsedMetadata() {
+        this.saveUnparsedMetadata = true;
+        return this;
     }
 
     public enum KnownTransformer {

@@ -77,6 +77,11 @@ public class Metadata implements XmlWritable {
         if (element instanceof XOAIMetadata) return (XOAIMetadata) element;
         else return null;
     }
+    
+    public String getMetadataAsString() {
+        if (element instanceof EchoElement) return ((EchoElement)element).asUnparsedString();
+        return null;
+    }
 
     /**
      * This is here for Dataverse 4/5 backward compatibility.

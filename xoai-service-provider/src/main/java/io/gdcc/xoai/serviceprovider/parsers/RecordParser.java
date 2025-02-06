@@ -47,18 +47,27 @@ public class RecordParser {
         if (!record.getHeader().isDeleted()) {
             reader.next(elementName(localPart(equalTo("metadata")))).next(aStartElement());
             String content = reader.retrieveCurrentAsString();
-            ByteArrayInputStream inputStream =
-                    new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
-            XSLPipeline pipeline =
-                    new XSLPipeline(inputStream, true)
-                            .apply(context.getMetadataTransformer(metadataPrefix));
+            System.out.println("Metadata content: "+content);
+            
+            if (this.context.isSaveUnparsedMetadata()) {
+                record.withMetadata(new Metadata(content));
+            } else {
+                ByteArrayInputStream inputStream
+                        = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
 
-            if (context.hasTransformer()) pipeline.apply(context.getTransformer());
+                XSLPipeline pipeline
+                        = new XSLPipeline(inputStream, true)
+                                .apply(context.getMetadataTransformer(metadataPrefix));
 
-            try {
-                record.withMetadata(new Metadata(new MetadataParser().parse(pipeline.process())));
-            } catch (TransformerException e) {
-                throw new InternalHarvestException("Unable to process transformer", e);
+                if (context.hasTransformer()) {
+                    pipeline.apply(context.getTransformer());
+                }
+
+                try {
+                    record.withMetadata(new Metadata(new MetadataParser().parse(pipeline.process())));
+                } catch (TransformerException e) {
+                    throw new InternalHarvestException("Unable to process transformer", e);
+                }
             }
         }
 
