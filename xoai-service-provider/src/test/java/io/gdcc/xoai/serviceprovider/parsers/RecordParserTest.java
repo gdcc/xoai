@@ -9,6 +9,7 @@
 package io.gdcc.xoai.serviceprovider.parsers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.gdcc.xoai.model.oaipmh.results.Record;
 import io.gdcc.xoai.serviceprovider.model.Context;
@@ -72,17 +73,26 @@ public class RecordParserTest {
     
     @Test
     public void rawUnparsedMetadata() throws Exception {
+        parser = new RecordParser(context, "oai_dc");
+        XmlReader reader = new XmlReader(input);
+        Record record = parser.parse(reader);
+        
+        assertNull(record.getMetadata().asUnparsedString());
+        
         context = context.withSaveUnparsedMetadata(); 
         parser = new RecordParser(context, "");
         input = getClass().getClassLoader().getResourceAsStream("test/oai_dc-CDATA.xml");
         
-        XmlReader reader = new XmlReader(input);
-        Record record = parser.parse(reader); 
-                     
+        reader = new XmlReader(input);
+        record = parser.parse(reader); 
+        
+        assertNull(record.getMetadata().getXoaiMetadata());
+        
         assertEquals(
             "<oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/  http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">\n" +
             "	<dc:title>Article Title-additional CDATA</dc:title>\n" +
             "</oai_dc:dc>",
             record.getMetadata().asUnparsedString());
+        
     }
 }
