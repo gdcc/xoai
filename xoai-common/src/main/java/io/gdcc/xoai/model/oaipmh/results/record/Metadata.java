@@ -78,7 +78,7 @@ public class Metadata implements XmlWritable {
         else return null;
     }
 
-    public String getMetadataAsString() {
+    public String asUnparsedString() {
         if (element instanceof EchoElement) return ((EchoElement) element).asUnparsedString();
         else return null;
     }
