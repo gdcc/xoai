@@ -69,4 +69,20 @@ public class RecordParserTest {
                 "Article Title-additional CDATA",
                 record.getMetadata().getXoaiMetadata().searcher().findOne("dc.title"));
     }
+    
+    @Test
+    public void rawUnparsedMetadata() throws Exception {
+        context = context.withSaveUnparsedMetadata(); 
+        parser = new RecordParser(context, "");
+        input = getClass().getClassLoader().getResourceAsStream("test/oai_dc-CDATA.xml");
+        
+        XmlReader reader = new XmlReader(input);
+        Record record = parser.parse(reader); 
+                     
+        assertEquals(
+            "<oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/  http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">\n" +
+            "	<dc:title>Article Title-additional CDATA</dc:title>\n" +
+            "</oai_dc:dc>",
+            record.getMetadata().asUnparsedString());
+    }
 }
