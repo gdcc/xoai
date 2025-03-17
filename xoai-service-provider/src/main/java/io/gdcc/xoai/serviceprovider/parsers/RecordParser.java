@@ -20,6 +20,7 @@ import io.gdcc.xoai.model.oaipmh.results.record.About;
 import io.gdcc.xoai.model.oaipmh.results.record.Metadata;
 import io.gdcc.xoai.serviceprovider.exceptions.InternalHarvestException;
 import io.gdcc.xoai.serviceprovider.model.Context;
+import io.gdcc.xoai.xml.StringElement;
 import io.gdcc.xoai.xml.XSLPipeline;
 import io.gdcc.xoai.xmlio.XmlReader;
 import io.gdcc.xoai.xmlio.exceptions.XmlReaderException;
@@ -47,10 +48,9 @@ public class RecordParser {
         if (!record.getHeader().isDeleted()) {
             reader.next(elementName(localPart(equalTo("metadata")))).next(aStartElement());
             String content = reader.retrieveCurrentAsString();
-            System.out.println("Metadata content: " + content);
 
             if (this.context.isSaveUnparsedMetadata()) {
-                record.withMetadata(new Metadata(content));
+                record.withMetadata(new Metadata(new StringElement(content)));
             } else {
                 ByteArrayInputStream inputStream =
                         new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));

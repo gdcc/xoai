@@ -11,6 +11,7 @@ package io.gdcc.xoai.model.oaipmh.results.record;
 import io.gdcc.xoai.model.xoai.XOAIMetadata;
 import io.gdcc.xoai.xml.CopyElement;
 import io.gdcc.xoai.xml.EchoElement;
+import io.gdcc.xoai.xml.StringElement;
 import io.gdcc.xoai.xml.XmlWritable;
 import io.gdcc.xoai.xml.XmlWriter;
 import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
@@ -42,6 +43,10 @@ public class Metadata implements XmlWritable {
     }
 
     public Metadata(final CopyElement value) {
+        this.element = value;
+    }
+
+    public Metadata(final StringElement value) {
         this.element = value;
     }
 
@@ -79,7 +84,7 @@ public class Metadata implements XmlWritable {
     }
 
     public String asUnparsedString() {
-        if (element instanceof EchoElement) return ((EchoElement) element).asUnparsedString();
+        if (element instanceof StringElement) return ((StringElement) element).asUnparsedString();
         else return null;
     }
 

@@ -53,13 +53,6 @@ public class EchoElement implements XmlWritable {
         }
     }
 
-    public String asUnparsedString() {
-        if (xmlString != null) {
-            return xmlString;
-        }
-        return null;
-    }
-
     private void write(final XmlWriter writer, final InputStream inStream)
             throws XmlWriteException {
         try (inStream;
