@@ -13,7 +13,7 @@
     <parent>
         <groupId>io.gdcc</groupId>
         <artifactId>parent</artifactId>
-        <version>0.12.1</version>
+        <version>0.12.4</version>
     </parent>
 
     <modules>
@@ -43,9 +43,6 @@
         <jakarta.jaxb-impl.version>4.0.4</jakarta.jaxb-impl.version>
         <stax2.api.version>4.2.2</stax2.api.version>
         <woodstox.version>7.1.1</woodstox.version>
-
-        <!-- Testing dependencies -->
-        <dependency-check-maven.version>12.1.3</dependency-check-maven.version>
     </properties>
 
     <licenses>
@@ -65,7 +62,6 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>${spotless.version}</version>
                 <configuration>
                     <!-- optional: limit format enforcement to just the files changed by this feature branch -->
                     <ratchetFrom>origin/branch-5.0</ratchetFrom>
@@ -190,7 +186,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <version>${maven-surefire-plugin.version}</version>
                         <configuration>
                             <skipTests>${skipUT}</skipTests>
                             <includes>**/*Benchmark</includes>
@@ -210,7 +205,6 @@
                         <!-- https://jeremylong.github.io/DependencyCheck/dependency-check-maven/index.html -->
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>${dependency-check-maven.version}</version>
                         <configuration>
                             <failBuildOnCVSS>7</failBuildOnCVSS>
                             <skipProvidedScope>true</skipProvidedScope>
