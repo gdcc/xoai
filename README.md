@@ -68,6 +68,17 @@ mvn spotless:check
 
 ## Release notes
 
+### v5.2.3
+
+#### 🌟 FEATURES
+- (none)
+
+#### 💔 BREAKING CHANGES
+- (none)
+
+#### 🏹 BUG FIXES
+- Switch to Sonatype Central Portal to [replace sunset OSSRH](https://central.sonatype.org/pages/ossrh-eol/)
+
 ### v5.2.2
 
 #### 🌟 FEATURES
