@@ -39,7 +39,7 @@ jobs:
           git tag "xoai-${{ inputs.version }}"
       - name: Increment to next version, commit and push
         run: |
-          mvn -B versions:set -DnextSnapshot -DnextSnapshotIndexToIncrement=2 -DgenerateBackupPoms=false
+          mvn -B versions:set -DnextSnapshot -DgenerateBackupPoms=false
           git add pom.xml **/pom.xml
           git commit -m "[github-action] Increment version after release of ${{ inputs.version }}"
           git push --tags origin branch-5.0
