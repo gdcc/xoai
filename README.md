@@ -77,6 +77,7 @@ mvn spotless:check
 - (none)
 
 #### 🏹 BUG FIXES
+- Fix a thread safety issue in CopyElement (Shoutout to @ErykKul for #283!)
 - Make Service Provider XML parsing more secure and avoid XXEs (activate STaX2 security features)
 - Make Service Provider XML parsing thread-safe (use thread-local variants of XmlInputFactory)
 - Switch to Sonatype Central Portal to [replace sunset OSSRH](https://central.sonatype.org/pages/ossrh-eol/)
