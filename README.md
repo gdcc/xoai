@@ -77,6 +77,8 @@ mvn spotless:check
 - (none)
 
 #### 🏹 BUG FIXES
+- Make Service Provider XML parsing more secure and avoid XXEs (activate STaX2 security features)
+- Make Service Provider XML parsing thread-safe (use thread-local variants of XmlInputFactory)
 - Switch to Sonatype Central Portal to [replace sunset OSSRH](https://central.sonatype.org/pages/ossrh-eol/)
 - Upgrade [GDCC Maven Parent POM](https://github.com/gdcc/maven-parent) to 0.12.4 (includes some dependency updates, including security)
 
