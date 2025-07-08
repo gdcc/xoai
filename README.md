@@ -78,6 +78,7 @@ mvn spotless:check
 
 #### 🏹 BUG FIXES
 - Switch to Sonatype Central Portal to [replace sunset OSSRH](https://central.sonatype.org/pages/ossrh-eol/)
+- Upgrade [GDCC Maven Parent POM](https://github.com/gdcc/maven-parent) to 0.12.4 (includes some dependency updates, including security)
 
 ### v5.2.2
 
