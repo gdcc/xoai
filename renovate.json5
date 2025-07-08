@@ -1,0 +1,12 @@
+{
+    extends: [
+        "config:recommended"
+    ],
+    packageRules: [
+        {
+            matchDepNames: ["/^org.springframework/"],
+            matchDepTypes: ["test"],
+            groupName: "Spring Framework Dependencies"
+        }
+    ]
+}

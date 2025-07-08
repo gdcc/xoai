@@ -39,17 +39,57 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
 public class XmlReader implements AutoCloseable {
-    // Using the STaX2 API here, but hiding behind STaX1
-    // Ignore SonarCloud warning here - it's used the way the library says we must use it.
-    // https://sonarcloud.io/organizations/gdcc/rules?open=java%3AS3252&rule_key=java%3AS3252
-    @SuppressWarnings("java:S3252")
-    private static final XMLInputFactory XML_INPUT_FACTORY = XMLInputFactory2.newFactory();
+
+    /**
+     * A thread-local holder for `XMLInputFactory` instances, ensuring a secure factory is created
+     * for each thread using the `createSecureXMLInputFactory` method in the containing `XmlReader`
+     * class.
+     *
+     * <p>The `XMLInputFactory` instances are configured with security parameters to disable
+     * potentially dangerous features, such as support for external entities, DTDs, and automatic
+     * entity replacement, mitigating common XML-related security vulnerabilities.
+     *
+     * <p>This approach avoids contention issues in multi-threaded contexts, as `XMLInputFactory` is
+     * not inherently thread-safe and must be instantiated separately for each thread.
+     *
+     * <p>In regard to suppressing the Sonar warning about not calling remove(): 1. XMLInputFactory
+     * is lightweight, the factory itself is a small, stateless object that doesn't hold significant
+     * resources 2. No resource leaks, as XMLInputFactory doesn't maintain open connections, file
+     * handles, or other system resources 3. ThreadPool reuse is beneficial, as keeping the factory
+     * in ThreadLocal allows efficient reuse across multiple XML parsing operations on the same
+     * thread
+     */
+    @SuppressWarnings("java:S5164")
+    private static final ThreadLocal<XMLInputFactory> XML_INPUT_FACTORY =
+            ThreadLocal.withInitial(XmlReader::createSecureXMLInputFactory);
+
+    private static XMLInputFactory createSecureXMLInputFactory() {
+        try {
+            // Using the STaX2 API here, but hiding behind STaX1
+            // Ignore SonarCloud warning here - it's used the way the library says we must use it.
+            // https://sonarcloud.io/organizations/gdcc/rules?open=java%3AS3252&rule_key=java%3AS3252
+            @SuppressWarnings("java:S3252")
+            XMLInputFactory factory = XMLInputFactory2.newFactory();
+
+            // Disable dangerous features: disallow loading external resources to avoid XXEs
+            // See
+            // https://github.com/FasterXML/woodstox/wiki/Configuring-Woodstox-I-%E2%80%90-Basic-Stax-Properties#standard-stax-properties
+            factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+            factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+            factory.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, false);
+
+            return factory;
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to create secure XMLInputFactory", e);
+        }
+    }
 
     private final XMLEventReader xmlEventParser;
 
     public XmlReader(final InputStream stream) throws XmlReaderException {
         try {
-            this.xmlEventParser = XML_INPUT_FACTORY.createXMLEventReader(stream);
+            // The EventParser is not thread-safe, so create one for every operation.
+            this.xmlEventParser = XML_INPUT_FACTORY.get().createXMLEventReader(stream);
         } catch (XMLStreamException e) {
             throw new XmlReaderException(e);
         }
