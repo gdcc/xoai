@@ -14,9 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - if: ${{ github.event_name == 'push' }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - if: ${{ inputs.version }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: "${{ inputs.version }}"
       # Alternative command if we just inherit the jdk.version from the parent (grep is faster):
