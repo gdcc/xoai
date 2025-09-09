@@ -83,6 +83,14 @@ public class Metadata implements XmlWritable {
         else return null;
     }
 
+    /**
+     * Returns the unparsed representation of the metadata as a string if the current element is an
+     * instance of {@code StringElement}. If the element is not an instance of {@code
+     * StringElement}, this method will return {@code null}.
+     *
+     * @return the unparsed string representation of the metadata, or {@code null} if the element
+     *     does not support unparsed string representation.
+     */
     public String asUnparsedString() {
         if (element instanceof StringElement) return ((StringElement) element).asUnparsedString();
         else return null;
