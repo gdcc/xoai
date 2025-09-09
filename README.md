@@ -68,10 +68,10 @@ mvn spotless:check
 
 ## Release notes
 
-### v5.2.3
+### v5.3.0
 
 #### 🌟 FEATURES
-- (none)
+- Added an API to the Metadata model class, allowing to retrieve record metadata as unparsed string (Shoutout to @landreev for #285!)
 
 #### 💔 BREAKING CHANGES
 - (none)

@@ -11,6 +11,7 @@ package io.gdcc.xoai.model.oaipmh.results.record;
 import io.gdcc.xoai.model.xoai.XOAIMetadata;
 import io.gdcc.xoai.xml.CopyElement;
 import io.gdcc.xoai.xml.EchoElement;
+import io.gdcc.xoai.xml.StringElement;
 import io.gdcc.xoai.xml.XmlWritable;
 import io.gdcc.xoai.xml.XmlWriter;
 import io.gdcc.xoai.xmlio.exceptions.XmlWriteException;
@@ -45,6 +46,10 @@ public class Metadata implements XmlWritable {
         this.element = value;
     }
 
+    public Metadata(final StringElement value) {
+        this.element = value;
+    }
+
     /**
      * If this metadata element needs to be passed through an {@link io.gdcc.xoai.xml.XSLPipeline},
      * this is indicated by "true". When this metadata element consists of pregenerated data, which
@@ -75,6 +80,19 @@ public class Metadata implements XmlWritable {
 
     public XOAIMetadata getXoaiMetadata() {
         if (element instanceof XOAIMetadata) return (XOAIMetadata) element;
+        else return null;
+    }
+
+    /**
+     * Returns the unparsed representation of the metadata as a string if the current element is an
+     * instance of {@code StringElement}. If the element is not an instance of {@code
+     * StringElement}, this method will return {@code null}.
+     *
+     * @return the unparsed string representation of the metadata, or {@code null} if the element
+     *     does not support unparsed string representation.
+     */
+    public String asUnparsedString() {
+        if (element instanceof StringElement) return ((StringElement) element).asUnparsedString();
         else return null;
     }
 

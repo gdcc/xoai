@@ -20,6 +20,7 @@ import io.gdcc.xoai.model.oaipmh.results.record.About;
 import io.gdcc.xoai.model.oaipmh.results.record.Metadata;
 import io.gdcc.xoai.serviceprovider.exceptions.InternalHarvestException;
 import io.gdcc.xoai.serviceprovider.model.Context;
+import io.gdcc.xoai.xml.StringElement;
 import io.gdcc.xoai.xml.XSLPipeline;
 import io.gdcc.xoai.xmlio.XmlReader;
 import io.gdcc.xoai.xmlio.exceptions.XmlReaderException;
@@ -47,18 +48,27 @@ public class RecordParser {
         if (!record.getHeader().isDeleted()) {
             reader.next(elementName(localPart(equalTo("metadata")))).next(aStartElement());
             String content = reader.retrieveCurrentAsString();
-            ByteArrayInputStream inputStream =
-                    new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
-            XSLPipeline pipeline =
-                    new XSLPipeline(inputStream, true)
-                            .apply(context.getMetadataTransformer(metadataPrefix));
 
-            if (context.hasTransformer()) pipeline.apply(context.getTransformer());
+            if (this.context.isSaveUnparsedMetadata()) {
+                record.withMetadata(new Metadata(new StringElement(content)));
+            } else {
+                ByteArrayInputStream inputStream =
+                        new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
 
-            try {
-                record.withMetadata(new Metadata(new MetadataParser().parse(pipeline.process())));
-            } catch (TransformerException e) {
-                throw new InternalHarvestException("Unable to process transformer", e);
+                XSLPipeline pipeline =
+                        new XSLPipeline(inputStream, true)
+                                .apply(context.getMetadataTransformer(metadataPrefix));
+
+                if (context.hasTransformer()) {
+                    pipeline.apply(context.getTransformer());
+                }
+
+                try {
+                    record.withMetadata(
+                            new Metadata(new MetadataParser().parse(pipeline.process())));
+                } catch (TransformerException e) {
+                    throw new InternalHarvestException("Unable to process transformer", e);
+                }
             }
         }
 
