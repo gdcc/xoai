@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.stream.XMLStreamException;
 
@@ -66,10 +65,10 @@ public class CopyElement implements XmlWritable {
     }
 
     /**
-     * A matcher, created only once, reusable to match the XML declaration with any attributes.
+     * A pattern, created only once, reusable to match the XML declaration with any attributes.
      * Non-greedy, so we do not interfere with any XML processing instructions following.
      */
-    private static final Matcher xmlDeclaration = Pattern.compile("<\\?xml .*?\\?>").matcher("");
+    private static final Pattern xmlDeclaration = Pattern.compile("<\\?xml .*?\\?>");
 
     protected void writeXml(XmlWriter writer) throws IOException {
 
@@ -109,7 +108,7 @@ public class CopyElement implements XmlWritable {
 
             String firstChars = new String(bytes, StandardCharsets.UTF_8);
             // match the start with the compiled regex and replace with nothing when matching.
-            firstChars = xmlDeclaration.reset(firstChars).replaceFirst("");
+            firstChars = xmlDeclaration.matcher(firstChars).replaceFirst("");
 
             // write the chars to the output stream
             writer.getOutputStream().write(firstChars.getBytes(StandardCharsets.UTF_8));

@@ -68,6 +68,21 @@ mvn spotless:check
 
 ## Release notes
 
+### v5.2.3
+
+#### 🌟 FEATURES
+- (none)
+
+#### 💔 BREAKING CHANGES
+- (none)
+
+#### 🏹 BUG FIXES
+- Fix a thread safety issue in CopyElement (Shoutout to @ErykKul for #283!)
+- Make Service Provider XML parsing more secure and avoid XXEs (activate STaX2 security features)
+- Make Service Provider XML parsing thread-safe (use thread-local variants of XmlInputFactory)
+- Switch to Sonatype Central Portal to [replace sunset OSSRH](https://central.sonatype.org/pages/ossrh-eol/)
+- Upgrade [GDCC Maven Parent POM](https://github.com/gdcc/maven-parent) to 0.12.4 (includes some dependency updates, including security)
+
 ### v5.2.2
 
 #### 🌟 FEATURES

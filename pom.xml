@@ -13,7 +13,7 @@
     <parent>
         <groupId>io.gdcc</groupId>
         <artifactId>parent</artifactId>
-        <version>0.10.2</version>
+        <version>0.12.4</version>
     </parent>
 
     <modules>
@@ -26,7 +26,7 @@
     </modules>
 
     <artifactId>xoai</artifactId>
-    <version>5.3.2-SNAPSHOT</version>
+    <version>5.2.3-SNAPSHOT</version>
 
     <name>XOAI : OAI-PMH Java Toolkit</name>
     <!--<url>https://github.com/gdcc/xoai</url>-->
@@ -42,10 +42,7 @@
         <jakarta.jaxb.version>4.0.1</jakarta.jaxb.version>
         <jakarta.jaxb-impl.version>4.0.4</jakarta.jaxb-impl.version>
         <stax2.api.version>4.2.2</stax2.api.version>
-        <woodstox.version>7.0.0</woodstox.version>
-
-        <!-- Testing dependencies -->
-        <dependency-check-maven.version>10.0.4</dependency-check-maven.version>
+        <woodstox.version>7.1.1</woodstox.version>
     </properties>
 
     <licenses>
@@ -65,7 +62,6 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>${spotless.version}</version>
                 <configuration>
                     <!-- optional: limit format enforcement to just the files changed by this feature branch -->
                     <ratchetFrom>origin/branch-5.0</ratchetFrom>
@@ -190,7 +186,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <version>${maven-surefire-plugin.version}</version>
                         <configuration>
                             <skipTests>${skipUT}</skipTests>
                             <includes>**/*Benchmark</includes>
@@ -210,7 +205,6 @@
                         <!-- https://jeremylong.github.io/DependencyCheck/dependency-check-maven/index.html -->
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>${dependency-check-maven.version}</version>
                         <configuration>
                             <failBuildOnCVSS>7</failBuildOnCVSS>
                             <skipProvidedScope>true</skipProvidedScope>
