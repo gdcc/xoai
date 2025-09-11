@@ -40,6 +40,16 @@ public class Metadata implements XmlWritable {
         this.element = value;
     }
 
+    /**
+     * Constructs a new instance wrapping the provided {@link String} value as an {@link
+     * EchoElement}.
+     *
+     * @param value The string representation of the metadata content to be wrapped in an {@link
+     *     EchoElement}. This value is parsed and managed for later XML handling operations.
+     * @deprecated Note that this constructor is deprecated and may be removed in a future release.
+     *     Please use {@link Metadata(EchoElement)} (or others) instead.
+     */
+    @Deprecated(forRemoval = true, since = "5.3.0")
     public Metadata(final String value) {
         this.element = new EchoElement(value);
     }
