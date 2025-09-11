@@ -26,6 +26,21 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.XMLEvent;
 
+/**
+ * This class is an implementation of the {@link XmlWritable} interface that allows XML content to
+ * be "echoed" (written using an {@link XmlWriter}). The content can be provided to the class
+ * constructor as either a string or an input stream.
+ *
+ * <p>This class handles writing XML content while preserving namespace declarations, attributes,
+ * and character data. It also manages namespace-scoped prefixes to avoid redundant declarations
+ * during the writing process.
+ *
+ * <p>The content is written by parsing the XML input and writing its events into the target
+ * XmlWriter instance.
+ *
+ * <p>Note: you cannot write at the root level with this element, as the StAX writer needs at least
+ * one wrapping element
+ */
 public class EchoElement implements XmlWritable {
     private final Deque<Set<String>> declaredPrefixes = new ArrayDeque<>();
     private final String xmlString;

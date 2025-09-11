@@ -5,6 +5,15 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import javax.xml.stream.XMLStreamException;
 
+/**
+ * This class implements the {@link XmlWritable} interface, enabling it to be serialized to an
+ * {@link XmlWriter} as part of the XML writing process. It represents an XML element in the form of
+ * an unparsed string, allowing raw XML content to be directly written without prior parsing or
+ * modification.
+ *
+ * <p>Note: you cannot write at the root level with this element, as the StAX writer needs at least
+ * one wrapping element.
+ */
 public class StringElement implements XmlWritable {
     private final String xmlString;
 

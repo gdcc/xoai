@@ -20,11 +20,11 @@ import javax.xml.stream.XMLStreamException;
 /**
  * Create a {@link XmlWritable} element that reads from the given {@link InputStream} at the very
  * last moment: when the XML writer is asked to write the content of the element. The input is
- * copied and an XML declaration is removed if present.
+ * copied, and an XML declaration is removed if present.
  *
- * <p>Obviously, the stream should send XML - although we write anything we receive. No input check
- * is done for speed reasons - it's the using applications responsibility to send valid XML that
- * also withstands namespace checks!
+ * <p>The stream should send valid XML - although we write anything we receive. No input check is
+ * done for speed reasons - it's the using applications responsibility to send XML that withstands
+ * validation and namespace checks!
  *
  * <p>Note: you cannot write at the root level with this element, as the StAX writer needs at least
  * one wrapping element.

@@ -30,6 +30,12 @@ public class Metadata implements XmlWritable {
     private final XmlWritable element;
     protected Map<String, String> attributes = null;
 
+    /**
+     * Constructs a new instance of {@code Metadata} using the given {@link XOAIMetadata} value.
+     *
+     * @apiNote This constructor is only used by service provider parser code. Data providers should
+     *     not use it.
+     */
     public Metadata(final XOAIMetadata value) {
         this.element = value;
     }
