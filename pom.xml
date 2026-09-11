@@ -13,7 +13,7 @@
     <parent>
         <groupId>io.gdcc</groupId>
         <artifactId>parent</artifactId>
-        <version>0.12.4</version>
+        <version>0.15.3</version>
     </parent>
 
     <modules>
